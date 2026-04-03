@@ -1,9 +1,12 @@
+import { useCallback, useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import supabase from '../utils/supabase';
 
 interface VerifyOtpResult {
   needsOnboarding: boolean;
 }
+
+export type AuthState = 'loading' | 'unauthenticated' | 'needs-onboarding' | 'authenticated';
 
 export const useUserAuth = () => {
   const sendOtp = useMutation({
@@ -77,4 +80,46 @@ export const useUserAuth = () => {
   });
 
   return { sendOtp, verifyOtp, completeOnboarding };
+};
+
+/**
+ * Resolves the auth state for a given user ID
+ * Checks the profiles table to determine if onboarding is needed
+ */
+export const resolveAuthState = async (userId: string): Promise<AuthState> => {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('has_onboarded')
+    .eq('id', userId)
+    .single();
+
+  return profile?.has_onboarded ? 'authenticated' : 'needs-onboarding';
+};
+
+/**
+ * Hook to monitor auth state changes and return the current state
+ */
+export const useAuthState = () => {
+  const [authState, setAuthState] = useState<AuthState>('loading');
+
+  const updateAuthState = useCallback(async (userId: string) => {
+    const state = await resolveAuthState(userId);
+    setAuthState(state);
+  }, []);
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (!session) {
+        setAuthState('unauthenticated');
+        return;
+      }
+      await updateAuthState(session.user.id);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [updateAuthState]);
+
+  return authState;
 };

@@ -12,11 +12,42 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import { useAuthState } from '../hooks/useUserAuth';
 
 const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
+
+function RootLayoutNav() {
+  const router = useRouter();
+  const segments = useSegments();
+  const authState = useAuthState();
+
+  useEffect(() => {
+    if (authState === 'loading') return;
+
+    const inAuth = segments[0] === '(auth)';
+    const inOnboarding = segments[0] === 'onboarding';
+    const inTabs = segments[0] === '(tabs)';
+
+    if (authState === 'unauthenticated' && !inAuth) {
+      router.replace('/(auth)');
+    } else if (authState === 'needs-onboarding' && !inOnboarding) {
+      router.replace('/onboarding');
+    } else if (authState === 'authenticated' && !inTabs) {
+      router.replace('/(tabs)');
+    }
+  }, [authState, segments, router]);
+
+  return (
+    <Stack>
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
 
 export const unstable_settings = {
   initialRouteName: '(auth)',
@@ -49,11 +80,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <Stack>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
+        <RootLayoutNav />
       </SafeAreaProvider>
     </QueryClientProvider>
   );
