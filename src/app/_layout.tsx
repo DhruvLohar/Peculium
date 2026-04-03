@@ -11,8 +11,10 @@ import {
   SpaceGrotesk_600SemiBold,
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
+
+const queryClient = new QueryClient();
 
 SplashScreen.preventAutoHideAsync();
 
@@ -45,11 +47,14 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <Stack>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <Stack>
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

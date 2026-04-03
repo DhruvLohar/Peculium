@@ -45,8 +45,8 @@ const OnboardingScreen: React.FC = () => {
     if (currentIndex < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      // Navigate to main app
-      router.replace("/(tabs)");
+      // Navigate to login
+      router.push("/login");
     }
   }, [currentIndex, router]);
 

@@ -69,13 +69,15 @@ export default memo(TransactionEntry);
 - Use **TanStack Query** for all server-state fetching/caching/sync.
 - Keep Supabase calls inside dedicated hooks in `src/hooks/` (for example: `useUser.ts`, `useTransactions.ts`, `useInsights.ts`).
 - Screens/components must consume hooks, not call Supabase directly.
+- **Mutations**: Use `useMutation` for any write/auth operation (sign in, update profile, etc.). Never use plain `useState` + `useCallback` for async Supabase calls.
+- **Refresh Control**: EVERY screen that fetches data MUST implement pull-to-refresh using `RefreshControl` wired to the query's `refetch` function.
 
-Reference pattern:
+Reference patterns:
 
 ```ts
-// src/hooks/useTransactions.ts
+// src/hooks/useTransactions.ts — query pattern
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../utils/supabase';
+import supabase from '../utils/supabase';
 
 export const useTransactions = () => {
   return useQuery({
@@ -86,17 +88,99 @@ export const useTransactions = () => {
         .select('*')
         .order('date', { ascending: false });
 
-      if (error) {
-        throw new Error(error.message); // TanStack catches this automatically
-      }
-
+      if (error) throw new Error(error.message);
       return data;
     },
   });
 };
 ```
 
-## 6. Design System Rule (Neo-Brutalism + Atoms First)
+```tsx
+// Pull-to-refresh pattern in any data-fetching screen
+import { ScrollView, RefreshControl } from 'react-native';
+
+const { data, refetch, isRefetching } = useTransactions();
+
+<ScrollView
+  refreshControl={
+    <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+  }
+>
+  {/* screen content */}
+</ScrollView>
+```
+
+```ts
+// src/hooks/useUserAuth.ts — mutation pattern for auth operations
+import { useMutation } from '@tanstack/react-query';
+import supabase from '../utils/supabase';
+
+export const useUserAuth = () => {
+  const sendOtp = useMutation({
+    mutationFn: async (email: string) => {
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      if (error) throw new Error(error.message);
+    },
+  });
+
+  const verifyOtp = useMutation({
+    mutationFn: async ({ email, token }: { email: string; token: string }) => {
+      const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+      if (error || !data.user) throw new Error(error?.message ?? 'Verification failed');
+      // check/upsert profile, return needsOnboarding boolean
+    },
+  });
+
+  return { sendOtp, verifyOtp };
+};
+```
+
+## 6. Form Handling (Zod + React Hook Form)
+- **EVERY form in the app MUST use `react-hook-form` with a `zod` schema via `@hookform/resolvers/zod`.**
+- Define all schemas in `src/utils/schemas.ts` and import from there — never inline schemas inside components.
+- Use `Controller` to wrap every `Input` atom (React Native controlled inputs are not compatible with uncontrolled RHF refs).
+- Display field-level errors from `formState.errors` below each input — never manage error state manually with `useState`.
+- The `Button` `onPress` must always call `handleSubmit(onSubmit)` — never wire up submit manually.
+
+Reference pattern:
+
+```tsx
+// src/utils/schemas.ts
+import { z } from 'zod';
+export const emailSchema = z.object({
+  email: z.string().email('Enter a valid email address'),
+});
+export type EmailFormValues = z.infer<typeof emailSchema>;
+```
+
+```tsx
+// Inside a screen component
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { emailSchema, type EmailFormValues } from '../../../utils/schemas';
+
+const { control, handleSubmit, formState: { errors } } = useForm<EmailFormValues>({
+  resolver: zodResolver(emailSchema),
+  defaultValues: { email: '' },
+});
+
+<Controller
+  control={control}
+  name="email"
+  render={({ field: { onChange, value } }) => (
+    <Input
+      value={value}
+      onChangeText={onChange}
+      isInvalid={!!errors.email}
+    />
+  )}
+/>
+{errors.email && <CustomText variant="muted">{errors.email.message}</CustomText>}
+
+<Button onPress={handleSubmit(onSubmit)}>Submit</Button>
+```
+
+## 7. Design System Rule (Neo-Brutalism + Atoms First)
 - We use **Neo-Brutalism** as the base design system across the app.
 - Every UI building block should come from `src/components/atoms/`.
 - If a required primitive does not exist, create it in `atoms` first, then compose pages/screens from those atoms.

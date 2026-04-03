@@ -6,26 +6,30 @@ import { Container } from '../../Container';
 import Input from '../../atoms/Input';
 import Button from '../../atoms/Button';
 import CustomText from '../../atoms/CustomText';
-import { emailSchema, type EmailFormValues } from '../../../utils/schemas';
+import { displayNameSchema, type DisplayNameFormValues } from '../../../utils/schemas';
 
-interface LoginScreenProps {
-  onSubmit: (email: string) => void;
+interface OnboardingNameScreenProps {
+  onContinue: (name: string) => void;
   isLoading?: boolean;
   serverError?: string;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, serverError }) => {
+const OnboardingNameScreen: React.FC<OnboardingNameScreenProps> = ({
+  onContinue,
+  isLoading = false,
+  serverError,
+}) => {
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<EmailFormValues>({
-    resolver: zodResolver(emailSchema),
-    defaultValues: { email: '' },
+  } = useForm<DisplayNameFormValues>({
+    resolver: zodResolver(displayNameSchema),
+    defaultValues: { name: '' },
   });
 
-  const handleFormSubmit = (data: EmailFormValues) => {
-    onSubmit(data.email);
+  const handleFormSubmit = (data: DisplayNameFormValues) => {
+    onContinue(data.name);
   };
 
   return (
@@ -40,33 +44,37 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
         </CustomText>
       </View>
 
-      {/* Login Form - Vertically Centered */}
+      {/* Name Form - Vertically Centered */}
       <View className="flex-1 justify-center">
         <View className="gap-6">
-          <Text className="font-head text-3xl text-foreground">
-            Login
-          </Text>
+          <View>
+            <Text className="font-head text-3xl text-foreground mb-2">
+              What should we call you?
+            </Text>
+            <CustomText variant="p" className="text-muted-foreground">
+              Let's personalize your experience
+            </CustomText>
+          </View>
 
           <View>
             <Controller
               control={control}
-              name="email"
+              name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  placeholder="Email"
+                  placeholder="Enter your name"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                  isInvalid={!!errors.email}
+                  autoCapitalize="words"
+                  autoComplete="name"
+                  isInvalid={!!errors.name}
                 />
               )}
             />
-            {errors.email && (
+            {errors.name && (
               <CustomText variant="p" className="text-destructive mt-2">
-                {errors.email.message}
+                {errors.name.message}
               </CustomText>
             )}
           </View>
@@ -83,7 +91,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
             size="lg"
             disabled={isLoading}
           >
-            {isLoading ? 'Sending...' : 'Continue'}
+            {isLoading ? 'Setting up...' : 'Continue'}
           </Button>
         </View>
       </View>
@@ -91,4 +99,4 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
   );
 };
 
-export default memo(LoginScreen);
+export default memo(OnboardingNameScreen);

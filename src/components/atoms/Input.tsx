@@ -37,7 +37,7 @@ const Input: React.FC<InputProps> = ({
   const inputClass = useMemo(
     () =>
       cn(
-        'w-full border-2 border-black px-4 py-2 font-sans text-foreground bg-background',
+        'w-full border-2 border-black py-2 font-sans text-foreground bg-background',
         isInvalid && 'border-destructive text-destructive',
         className,
       ),
@@ -46,7 +46,7 @@ const Input: React.FC<InputProps> = ({
 
   const shadowStyle = useMemo(
     () => ({
-      boxShadow: isFocused ? '2px 2px 0px black' : '4px 4px 0px black',
+      boxShadow: isFocused ? '0px 0px 0px black' : '4px 4px 0px black',
     }),
     [isFocused],
   );
@@ -56,7 +56,11 @@ const Input: React.FC<InputProps> = ({
       placeholder={placeholder}
       placeholderTextColor="#aeaeae"
       className={inputClass}
-      style={shadowStyle}
+      style={{
+        ...shadowStyle,
+        paddingLeft: 16,
+        paddingRight: 16,
+      }}
       onChangeText={onChangeText}
       onFocus={handleFocus}
       onBlur={handleBlur}
