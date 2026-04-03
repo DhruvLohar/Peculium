@@ -1,10 +1,56 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/app/**/*.{js,ts,tsx}', './src/components/**/*.{js,ts,tsx}'],
+  darkMode: 'class',
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './global.css'],
 
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: '#ffffff',
+        foreground: '#000000',
+        card: '#ffffff',
+        'card-foreground': '#000000',
+        primary: '#ffdb33',
+        'primary-hover': '#ffcc00',
+        'primary-foreground': '#000000',
+        secondary: '#000000',
+        'secondary-foreground': '#ffffff',
+        muted: '#aeaeae',
+        'muted-foreground': '#5a5a5a',
+        accent: '#fae583',
+        'accent-foreground': '#000000',
+        destructive: '#e63946',
+        'destructive-foreground': '#ffffff',
+        border: '#000000',
+      },
+      fontFamily: {
+        head: ['ArchivoBlack_400Regular'],
+        sans: ['SpaceGrotesk_400Regular'],
+        'sans-light': ['SpaceGrotesk_300Light'],
+        'sans-medium': ['SpaceGrotesk_500Medium'],
+        'sans-semibold': ['SpaceGrotesk_600SemiBold'],
+        'sans-bold': ['SpaceGrotesk_700Bold'],
+      },
+      borderRadius: {
+        none: '0px',
+        sm: '0px',
+        DEFAULT: '0px',
+        md: '0px',
+        lg: '0px',
+        xl: '0px',
+        full: '9999px',
+      },
+      boxShadow: {
+        xs: '1px 1px 0 0 #000000',
+        sm: '2px 2px 0 0 #000000',
+        DEFAULT: '3px 3px 0 0 #000000',
+        md: '4px 4px 0 0 #000000',
+        lg: '6px 6px 0 0 #000000',
+        xl: '10px 10px 0 1px #000000',
+        '2xl': '16px 16px 0 1px #000000',
+      },
+    },
   },
   plugins: [],
 };

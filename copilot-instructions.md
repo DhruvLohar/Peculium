@@ -62,3 +62,42 @@ const TransactionEntry: React.FC<TransactionEntryProps> = ({
 
 // 3. Export with memo
 export default memo(TransactionEntry);
+```
+
+## 5. Data Fetching & API Architecture (Supabase + TanStack Query)
+- Use **Supabase** as the API/data layer.
+- Use **TanStack Query** for all server-state fetching/caching/sync.
+- Keep Supabase calls inside dedicated hooks in `src/hooks/` (for example: `useUser.ts`, `useTransactions.ts`, `useInsights.ts`).
+- Screens/components must consume hooks, not call Supabase directly.
+
+Reference pattern:
+
+```ts
+// src/hooks/useTransactions.ts
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '../utils/supabase';
+
+export const useTransactions = () => {
+  return useQuery({
+    queryKey: ['transactions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) {
+        throw new Error(error.message); // TanStack catches this automatically
+      }
+
+      return data;
+    },
+  });
+};
+```
+
+## 6. Design System Rule (Neo-Brutalism + Atoms First)
+- We use **Neo-Brutalism** as the base design system across the app.
+- Every UI building block should come from `src/components/atoms/`.
+- If a required primitive does not exist, create it in `atoms` first, then compose pages/screens from those atoms.
+- Avoid writing one-off visual primitives directly inside page/screen files.
