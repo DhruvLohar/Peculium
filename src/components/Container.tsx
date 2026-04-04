@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { cn } from '../utils/cn';
+import { cn } from '@/utils/cn';
 
 interface ContainerProps {
   children: React.ReactNode;

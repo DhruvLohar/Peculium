@@ -2,11 +2,11 @@ import React, { memo, useCallback } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Container } from '../../Container';
-import Input from '../../atoms/Input';
-import Button from '../../atoms/Button';
-import CustomText from '../../atoms/CustomText';
-import { otpSchema, type OTPFormValues } from '../../../utils/schemas';
+import { Container } from '@/components/Container';
+import Input from '@/components/atoms/Input';
+import Button from '@/components/atoms/Button';
+import CustomText from '@/components/atoms/CustomText';
+import { otpSchema, type OTPFormValues } from '@/utils/schemas';
 
 interface OTPScreenProps {
   email: string;

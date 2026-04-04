@@ -57,6 +57,42 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          amount: number
+          category: Database["public"]["Enums"]["transaction_category"]
+          created_at: string
+          id: string
+          notes: string | null
+          transaction_date: string
+          type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: Database["public"]["Enums"]["transaction_category"]
+          created_at?: string
+          id?: string
+          notes?: string | null
+          transaction_date?: string
+          type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: Database["public"]["Enums"]["transaction_category"]
+          created_at?: string
+          id?: string
+          notes?: string | null
+          transaction_date?: string
+          type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -65,7 +101,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      transaction_category:
+        | "Home"
+        | "Groceries"
+        | "Rent"
+        | "Food"
+        | "Travel"
+        | "Salary"
+        | "Health"
+        | "Other"
+      transaction_type: "INCOME" | "EXPENSE"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -195,6 +240,18 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      transaction_category: [
+        "Home",
+        "Groceries",
+        "Rent",
+        "Food",
+        "Travel",
+        "Salary",
+        "Health",
+        "Other",
+      ],
+      transaction_type: ["INCOME", "EXPENSE"],
+    },
   },
 } as const

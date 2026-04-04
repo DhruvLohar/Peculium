@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
-import LoginScreen from '../../components/screens/login/LoginScreen';
-import OTPScreen from '../../components/screens/login/OTPScreen';
-import { useUserAuth } from '../../hooks/useUserAuth';
+import LoginScreen from '@/components/screens/login/LoginScreen';
+import OTPScreen from '@/components/screens/login/OTPScreen';
+import { useUserAuth } from '@/hooks/useUserAuth';
 
 type Step = 'email' | 'otp';
 
@@ -18,8 +18,8 @@ const LoginPage: React.FC = () => {
       try {
         await sendOtp.mutateAsync(emailInput);
         setStep('otp');
-      } catch {
-        // error surfaced via sendOtp.error
+      } catch (error) {
+        console.error(error);
       }
     },
     [sendOtp],
@@ -34,8 +34,8 @@ const LoginPage: React.FC = () => {
         } else {
           router.replace('/(tabs)');
         }
-      } catch {
-        // error surfaced via verifyOtp.error
+      } catch (error) {
+        console.error(error)
       }
     },
     [email, verifyOtp, router],
@@ -44,8 +44,8 @@ const LoginPage: React.FC = () => {
   const handleResendOtp = useCallback(async () => {
     try {
       await sendOtp.mutateAsync(email);
-    } catch {
-      // error surfaced via sendOtp.error
+    } catch (error) {
+      console.error(error)
     }
   }, [email, sendOtp]);
 

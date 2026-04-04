@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { Text, type TextProps } from 'react-native';
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 export interface LabelProps extends TextProps {
   className?: string;

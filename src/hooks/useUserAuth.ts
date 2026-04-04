@@ -66,16 +66,18 @@ export const useUserAuth = () => {
 
       if (!user) throw new Error('No authenticated user');
 
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: { display_name: name },
-      });
-      if (updateError) throw new Error(updateError.message);
-
+      // Update profile FIRST so that when updateUser triggers onAuthStateChange,
+      // resolveAuthState reads has_onboarded: true and doesn't bounce back to onboarding.
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ has_onboarded: true, updated_at: new Date().toISOString() })
         .eq('id', user.id);
       if (profileError) throw new Error(profileError.message);
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { display_name: name },
+      });
+      if (updateError) throw new Error(updateError.message);
     },
   });
 

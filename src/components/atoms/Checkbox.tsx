@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 const checkboxVariants = cva('border-2 items-center justify-center', {
   variants: {

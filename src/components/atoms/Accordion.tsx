@@ -14,7 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 // ─── Root Context ────────────────────────────────────────────────────────────
 

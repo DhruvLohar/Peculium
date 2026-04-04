@@ -1,11 +1,14 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { TextInput, type TextInputProps } from 'react-native';
-import { cn } from '../../utils/cn';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { cn } from '@/utils/cn';
 
 export interface InputProps extends TextInputProps {
   className?: string;
   isInvalid?: boolean;
 }
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const Input: React.FC<InputProps> = ({
   placeholder = 'Enter text',
@@ -16,51 +19,40 @@ const Input: React.FC<InputProps> = ({
   onBlur,
   ...props
 }) => {
-  const [isFocused, setIsFocused] = React.useState(false);
+  const shadowOffset = useSharedValue(4);
 
   const handleFocus = useCallback(
     (e: Parameters<NonNullable<TextInputProps['onFocus']>>[0]) => {
-      setIsFocused(true);
+      shadowOffset.value = withTiming(0, { duration: 150 });
       onFocus?.(e);
     },
-    [onFocus],
+    [onFocus, shadowOffset],
   );
 
   const handleBlur = useCallback(
     (e: Parameters<NonNullable<TextInputProps['onBlur']>>[0]) => {
-      setIsFocused(false);
+      shadowOffset.value = withTiming(4, { duration: 150 });
       onBlur?.(e);
     },
-    [onBlur],
+    [onBlur, shadowOffset],
   );
 
-  const inputClass = useMemo(
-    () =>
-      cn(
-        'w-full border-2 border-black py-2 font-sans text-foreground bg-background',
-        isInvalid && 'border-destructive text-destructive',
-        className,
-      ),
-    [isInvalid, className],
-  );
+  const animatedStyle = useAnimatedStyle(() => ({
+    boxShadow: `${shadowOffset.value}px ${shadowOffset.value}px 0px black`,
+  }));
 
-  const shadowStyle = useMemo(
-    () => ({
-      boxShadow: isFocused ? '0px 0px 0px black' : '4px 4px 0px black',
-    }),
-    [isFocused],
+  const inputClass = cn(
+    'w-full border-2 border-black px-4 py-2 font-sans text-foreground bg-background',
+    isInvalid && 'border-destructive text-destructive',
+    className,
   );
 
   return (
-    <TextInput
+    <AnimatedTextInput
       placeholder={placeholder}
       placeholderTextColor="#aeaeae"
       className={inputClass}
-      style={{
-        ...shadowStyle,
-        paddingLeft: 16,
-        paddingRight: 16,
-      }}
+      style={animatedStyle}
       onChangeText={onChangeText}
       onFocus={handleFocus}
       onBlur={handleBlur}

@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useRef, useState } from "react";
 import { View, FlatList, Dimensions, Pressable, type NativeSyntheticEvent, type NativeScrollEvent } from "react-native";
 import { useRouter } from "expo-router";
-import CustomText from "../../components/atoms/CustomText";
-import Button from "../../components/atoms/Button";
+import CustomText from "@/components/atoms/CustomText";
+import Button from "@/components/atoms/Button";
 
 const { width } = Dimensions.get("window");
 

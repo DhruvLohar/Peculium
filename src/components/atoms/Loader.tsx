@@ -10,7 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 const loaderVariants = cva('flex-row gap-1', {
   variants: {

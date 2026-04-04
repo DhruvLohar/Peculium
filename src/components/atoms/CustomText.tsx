@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Text, type TextProps } from 'react-native';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 const textVariants = cva('text-foreground', {
   variants: {
@@ -25,6 +25,7 @@ const textVariants = cva('text-foreground', {
 
 export interface CustomTextProps extends TextProps, VariantProps<typeof textVariants> {
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const CustomText: React.FC<CustomTextProps> = ({ variant = 'p', className, children, ...props }) => {
@@ -34,7 +35,7 @@ const CustomText: React.FC<CustomTextProps> = ({ variant = 'p', className, child
   );
 
   return (
-    <Text className={textClass} {...props}>
+    <Text className={textClass} style={props.style} {...props}>
       {children}
     </Text>
   );

@@ -12,21 +12,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'HOME',
           tabBarIcon: ({ color }) => <FontAwesome name="home" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
-          title: 'History',
-          tabBarIcon: ({ color }) => <FontAwesome name="history" size={22} color={color} />,
+          title: 'TRANSACTIONS',
+          tabBarIcon: ({ color }) => <FontAwesome name="rupee" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="insights"
         options={{
-          title: 'Insights',
+          title: 'INSIGHTS',
           tabBarIcon: ({ color }) => <FontAwesome name="line-chart" size={22} color={color} />,
         }}
       />
