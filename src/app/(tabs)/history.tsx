@@ -1,7 +1,9 @@
 import React, { memo, useState, useMemo, useCallback } from 'react';
-import { ScrollView, RefreshControl, View, ActivityIndicator } from 'react-native';
+import { ScrollView, RefreshControl, View, ActivityIndicator, Text } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Container } from '@/components/Container';
 import CustomText from '@/components/atoms/CustomText';
+import FloatingActionButton from '@/components/atoms/FloatingActionButton';
 import TransactionSearchBar from '@/components/screens/transactions/TransactionSearchBar';
 import TransactionFilterBar, {
   type FilterOption,
@@ -57,6 +59,7 @@ function groupByDate(
 }
 
 const HistoryScreen: React.FC = () => {
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterOption>('ALL');
   const [sheetType, setSheetType] = useState<TransactionType | null>(null);
@@ -120,6 +123,10 @@ const HistoryScreen: React.FC = () => {
     // TODO: navigate to transaction detail
   }, []);
 
+  const handleAddTransaction = useCallback(() => {
+    router.push('/transaction/add');
+  }, [router]);
+
   return (
     <Container>
       <View className="pt-8 pb-4">
@@ -170,6 +177,10 @@ const HistoryScreen: React.FC = () => {
         )}
         <View className="h-8" />
       </ScrollView>
+
+      <FloatingActionButton onPress={handleAddTransaction} variant="default" size="lg">
+        <Text className="text-3xl font-bold text-primary-foreground">+</Text>
+      </FloatingActionButton>
     </Container>
   );
 };

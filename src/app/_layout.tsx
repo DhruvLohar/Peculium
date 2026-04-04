@@ -35,13 +35,13 @@ function RootLayoutNav() {
 
     const inAuth = segments[0] === '(auth)';
     const inOnboarding = segments[0] === 'onboarding';
-    const inTabs = segments[0] === '(tabs)';
 
     if (authState === 'unauthenticated' && !inAuth) {
       router.replace('/(auth)');
     } else if (authState === 'needs-onboarding' && !inOnboarding) {
       router.replace('/onboarding');
-    } else if (authState === 'authenticated' && !inTabs) {
+    } else if (authState === 'authenticated' && inAuth) {
+      // Authenticated users shouldn't be in auth screens
       router.replace('/(tabs)');
     }
   }, [authState, segments, router]);
@@ -51,6 +51,9 @@ function RootLayoutNav() {
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="transaction/add" options={{ headerShown: false }} />
+      <Stack.Screen name="transaction/edit" options={{ headerShown: false }} />
+      <Stack.Screen name="transaction/view" options={{ headerShown: false }} />
     </Stack>
   );
 }
