@@ -2,6 +2,7 @@ import React, { memo, useCallback, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
+import FixedBottomSheet from '@/components/atoms/FixedBottomSheet';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Constants } from '@/utils/database.types';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
@@ -146,3 +147,10 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
 };
 
 export default memo(TransactionFilters);
+
+// Self-contained sheet — mount anywhere, renders via portal above everything
+export const TransactionFiltersSheet = memo(() => (
+  <FixedBottomSheet<TransactionFilterArgs> id={TRANSACTION_FILTERS_SHEET_ID}>
+    {(args) => <TransactionFilters {...args} />}
+  </FixedBottomSheet>
+));

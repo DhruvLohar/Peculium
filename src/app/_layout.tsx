@@ -2,7 +2,6 @@ import '../../global.css';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { ArchivoBlack_400Regular } from '@expo-google-fonts/archivo-black';
 import {
@@ -15,11 +14,7 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthState } from '@/hooks/useUserAuth';
-import FixedBottomSheet from '@/components/atoms/FixedBottomSheet';
-import TransactionFilters, {
-  TRANSACTION_FILTERS_SHEET_ID,
-  type TransactionFilterArgs,
-} from '@/components/bottomsheets/TransactionFilters';
+import BottomSheetProvider from '@/components/providers/BottomSheetProvider';
 
 const queryClient = new QueryClient();
 
@@ -41,7 +36,6 @@ function RootLayoutNav() {
     } else if (authState === 'needs-onboarding' && !inOnboarding) {
       router.replace('/onboarding');
     } else if (authState === 'authenticated' && inAuth) {
-      // Authenticated users shouldn't be in auth screens
       router.replace('/(tabs)');
     }
   }, [authState, segments, router]);
@@ -89,14 +83,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
-        <View style={{ flex: 1 }}>
+        <BottomSheetProvider>
           <RootLayoutNav />
-
-          {/* Global bottom sheets — render above everything including tab bar */}
-          <FixedBottomSheet<TransactionFilterArgs> id={TRANSACTION_FILTERS_SHEET_ID}>
-            {(args) => <TransactionFilters {...args} />}
-          </FixedBottomSheet>
-        </View>
+        </BottomSheetProvider>
       </SafeAreaProvider>
     </QueryClientProvider>
   );

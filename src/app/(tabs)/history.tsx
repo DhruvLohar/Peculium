@@ -12,6 +12,7 @@ import TransactionDateGroup from '@/components/screens/transactions/TransactionD
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import {
   TRANSACTION_FILTERS_SHEET_ID,
+  TransactionFiltersSheet,
   type TransactionFilterArgs,
 } from '@/components/bottomsheets/TransactionFilters';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -181,6 +182,8 @@ const HistoryScreen: React.FC = () => {
       <FloatingActionButton onPress={handleAddTransaction} variant="default" size="lg">
         <Text className="text-3xl font-bold text-primary-foreground">+</Text>
       </FloatingActionButton>
+
+      <TransactionFiltersSheet />
     </Container>
   );
 };
