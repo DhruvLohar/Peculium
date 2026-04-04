@@ -26,7 +26,7 @@ const TransactionDateGroup: React.FC<TransactionDateGroupProps> = ({
 
   return (
     <View className="mb-2">
-      <CustomText variant="h6" className="text-primary mb-3 tracking-widest">
+      <CustomText variant="h6" className="mb-3">
         {label}
       </CustomText>
       {transactions.map((t) => (

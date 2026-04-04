@@ -1,21 +1,12 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import { TouchableOpacity, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import CustomText from '@/components/atoms/CustomText';
+import { CATEGORY_CONFIG } from '@/utils/categoryConfig';
 import type { Database } from '@/utils/database.types';
 
 type TransactionRow = Database['public']['Tables']['transactions']['Row'];
 type TransactionCategory = Database['public']['Enums']['transaction_category'];
-
-const CATEGORY_CONFIG: Record<TransactionCategory, { bg: string; emoji: string }> = {
-  Food: { bg: '#a855f7', emoji: '☕' },
-  Salary: { bg: '#22c55e', emoji: '💼' },
-  Groceries: { bg: '#06b6d4', emoji: '🛒' },
-  Travel: { bg: '#ec4899', emoji: '🚗' },
-  Home: { bg: '#3b82f6', emoji: '🏠' },
-  Rent: { bg: '#f97316', emoji: '🏘️' },
-  Health: { bg: '#ef4444', emoji: '💊' },
-  Other: { bg: '#6b7280', emoji: '📦' },
-};
 
 interface TransactionCardProps {
   transaction: TransactionRow;
@@ -46,7 +37,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onPress 
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    return transaction.type === 'INCOME' ? `+$${abs}` : `-$${abs}`;
+    return transaction.type === 'INCOME' ? `+₹${abs}` : `-₹${abs}`;
   }, [transaction.amount, transaction.type]);
 
   const displayName = useMemo(
@@ -64,22 +55,21 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onPress 
         className="w-10 h-10 items-center justify-center mr-3"
         style={{ backgroundColor: config.bg }}
       >
-        <CustomText className="text-base">{config.emoji}</CustomText>
+        <MaterialIcons name={config.icon as any} size={20} color="#fff" />
       </View>
 
       <View className="flex-1">
-        <CustomText variant="label" className="text-secondary font-sans-bold tracking-wider">
+        <CustomText variant="label" className="font-sans-bold tracking-wider">
           {displayName}
         </CustomText>
-        <CustomText variant="muted" className="text-xs" style={{ color: '#6b7280' }}>
+        <CustomText variant="muted" className="text-xs">
           {formattedTime}
         </CustomText>
       </View>
 
       <CustomText
-        variant="label"
-        className="font-sans-bold"
-        style={{ color: transaction.type === 'INCOME' ? '#22c55e' : '#e63946' }}
+        className="font-sans-bold text-lg"
+        // style={{ color: transaction.type === 'INCOME' ? '#22c55e' : '#e63946' }}
       >
         {formattedAmount}
       </CustomText>

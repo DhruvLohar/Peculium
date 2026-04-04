@@ -24,6 +24,7 @@ export const buttonVariants = cva(
       variant: {
         default: 'bg-primary',
         secondary: 'bg-secondary',
+        destructive: 'bg-destructive',
         outline: 'bg-transparent',
         link: 'bg-transparent border-0',
         ghost: 'bg-transparent border-0',
@@ -47,6 +48,7 @@ const buttonTextVariants = cva('font-head font-medium', {
     variant: {
       default: 'text-primary-foreground',
       secondary: 'text-secondary-foreground',
+      destructive: 'text-destructive-foreground',
       outline: 'text-foreground',
       link: 'text-foreground underline',
       ghost: 'text-foreground',

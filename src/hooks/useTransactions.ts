@@ -138,3 +138,25 @@ export const useDeleteTransaction = () => {
     },
   });
 };
+
+/**
+ * Query hook to fetch a single transaction by ID
+ */
+export const useTransaction = (id: string | null) => {
+  return useQuery({
+    queryKey: ['transaction', id],
+    queryFn: async (): Promise<TransactionRow | null> => {
+      if (!id) return null;
+
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    enabled: !!id,
+  });
+};

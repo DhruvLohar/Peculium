@@ -1,9 +1,10 @@
 import React, { memo, useState, useMemo, useCallback } from 'react';
 import { ScrollView, RefreshControl, View, ActivityIndicator, Text } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Container } from '@/components/Container';
 import CustomText from '@/components/atoms/CustomText';
 import FloatingActionButton from '@/components/atoms/FloatingActionButton';
+import Loader from '@/components/atoms/Loader';
 import TransactionSearchBar from '@/components/screens/transactions/TransactionSearchBar';
 import TransactionFilterBar, {
   type FilterOption,
@@ -70,6 +71,13 @@ const HistoryScreen: React.FC = () => {
 
   const { data: transactions = [], isLoading, isRefetching, refetch } = useTransactions();
 
+  // Refetch transactions when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
+
   const handleApplyFilters = useCallback(
     ({ type, categories }: { type: TransactionType | null; categories: TransactionCategory[] }) => {
       setSheetType(type);
@@ -120,9 +128,9 @@ const HistoryScreen: React.FC = () => {
 
   const groups = useMemo(() => groupByDate(filtered), [filtered]);
 
-  const handleCardPress = useCallback((_id: string) => {
-    // TODO: navigate to transaction detail
-  }, []);
+  const handleCardPress = useCallback((id: string) => {
+    router.push(`/transaction/edit?id=${id}`);
+  }, [router]);
 
   const handleAddTransaction = useCallback(() => {
     router.push('/transaction/add');
@@ -130,7 +138,7 @@ const HistoryScreen: React.FC = () => {
 
   return (
     <Container>
-      <View className="pt-8 pb-4">
+      <View className="pt-8 pb-10">
         <View className="items-start mb-4">
           <CustomText variant="h2">
             Transactions
@@ -140,7 +148,7 @@ const HistoryScreen: React.FC = () => {
           </CustomText>
         </View>
         <TransactionSearchBar value={search} onChangeText={setSearch} onFilterPress={handleOpenFilters} />
-        <View className="mt-4">
+        <View className="mt-6">
           <TransactionFilterBar active={activeFilter} onChange={setActiveFilter} />
         </View>
       </View>
@@ -158,7 +166,7 @@ const HistoryScreen: React.FC = () => {
       >
         {isLoading ? (
           <View className="items-center justify-center py-20">
-            <ActivityIndicator color="#ffdb33" size="large" />
+            <Loader />
           </View>
         ) : groups.length === 0 ? (
           <View className="items-center justify-center py-20">
