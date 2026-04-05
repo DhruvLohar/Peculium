@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useState } from 'react';
-import { useRouter } from 'expo-router';
 import LoginScreen from '@/components/screens/login/LoginScreen';
 import OTPScreen from '@/components/screens/login/OTPScreen';
 import { useUserAuth } from '@/hooks/useUserAuth';
@@ -7,7 +6,6 @@ import { useUserAuth } from '@/hooks/useUserAuth';
 type Step = 'email' | 'otp';
 
 const LoginPage: React.FC = () => {
-  const router = useRouter();
   const { sendOtp, verifyOtp } = useUserAuth();
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
@@ -28,17 +26,13 @@ const LoginPage: React.FC = () => {
   const handleVerifyOtp = useCallback(
     async (otp: string) => {
       try {
-        const result = await verifyOtp.mutateAsync({ email, token: otp });
-        if (result.needsOnboarding) {
-          router.replace('/onboarding');
-        } else {
-          router.replace('/(tabs)');
-        }
+        await verifyOtp.mutateAsync({ email, token: otp });
+        // Navigation is handled reactively by RootLayoutNav via useAuthState
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     },
-    [email, verifyOtp, router],
+    [email, verifyOtp],
   );
 
   const handleResendOtp = useCallback(async () => {
