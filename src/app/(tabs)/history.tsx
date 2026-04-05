@@ -1,5 +1,5 @@
 import React, { memo, useState, useMemo, useCallback } from 'react';
-import { ScrollView, RefreshControl, View, ActivityIndicator, Text } from 'react-native';
+import { ScrollView, RefreshControl, View, ActivityIndicator, Text, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Container } from '@/components/Container';
 import CustomText from '@/components/atoms/CustomText';
@@ -16,7 +16,7 @@ import {
   TransactionFiltersSheet,
   type TransactionFilterArgs,
 } from '@/components/bottomsheets/TransactionFilters';
-import { useTransactions } from '@/hooks/useTransactions';
+import { useInfiniteTransactions } from '@/hooks/useTransactions';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
 import type { Database } from '@/utils/database.types';
 
@@ -69,7 +69,21 @@ const HistoryScreen: React.FC = () => {
 
   const { open: openFilters } = useBottomSheet<TransactionFilterArgs>(TRANSACTION_FILTERS_SHEET_ID);
 
-  const { data: transactions = [], isLoading, isRefetching, refetch } = useTransactions();
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    refetch,
+    isRefetching,
+  } = useInfiniteTransactions();
+
+  // Flatten all pages into single array
+  const allTransactions = useMemo(
+    () => data?.pages.flatMap((page) => page.transactions) ?? [],
+    [data],
+  );
 
   // Refetch transactions when screen comes into focus
   useFocusEffect(
@@ -95,7 +109,7 @@ const HistoryScreen: React.FC = () => {
   }, [openFilters, handleApplyFilters, sheetType, sheetCategories]);
 
   const filtered = useMemo(() => {
-    let result = transactions;
+    let result = allTransactions;
 
     if (activeFilter === 'INCOME') {
       result = result.filter((t) => t.type === 'INCOME');
@@ -124,7 +138,7 @@ const HistoryScreen: React.FC = () => {
     }
 
     return result;
-  }, [transactions, activeFilter, sheetType, sheetCategories, search]);
+  }, [allTransactions, activeFilter, sheetType, sheetCategories, search]);
 
   const groups = useMemo(() => groupByDate(filtered), [filtered]);
 
@@ -135,6 +149,23 @@ const HistoryScreen: React.FC = () => {
   const handleAddTransaction = useCallback(() => {
     router.push('/transaction/add');
   }, [router]);
+
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+      
+      // Check if user is near bottom (within 200px)
+      const paddingToBottom = 200;
+      const isCloseToBottom =
+        layoutMeasurement.height + contentOffset.y >=
+        contentSize.height - paddingToBottom;
+
+      if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage],
+  );
 
   return (
     <Container>
@@ -155,6 +186,8 @@ const HistoryScreen: React.FC = () => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={400}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
@@ -175,14 +208,32 @@ const HistoryScreen: React.FC = () => {
             </CustomText>
           </View>
         ) : (
-          groups.map((group) => (
-            <TransactionDateGroup
-              key={group.label}
-              label={group.label}
-              transactions={group.data}
-              onCardPress={handleCardPress}
-            />
-          ))
+          <>
+            {groups.map((group) => (
+              <TransactionDateGroup
+                key={group.label}
+                label={group.label}
+                transactions={group.data}
+                onCardPress={handleCardPress}
+              />
+            ))}
+            
+            {/* Loading indicator for next page */}
+            {isFetchingNextPage && (
+              <View className="py-4 items-center">
+                <ActivityIndicator size="small" color="#ffdb33" />
+              </View>
+            )}
+            
+            {/* End of list indicator */}
+            {!hasNextPage && filtered.length > 0 && (
+              <View className="py-4 items-center">
+                <CustomText variant="muted" className="text-xs">
+                  No more transactions
+                </CustomText>
+              </View>
+            )}
+          </>
         )}
         <View className="h-8" />
       </ScrollView>

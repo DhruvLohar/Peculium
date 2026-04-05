@@ -5,6 +5,7 @@ import CustomText from '@/components/atoms/CustomText';
 import BarChart from '@/components/atoms/BarChart';
 import DashboardCards from '@/components/Dashboard/DashboardCards';
 import MonthlySpendBudgetCard from '@/components/Dashboard/MonthlySpendBudgetCard';
+import AnalyzeMicroSpend from '@/components/Dashboard/AnalyzeMicroSpend';
 import { EditMonthlyBudgetSheet } from '@/components/bottomsheets/EditMonthlyBudgetSheet';
 import { useUser } from '@/hooks/useUser';
 import { useDashboard } from '@/hooks/useDashboard';
@@ -85,10 +86,16 @@ const Home: React.FC = () => {
         </View>
 
         {/* Last 7 Days Spending */}
-        <View className="mt-6">
-          <CustomText variant="h4" className="mb-6">
-            Last 7 Days Spending
-          </CustomText>
+        <View className="mt-8">
+          <View className="mb-8">
+            <CustomText variant="h4" className="mb-2">
+              Last 7 Days Spending
+            </CustomText>
+            <View 
+              style={{ width: '100%', height: 2 }}
+              className="bg-foreground"
+            />
+          </View>
           {chartData.length > 0 ? (
             <BarChart
               data={chartData}
@@ -100,6 +107,11 @@ const Home: React.FC = () => {
               <CustomText variant="muted">No spending data available</CustomText>
             </View>
           )}
+        </View>
+
+        {/* Micro Spend Analyzer */}
+        <View className="mt-8 pr-1">
+          <AnalyzeMicroSpend />
         </View>
 
         <View className="h-8" />

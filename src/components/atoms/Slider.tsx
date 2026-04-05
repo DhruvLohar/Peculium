@@ -104,15 +104,14 @@ const Slider: React.FC<SliderProps> = ({
     [disabled, isDragging, position, width, min, max, notifyValueChange, onValueChange],
   );
 
-  const thumbAnimatedStyle = useAnimatedStyle(() => {
-    const scale = isDragging.value ? 1.2 : 1;
-    return {
-      transform: [
-        { translateX: position.value },
-        { scale: withSpring(scale, { damping: 15, stiffness: 300 }) },
-      ],
-    };
-  });
+  // THUMB_SIZE must match w-6 (24px). Using left: position - half keeps the
+  // thumb centered exactly on the fill endpoint without relying on negative
+  // margins (which behave inconsistently on absolute elements in React Native).
+  const THUMB_HALF = 12;
+
+  const thumbAnimatedStyle = useAnimatedStyle(() => ({
+    left: position.value - THUMB_HALF,
+  }));
 
   const rangeAnimatedStyle = useAnimatedStyle(() => ({
     width: position.value,
@@ -126,7 +125,7 @@ const Slider: React.FC<SliderProps> = ({
   const trackClass = useMemo(
     () =>
       cn(
-        'relative h-3 w-full overflow-hidden bg-muted/20 border-2 border-black',
+        'relative w-full bg-muted/20 border-2 border-black',
         disabled && 'opacity-50',
         trackClassName,
       ),
@@ -141,7 +140,7 @@ const Slider: React.FC<SliderProps> = ({
   const thumbClass = useMemo(
     () =>
       cn(
-        'absolute h-6 w-6 -ml-3 -mt-1.5 border-2 border-black bg-background',
+        'absolute -top-2 w-6 h-6 border-2 border-black bg-background',
         'shadow-[2px_2px_0px_0px_#000]',
         disabled && 'opacity-50',
         thumbClassName,
@@ -152,10 +151,11 @@ const Slider: React.FC<SliderProps> = ({
   return (
     <View className={containerClass}>
       <GestureDetector gesture={panGesture}>
-        <View className="relative w-full touch-none select-none flex items-center">
-          <View className={trackClass} onLayout={handleLayoutChange}>
-            <Animated.View className={rangeClass} style={rangeAnimatedStyle} />
-          </View>
+        {/* h-6 matches the thumb height so the track is tall enough to contain it */}
+        <View className={cn(trackClass, 'h-3')} onLayout={handleLayoutChange}>
+          {/* Fill — clipped to the track's inner area */}
+          <Animated.View className={cn(rangeClass, 'h-full')} style={rangeAnimatedStyle} />
+          {/* Thumb — same coordinate origin as the fill */}
           <Animated.View className={thumbClass} style={thumbAnimatedStyle} />
         </View>
       </GestureDetector>

@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import supabase from '../utils/supabase';
 import type { Database } from '../utils/database.types';
 
@@ -29,9 +29,11 @@ export type NewTransaction = {
 // Update transaction payload (for edit)
 export type UpdateTransaction = Partial<NewTransaction> & { id: string };
 
+const PAGE_SIZE = 20;
+
 /**
- * Query hook to fetch transactions with optional filters
- * Automatically caches by filter combination
+ * Infinite query hook to fetch transactions with cursor-based pagination
+ * Loads 20 transactions at a time, with infinite scroll support
  */
 export const useTransactions = (filters?: TransactionFilters) => {
   return useQuery({
@@ -66,6 +68,71 @@ export const useTransactions = (filters?: TransactionFilters) => {
       if (error) throw new Error(error.message);
       return data ?? [];
     },
+  });
+};
+
+/**
+ * Infinite query hook for paginated transactions (for history screen)
+ * Uses cursor-based pagination with 20 items per page
+ */
+export const useInfiniteTransactions = (filters?: TransactionFilters) => {
+  return useInfiniteQuery({
+    queryKey: ['transactions-infinite', filters],
+    queryFn: async ({ pageParam }: { pageParam?: string }): Promise<{
+      transactions: TransactionRow[];
+      nextCursor: string | null;
+    }> => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let query = supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('transaction_date', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(PAGE_SIZE);
+
+      // Cursor-based pagination: fetch rows after the cursor
+      if (pageParam) {
+        // Parse cursor: "transaction_date|created_at"
+        const [cursorDate, cursorCreated] = pageParam.split('|');
+        query = query.or(
+          `transaction_date.lt.${cursorDate},and(transaction_date.eq.${cursorDate},created_at.lt.${cursorCreated})`
+        );
+      }
+
+      // Month + year filter: gte start of month, lt start of next month
+      if (filters?.month && filters?.year) {
+        const start = new Date(filters.year, filters.month - 1, 1).toISOString();
+        const end = new Date(filters.year, filters.month, 1).toISOString();
+        query = query.gte('transaction_date', start).lt('transaction_date', end);
+      } else if (filters?.year) {
+        const start = new Date(filters.year, 0, 1).toISOString();
+        const end = new Date(filters.year + 1, 0, 1).toISOString();
+        query = query.gte('transaction_date', start).lt('transaction_date', end);
+      }
+
+      if (filters?.type) query = query.eq('type', filters.type);
+      if (filters?.category) query = query.eq('category', filters.category);
+
+      const { data, error } = await query;
+      if (error) throw new Error(error.message);
+
+      const transactions = data ?? [];
+      
+      // Generate next cursor from last item
+      const nextCursor =
+        transactions.length === PAGE_SIZE && transactions.length > 0
+          ? `${transactions[transactions.length - 1].transaction_date}|${transactions[transactions.length - 1].created_at}`
+          : null;
+
+      return { transactions, nextCursor };
+    },
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 };
 
