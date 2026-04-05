@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -114,6 +114,7 @@ const EditTransactionScreen: React.FC = () => {
 
   return (
     <Container>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <ScreenHeader title="Edit Transaction" subtitle="Update or delete your transaction" />
 
@@ -220,6 +221,7 @@ const EditTransactionScreen: React.FC = () => {
           </View>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
 
       {/* Delete Confirmation Bottom Sheet */}
       <ConfirmTransactionDeleteSheet />

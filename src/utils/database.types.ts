@@ -68,18 +68,27 @@ export type Database = {
       }
       profiles: {
         Row: {
+          current_streak: number
           has_onboarded: boolean
           id: string
+          last_streak_updated_at: string | null
+          longest_streak: number
           updated_at: string | null
         }
         Insert: {
+          current_streak?: number
           has_onboarded?: boolean
           id: string
+          last_streak_updated_at?: string | null
+          longest_streak?: number
           updated_at?: string | null
         }
         Update: {
+          current_streak?: number
           has_onboarded?: boolean
           id?: string
+          last_streak_updated_at?: string | null
+          longest_streak?: number
           updated_at?: string | null
         }
         Relationships: []

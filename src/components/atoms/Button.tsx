@@ -103,7 +103,7 @@ const Button: React.FC<ButtonProps> = ({
     ],
     boxShadow: hasShadow
       ? `${offset - translate.value * offset}px ${offset - translate.value * offset}px 0px black`
-      : undefined,
+      : '0px 0px 0px black',
   }));
 
   const containerClass = useMemo(

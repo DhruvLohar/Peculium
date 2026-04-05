@@ -139,6 +139,7 @@ export const useInfiniteTransactions = (filters?: TransactionFilters) => {
 /**
  * Mutation hook to add a new transaction
  * Invalidates all transaction caches on success
+ * Note: Streak update should be handled separately in the component
  */
 export const useAddTransaction = () => {
   const queryClient = useQueryClient();
@@ -160,6 +161,8 @@ export const useAddTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions-infinite'] });
+      // Note: Streak invalidation happens in useUpdateStreak
     },
   });
 };

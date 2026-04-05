@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,10 +15,12 @@ import TypeToggle from '@/components/AddTransaction/TypeToggle';
 import CategoryGrid from '@/components/AddTransaction/CategoryGrid';
 import { addTransactionSchema, type AddTransactionFormValues } from '@/utils/schemas';
 import { useAddTransaction } from '@/hooks/useTransactions';
+import { useUpdateStreak } from '@/hooks/useStreak';
 
 const AddTransactionScreen: React.FC = () => {
   const router = useRouter();
   const { mutate: addTransaction, isPending, error } = useAddTransaction();
+  const { mutate: updateStreak } = useUpdateStreak();
 
   const {
     control,
@@ -45,7 +47,7 @@ const AddTransactionScreen: React.FC = () => {
           notes: values.notes || undefined,
           transaction_date: new Date(values.transaction_date).toISOString(),
         },
-        { onSuccess: () => router.back() },
+        { onSuccess: () => { updateStreak(); router.back(); } },
       );
     },
     [addTransaction, router],
@@ -53,6 +55,7 @@ const AddTransactionScreen: React.FC = () => {
 
   return (
     <Container>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <ScreenHeader title="Add Transaction" subtitle="Track your income and expenses" />
 
@@ -147,6 +150,7 @@ const AddTransactionScreen: React.FC = () => {
           </Button>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </Container>
   );
 };

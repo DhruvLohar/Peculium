@@ -40,9 +40,7 @@ const Slider: React.FC<SliderProps> = ({
   const initialValue = isControlled ? controlledValue : defaultValue;
 
   const width = useSharedValue(0);
-  const position = useSharedValue(
-    ((initialValue - min) / (max - min)) * width.value,
-  );
+  const position = useSharedValue(0);
   const isDragging = useSharedValue(false);
 
   // Update position when controlled value changes

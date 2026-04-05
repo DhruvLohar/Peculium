@@ -6,11 +6,14 @@ import BarChart from '@/components/atoms/BarChart';
 import DashboardCards from '@/components/Dashboard/DashboardCards';
 import MonthlySpendBudgetCard from '@/components/Dashboard/MonthlySpendBudgetCard';
 import AnalyzeMicroSpend from '@/components/Dashboard/AnalyzeMicroSpend';
+import StreakCard from '@/components/Dashboard/StreakCard';
 import { EditMonthlyBudgetSheet } from '@/components/bottomsheets/EditMonthlyBudgetSheet';
+import StreakExplainerSheet from '@/components/bottomsheets/StreakExplainerSheet';
 import { useUser } from '@/hooks/useUser';
 import { useDashboard } from '@/hooks/useDashboard';
 import { useLast7DaysSpending } from '@/hooks/useLast7DaysSpending';
 import { useMonthlyBudget } from '@/hooks/useMonthlyBudget';
+import { useStreak } from '@/hooks/useStreak';
 
 const Home: React.FC = () => {
   const { data: user } = useUser();
@@ -24,6 +27,7 @@ const Home: React.FC = () => {
     year: currentDate.getFullYear(),
   });
   const { budget, isRefetching: isBudgetRefetching, refetch: refetchBudget } = useMonthlyBudget();
+  const { data: streakData, isRefetching: isStreakRefetching, refetch: refetchStreak } = useStreak();
 
   const displayName = useMemo(
     () => (user?.user_metadata?.display_name as string | undefined) ?? '',
@@ -37,7 +41,8 @@ const Home: React.FC = () => {
     refetchChart();
     refetchMonth();
     refetchBudget();
-  }, [refetch, refetchChart, refetchMonth, refetchBudget]);
+    refetchStreak();
+  }, [refetch, refetchChart, refetchMonth, refetchBudget, refetchStreak]);
 
   return (
     <Container>
@@ -46,7 +51,7 @@ const Home: React.FC = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={isRefetching || isChartRefetching || isMonthRefetching || isBudgetRefetching}
+            refreshing={isRefetching || isChartRefetching || isMonthRefetching || isBudgetRefetching || isStreakRefetching}
             onRefresh={handleRefresh}
             tintColor="#ffdb33"
             colors={['#ffdb33']}
@@ -68,6 +73,11 @@ const Home: React.FC = () => {
               {displayName}
             </CustomText>
           </View>
+          
+          <StreakCard
+            currentStreak={streakData?.current_streak ?? 0}
+            longestStreak={streakData?.longest_streak ?? 0}
+          />
         </View>
 
         {/* Dashboard Cards */}
@@ -117,8 +127,9 @@ const Home: React.FC = () => {
         <View className="h-8" />
       </ScrollView>
 
-      {/* Bottom Sheet */}
+      {/* Bottom Sheets */}
       <EditMonthlyBudgetSheet />
+      <StreakExplainerSheet />
     </Container>
   );
 };
