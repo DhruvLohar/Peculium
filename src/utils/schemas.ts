@@ -36,3 +36,12 @@ export const addTransactionSchema = z.object({
 });
 
 export type AddTransactionFormValues = z.infer<typeof addTransactionSchema>;
+
+export const budgetSchema = z.object({
+  amount: z.coerce
+    .number({ invalid_type_error: 'Enter a valid amount' })
+    .positive('Budget must be greater than 0'),
+});
+
+export type BudgetFormValues = z.infer<typeof budgetSchema>;
+

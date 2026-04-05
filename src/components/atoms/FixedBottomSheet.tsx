@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { Dimensions, Pressable, View } from 'react-native';
+import { Dimensions, Keyboard, Pressable, View } from 'react-native';
 import Animated, {
+  useAnimatedKeyboard,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -42,6 +43,7 @@ function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<st
 
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const backdropOpacity = useSharedValue(0);
+  const keyboard = useAnimatedKeyboard();
 
   // Register sheet in bottom sheet store on mount
   useEffect(() => {
@@ -58,6 +60,7 @@ function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<st
       translateY.value = withSpring(0, SPRING_CONFIG);
       backdropOpacity.value = withTiming(1, { duration: 200 });
     } else {
+      Keyboard.dismiss();
       translateY.value = withSpring(SCREEN_HEIGHT, SPRING_CONFIG);
       backdropOpacity.value = withTiming(0, { duration: 200 });
     }
@@ -68,6 +71,7 @@ function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<st
   // Stable animated style refs — Reanimated returns same object identity
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    bottom: keyboard.height.value,
   }));
 
   const backdropStyle = useAnimatedStyle(() => ({

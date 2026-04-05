@@ -21,7 +21,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
   const expenseStr = useMemo(() => formatAmount(expense), [expense]);
 
   return (
-    <View className="flex-row gap-3" style={{ height: 260 }}>
+    <View className="flex-row gap-3" style={{ height: 190 }}>
 
       {/* Left — Balance */}
       <View className="flex-1 border-2 border-black bg-background p-4 justify-between">

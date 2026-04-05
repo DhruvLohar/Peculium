@@ -22,6 +22,9 @@ module.exports = {
         'accent-foreground': '#000000',
         destructive: '#e63946',
         'destructive-foreground': '#ffffff',
+        safe: '#4ade80',
+        'safe-foreground': '#000000',
+        'safe-muted': '#dcfce7',
         border: '#000000',
       },
       fontFamily: {
