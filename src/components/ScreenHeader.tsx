@@ -2,8 +2,10 @@ import React, { memo, useCallback } from 'react';
 import { View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
+import { getThemeColors } from '@/utils/themeColors';
 
 interface ScreenHeaderProps {
   title: string;
@@ -19,6 +21,8 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   showBackButton = true,
 }) => {
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
 
   const handleBack = useCallback(() => {
     if (onBack) {
@@ -30,14 +34,11 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
 
   return (
     <View className="pt-8 pb-6">
-      {/* Back Button */}
       {showBackButton && (
         <Button size="icon" variant="outline" onPress={handleBack} className="mb-4 self-start">
-          <MaterialIcons name="arrow-back" size={12} color="#000000" />
+          <MaterialIcons name="arrow-back" size={12} color={colors.foreground} />
         </Button>
       )}
-
-      {/* Title & Subtitle */}
       <View className="items-start">
         <CustomText variant="h2" className="mb-1">
           {title}

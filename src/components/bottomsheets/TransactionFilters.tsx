@@ -1,10 +1,12 @@
 import React, { memo, useCallback, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
 import FixedBottomSheet from '@/components/atoms/FixedBottomSheet';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Constants } from '@/utils/database.types';
+import { getThemeColors } from '@/utils/themeColors';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
 
 export const TRANSACTION_FILTERS_SHEET_ID = 'transaction-filters';
@@ -23,47 +25,58 @@ interface ChipProps {
   onPress: () => void;
 }
 
-const Chip: React.FC<ChipProps> = memo(({ label, selected, onPress }) => (
-  <Pressable
-    onPress={onPress}
-    style={{
-      paddingHorizontal: 14,
-      paddingVertical: 7,
-      borderWidth: 2,
-      borderColor: 'black',
-      backgroundColor: selected ? 'black' : 'white',
-      boxShadow: selected ? '2px 2px 0px black' : undefined,
-      marginRight: 8,
-      marginBottom: 8,
-    }}
-  >
-    <CustomText
+const Chip: React.FC<ChipProps> = memo(({ label, selected, onPress }) => {
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
+  const unselectedBg = colorScheme === 'dark' ? '#242424' : '#ffffff';
+
+  return (
+    <Pressable
+      onPress={onPress}
       style={{
-        fontWeight: '600',
-        fontSize: 13,
-        color: selected ? 'white' : 'black',
+        paddingHorizontal: 14,
+        paddingVertical: 7,
+        borderWidth: 2,
+        borderColor: colors.border,
+        backgroundColor: selected ? colors.border : unselectedBg,
+        boxShadow: selected ? `2px 2px 0px ${colors.border}` : undefined,
+        marginRight: 8,
+        marginBottom: 8,
       }}
     >
-      {label}
-    </CustomText>
-  </Pressable>
-));
+      <CustomText
+        style={{
+          fontWeight: '600',
+          fontSize: 13,
+          color: selected ? (colorScheme === 'dark' ? '#1a1a1a' : 'white') : colors.foreground,
+        }}
+      >
+        {label}
+      </CustomText>
+    </Pressable>
+  );
+});
 
 // ─── Section Label ────────────────────────────────────────────────────────────
 
-const SectionLabel: React.FC<{ children: string }> = memo(({ children }) => (
-  <CustomText
-    style={{
-      fontWeight: '700',
-      fontSize: 11,
-      letterSpacing: 1.2,
-      marginBottom: 10,
-      color: '#555',
-    }}
-  >
-    {children.toUpperCase()}
-  </CustomText>
-));
+const SectionLabel: React.FC<{ children: string }> = memo(({ children }) => {
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
+
+  return (
+    <CustomText
+      style={{
+        fontWeight: '700',
+        fontSize: 11,
+        letterSpacing: 1.2,
+        marginBottom: 10,
+        color: colors.muted,
+      }}
+    >
+      {children.toUpperCase()}
+    </CustomText>
+  );
+});
 
 // ─── Main Content ─────────────────────────────────────────────────────────────
 

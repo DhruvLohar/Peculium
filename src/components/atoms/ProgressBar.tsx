@@ -13,7 +13,7 @@ const AnimatedView = Animated.View;
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 
-const progressVariants = cva('relative overflow-hidden border-2 border-black', {
+const progressVariants = cva('relative overflow-hidden border-2 border-border', {
   variants: {
     variant: {
       default: 'bg-background',

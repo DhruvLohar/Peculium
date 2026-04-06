@@ -97,7 +97,7 @@ const ProgressBarDemo: React.FC = () => {
       {/* Budget Example */}
       <View className="gap-2">
         <CustomText variant="h4">Budget Progress</CustomText>
-        <View className="bg-white border-2 border-black p-4 gap-2">
+        <View className="bg-card border-2 border-border p-4 gap-2">
           <View className="flex-row justify-between">
             <CustomText variant="label">Food Budget</CustomText>
             <CustomText variant="muted" className="text-xs">
@@ -114,7 +114,7 @@ const ProgressBarDemo: React.FC = () => {
       {/* Over Budget Example */}
       <View className="gap-2">
         <CustomText variant="h4">Over Budget Warning</CustomText>
-        <View className="bg-white border-2 border-black p-4 gap-2">
+        <View className="bg-card border-2 border-border p-4 gap-2">
           <View className="flex-row justify-between">
             <CustomText variant="label">Travel Budget</CustomText>
             <CustomText variant="muted" className="text-xs">
@@ -131,7 +131,7 @@ const ProgressBarDemo: React.FC = () => {
       {/* Savings Goal */}
       <View className="gap-2">
         <CustomText variant="h4">Savings Goal</CustomText>
-        <View className="bg-accent border-2 border-black p-4 gap-2">
+        <View className="bg-accent border-2 border-border p-4 gap-2">
           <View className="flex-row justify-between">
             <CustomText variant="label">Dream Vacation</CustomText>
             <CustomText variant="muted" className="text-xs">
@@ -154,7 +154,7 @@ const ProgressBarDemo: React.FC = () => {
       {/* Interactive Example */}
       <View className="gap-2">
         <CustomText variant="h4">Interactive</CustomText>
-        <View className="bg-white border-2 border-black p-4 gap-3">
+        <View className="bg-card border-2 border-border p-4 gap-3">
           <View className="flex-row justify-between">
             <CustomText variant="label">Progress: {dynamicValue}%</CustomText>
             <Button

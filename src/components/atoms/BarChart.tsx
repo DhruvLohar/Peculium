@@ -9,7 +9,9 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import { useColorScheme } from 'nativewind';
 import CustomText from './CustomText';
+import { getThemeColors } from '@/utils/themeColors';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 const AnimatedView = Animated.View;
@@ -101,13 +103,14 @@ interface AnimatedBarProps {
   barWidth: number;
   chartHeight: number;
   color: string;
+  borderColor: string;
   delay: number;
   duration: number;
   isSelected: boolean;
 }
 
 const AnimatedBar: React.FC<AnimatedBarProps> = memo(
-  ({ x, value, maxValue, barWidth, chartHeight, color, delay, duration, isSelected }) => {
+  ({ x, value, maxValue, barWidth, chartHeight, color, borderColor, delay, duration, isSelected }) => {
     const progress = useSharedValue(0);
 
     useEffect(() => {
@@ -144,7 +147,7 @@ const AnimatedBar: React.FC<AnimatedBarProps> = memo(
           x={x}
           width={barWidth}
           fill={color}
-          stroke="#000000"
+          stroke={borderColor}
           strokeWidth={2}
           animatedProps={animatedProps}
         />
@@ -164,9 +167,11 @@ interface TooltipProps {
   value: number;
   headers: [string, string];
   visible: boolean;
+  borderColor: string;
+  bgColor: string;
 }
 
-const Tooltip: React.FC<TooltipProps> = memo(({ x, y, name, value, headers, visible }) => {
+const Tooltip: React.FC<TooltipProps> = memo(({ x, y, name, value, headers, visible, borderColor, bgColor }) => {
   const opacity = useSharedValue(0);
 
   useEffect(() => {
@@ -186,11 +191,14 @@ const Tooltip: React.FC<TooltipProps> = memo(({ x, y, name, value, headers, visi
           position: 'absolute',
           left: x,
           top: y,
-          boxShadow: '3px 3px 0 0 #000000',
+          boxShadow: `3px 3px 0 0 ${borderColor}`,
+          backgroundColor: bgColor,
+          borderWidth: 2,
+          borderColor,
         },
         animatedStyle,
       ]}
-      className="bg-white border-2 border-black px-3 py-2 min-w-[120px]"
+      className="px-3 py-2 min-w-[120px]"
       pointerEvents="none"
     >
       <View className="flex-row justify-between mb-1">
@@ -221,6 +229,10 @@ const BarChart: React.FC<BarChartProps> = ({
   animationDuration = 600,
   className,
 }) => {
+  const { colorScheme } = useColorScheme();
+  const themeColors = getThemeColors(colorScheme === 'dark');
+  const cardBg = colorScheme === 'dark' ? '#242424' : '#ffffff';
+
   const [chartWidth, setChartWidth] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -340,6 +352,7 @@ const BarChart: React.FC<BarChartProps> = ({
                     barWidth={barWidth}
                     chartHeight={chartHeight}
                     color={barColor}
+                    borderColor={themeColors.border}
                     delay={index * 80}
                     duration={animationDuration}
                     isSelected={selectedIndex === index}
@@ -393,6 +406,8 @@ const BarChart: React.FC<BarChartProps> = ({
             value={tooltipData.value}
             headers={tooltipHeaders}
             visible={selectedIndex !== null}
+            borderColor={themeColors.border}
+            bgColor={cardBg}
           />
         )}
       </View>

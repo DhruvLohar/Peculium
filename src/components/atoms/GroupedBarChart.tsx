@@ -1,6 +1,8 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { LayoutChangeEvent, Pressable, View } from 'react-native';
 import Svg, { Line, Rect } from 'react-native-svg';
+import { useColorScheme } from 'nativewind';
+import { getThemeColors } from '@/utils/themeColors';
 import Animated, {
   Easing,
   useAnimatedProps,
@@ -103,12 +105,13 @@ interface AnimatedBarProps {
   barWidth: number;
   chartHeight: number;
   color: string;
+  borderColor: string;
   delay: number;
   duration: number;
 }
 
 const AnimatedBar: React.FC<AnimatedBarProps> = memo(
-  ({ x, value, maxValue, barWidth, chartHeight, color, delay, duration }) => {
+  ({ x, value, maxValue, barWidth, chartHeight, color, borderColor, delay, duration }) => {
     const progress = useSharedValue(0);
 
     useEffect(() => {
@@ -132,7 +135,7 @@ const AnimatedBar: React.FC<AnimatedBarProps> = memo(
         x={x}
         width={barWidth}
         fill={color}
-        stroke="#000000"
+        stroke={borderColor}
         strokeWidth={2}
         animatedProps={animatedProps}
       />
@@ -151,10 +154,12 @@ interface GroupedTooltipProps {
   segments: GroupedBarSegment[];
   values: Record<string, number>;
   visible: boolean;
+  borderColor: string;
+  bgColor: string;
 }
 
 const GroupedTooltip: React.FC<GroupedTooltipProps> = memo(
-  ({ x, y, label, segments, values, visible }) => {
+  ({ x, y, label, segments, values, visible, borderColor, bgColor }) => {
     const opacity = useSharedValue(0);
 
     useEffect(() => {
@@ -174,11 +179,11 @@ const GroupedTooltip: React.FC<GroupedTooltipProps> = memo(
             position: 'absolute',
             left: x,
             top: y,
-            boxShadow: '3px 3px 0 0 #000000',
+            boxShadow: `3px 3px 0 0 ${borderColor}`,
           },
           animatedStyle,
         ]}
-        className="bg-white border-2 border-black px-3 py-2 min-w-[130px]"
+        style={{ backgroundColor: bgColor, borderWidth: 2, borderColor }} className="px-3 py-2 min-w-[130px]"
         pointerEvents="none"
       >
         <CustomText variant="label" className="text-xs font-sans-bold mb-2">
@@ -189,7 +194,7 @@ const GroupedTooltip: React.FC<GroupedTooltipProps> = memo(
             <View className="flex-row items-center">
               <View
                 style={{ width: 10, height: 10, backgroundColor: seg.color, marginRight: 6 }}
-                className="border border-black"
+                className="border border-border"
               />
               <CustomText variant="label" className="text-xs text-muted-foreground">
                 {seg.key}
@@ -216,6 +221,10 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
   animationDuration = 600,
   className,
 }) => {
+  const { colorScheme } = useColorScheme();
+  const themeColors = getThemeColors(colorScheme === 'dark');
+  const cardBg = colorScheme === 'dark' ? '#242424' : '#ffffff';
+
   const [chartWidth, setChartWidth] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -375,6 +384,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
                         barWidth={singleBarWidth}
                         chartHeight={chartHeight}
                         color={seg.color}
+                        borderColor={themeColors.border}
                         delay={index * 80}
                         duration={animationDuration}
                       />
@@ -429,6 +439,8 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
             segments={segments}
             values={tooltipData.values}
             visible={selectedIndex !== null}
+            borderColor={themeColors.border}
+            bgColor={cardBg}
           />
         )}
       </View>

@@ -49,7 +49,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onPress 
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.85}
-      className="flex-row items-center bg-white border-2 border-secondary p-3 mb-3 shadow-sm"
+      className="flex-row items-center bg-card border-2 border-border p-3 mb-3 shadow-sm"
     >
       <View
         className="w-10 h-10 items-center justify-center mr-3"
@@ -67,10 +67,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({ transaction, onPress 
         </CustomText>
       </View>
 
-      <CustomText
-        className="font-sans-bold text-lg"
-        // style={{ color: transaction.type === 'INCOME' ? '#22c55e' : '#e63946' }}
-      >
+      <CustomText className="font-sans-bold text-lg text-foreground">
         {formattedAmount}
       </CustomText>
     </TouchableOpacity>

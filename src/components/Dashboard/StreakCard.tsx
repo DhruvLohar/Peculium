@@ -30,7 +30,7 @@ const StreakCard: React.FC<StreakCardProps> = ({ currentStreak, longestStreak })
   return (
     <Button onPress={handlePress} className="ml-auto mr-1">
       <FireIcon size={18} color="#e63946" />
-      <CustomText variant="h4" className="ml-2">
+      <CustomText variant="h4" className="ml-2" darkInvert>
         {currentStreak}
       </CustomText>
     </Button>

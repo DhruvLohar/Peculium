@@ -14,9 +14,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
-
-// ─── Root Context ────────────────────────────────────────────────────────────
+import { getThemeColors } from '@/utils/themeColors';
 
 interface AccordionContextValue {
   type: 'single' | 'multiple';
@@ -33,8 +33,6 @@ function useAccordion() {
   return ctx;
 }
 
-// ─── Item Context ─────────────────────────────────────────────────────────────
-
 interface AccordionItemContextValue {
   value: string;
   isOpen: boolean;
@@ -48,8 +46,6 @@ function useAccordionItem() {
   if (!ctx) throw new Error('AccordionHeader / AccordionContent must be used inside <Accordion.Item>');
   return ctx;
 }
-
-// ─── Root ─────────────────────────────────────────────────────────────────────
 
 interface AccordionProps {
   type?: 'single' | 'multiple';
@@ -100,8 +96,6 @@ const AccordionRoot: React.FC<AccordionProps> = ({
   );
 };
 
-// ─── Item ─────────────────────────────────────────────────────────────────────
-
 interface AccordionItemProps {
   value: string;
   children: React.ReactNode;
@@ -122,8 +116,8 @@ const AccordionItem: React.FC<AccordionItemProps> = memo(({ value, children, cla
   return (
     <AccordionItemContext.Provider value={itemContext}>
       <View
-        className={cn('border-2 border-black bg-background overflow-hidden', className)}
-        style={{ boxShadow: '4px 4px 0px black' }}
+        className={cn('border-2 border-border bg-card overflow-hidden', className)}
+        style={{ boxShadow: '4px 4px 0px var(--border)' }}
       >
         {children}
       </View>
@@ -133,8 +127,6 @@ const AccordionItem: React.FC<AccordionItemProps> = memo(({ value, children, cla
 
 AccordionItem.displayName = 'AccordionItem';
 
-// ─── Header ───────────────────────────────────────────────────────────────────
-
 interface AccordionHeaderProps {
   children: React.ReactNode;
   className?: string;
@@ -142,6 +134,8 @@ interface AccordionHeaderProps {
 
 const AccordionHeader: React.FC<AccordionHeaderProps> = memo(({ children, className }) => {
   const { isOpen, toggle } = useAccordionItem();
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
   const rotation = useSharedValue(0);
 
   useEffect(() => {
@@ -159,15 +153,13 @@ const AccordionHeader: React.FC<AccordionHeaderProps> = memo(({ children, classN
     >
       <Text className="font-head flex-1 text-foreground">{children}</Text>
       <Animated.View style={chevronStyle}>
-        <Feather name="chevron-down" size={16} color="#000000" />
+        <Feather name="chevron-down" size={16} color={colors.foreground} />
       </Animated.View>
     </Pressable>
   );
 });
 
 AccordionHeader.displayName = 'AccordionHeader';
-
-// ─── Content ──────────────────────────────────────────────────────────────────
 
 interface AccordionContentProps {
   children: React.ReactNode;
@@ -199,7 +191,7 @@ const AccordionContent: React.FC<AccordionContentProps> = memo(({ children, clas
         }}
         className="absolute left-0 right-0 top-0"
       >
-        <View className={cn('px-4 pb-4 pt-2 bg-white', className)}>
+        <View className={cn('px-4 pb-4 pt-2 bg-card', className)}>
           <Text className="font-sans text-muted-foreground">{children}</Text>
         </View>
       </View>
@@ -208,8 +200,6 @@ const AccordionContent: React.FC<AccordionContentProps> = memo(({ children, clas
 });
 
 AccordionContent.displayName = 'AccordionContent';
-
-// ─── Export ───────────────────────────────────────────────────────────────────
 
 const Accordion = Object.assign(memo(AccordionRoot), {
   Item: AccordionItem,

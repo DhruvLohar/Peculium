@@ -6,9 +6,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { EDIT_MONTHLY_BUDGET_SHEET_ID } from '@/components/bottomsheets/EditMonthlyBudgetSheet';
+import { getThemeColors } from '@/utils/themeColors';
 import { cn } from '@/utils/cn';
 
 const AnimatedView = Animated.View;
@@ -18,7 +20,7 @@ const SHADOW_SIZE = 4;
 
 export interface MonthlySpendBudgetCardProps {
   currentSpend: number;
-  totalBudget: number; // 0 = not set yet
+  totalBudget: number;
 }
 
 type BudgetState = 'SAFE TO SPEND' | 'TIGHT' | 'STOP NOW';
@@ -28,10 +30,13 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
   totalBudget,
 }) => {
   const { open } = useBottomSheet(EDIT_MONTHLY_BUDGET_SHEET_ID);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = getThemeColors(isDark);
+
   const progress = useSharedValue(0);
   const translate = useSharedValue(0);
 
-  // Calculate state and colors
   const { spendPercentage, state, headerBg, badgeBg, fillColor } = useMemo(() => {
     if (totalBudget === 0) {
       return {
@@ -39,7 +44,7 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
         state: 'SAFE TO SPEND' as BudgetState,
         headerBg: 'bg-muted/20',
         badgeBg: 'bg-muted',
-        fillColor: '#aeaeae',
+        fillColor: colors.muted,
       };
     }
 
@@ -65,14 +70,13 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
       return {
         spendPercentage: percentage,
         state: 'SAFE TO SPEND' as BudgetState,
-        headerBg: 'bg-safe-muted',
+        headerBg: 'bg-safe/10',
         badgeBg: 'bg-safe',
         fillColor: '#4ade80',
       };
     }
-  }, [currentSpend, totalBudget]);
+  }, [currentSpend, totalBudget, colors.muted]);
 
-  // Animate progress bar
   useEffect(() => {
     progress.value = withTiming(spendPercentage, { duration: 600 });
   }, [spendPercentage, progress]);
@@ -87,7 +91,7 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
       { translateX: translate.value * SHADOW_SIZE },
       { translateY: translate.value * SHADOW_SIZE },
     ],
-    boxShadow: `${SHADOW_SIZE - translate.value * SHADOW_SIZE}px ${SHADOW_SIZE - translate.value * SHADOW_SIZE}px 0px black`,
+    boxShadow: `${SHADOW_SIZE - translate.value * SHADOW_SIZE}px ${SHADOW_SIZE - translate.value * SHADOW_SIZE}px 0px ${colors.border}`,
   }));
 
   const handlePressIn = useCallback(() => {
@@ -102,42 +106,29 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
     open({ currentAmount: totalBudget });
   }, [open, totalBudget]);
 
-  const formattedSpend = useMemo(
-    () => currentSpend.toLocaleString('en-IN'),
-    [currentSpend],
-  );
+  const formattedSpend = useMemo(() => currentSpend.toLocaleString('en-IN'), [currentSpend]);
+  const formattedBudget = useMemo(() => totalBudget.toLocaleString('en-IN'), [totalBudget]);
 
-  const formattedBudget = useMemo(
-    () => totalBudget.toLocaleString('en-IN'),
-    [totalBudget],
-  );
-
-  // Empty state - no budget set
   if (totalBudget === 0) {
     return (
-      <AnimatedPressable 
+      <AnimatedPressable
         onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={cardAnimatedStyle}
       >
-        <View className="bg-white border-2 border-black">
-          {/* Header */}
-          <View className={cn('border-b-2 border-black px-4 py-3', headerBg)}>
+        <View className="bg-card border-2 border-border">
+          <View className={cn('border-b-2 border-border px-4 py-3', headerBg)}>
             <View className="flex-row items-center gap-2">
-              <MaterialIcons name="account-balance-wallet" size={20} color="#000" />
+              <MaterialIcons name="account-balance-wallet" size={20} color={colors.foreground} />
               <CustomText variant="label" className="text-xs tracking-widest">
                 MONTHLY BUDGET
               </CustomText>
             </View>
           </View>
-
-          {/* Empty State Body */}
           <View className="px-4 py-8 items-center">
-            <MaterialIcons name="trending-up" size={48} color="#aeaeae" />
-            <CustomText variant="h4" className="mt-4 mb-2">
-              No Budget Set
-            </CustomText>
+            <MaterialIcons name="trending-up" size={48} color={colors.muted} />
+            <CustomText variant="h4" className="mt-4 mb-2">No Budget Set</CustomText>
             <CustomText variant="muted" className="text-center text-sm">
               Tap to set your monthly spending limit
             </CustomText>
@@ -147,36 +138,32 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
     );
   }
 
-  // Normal state - budget is set
   return (
-    <AnimatedPressable 
+    <AnimatedPressable
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       style={cardAnimatedStyle}
     >
-      <View className="bg-white border-2 border-black">
-        {/* Header Row */}
-        <View className={cn('border-b-2 border-black px-4 py-3 flex-row justify-between items-center', headerBg)}>
+      <View className="bg-card border-2 border-border">
+        <View className={cn('border-b-2 border-border px-4 py-3 flex-row justify-between items-center', headerBg)}>
           <View className="flex-row items-center gap-2">
-            <MaterialIcons name="account-balance-wallet" size={20} color="#000" />
+            <MaterialIcons name="account-balance-wallet" size={20} color={colors.foreground} />
             <CustomText variant="label" className="text-xs tracking-widest">
               MONTHLY BUDGET
             </CustomText>
           </View>
           <View
-            className={cn('border-2 border-black px-3 py-1', badgeBg)}
-            style={{ boxShadow: '1px 1px 0 0 #000' }}
+            className={cn('border-2 border-border px-3 py-1', badgeBg)}
+            style={{ boxShadow: `1px 1px 0 0 ${colors.border}` }}
           >
-            <CustomText variant="label" className="text-xs tracking-wider">
+            <CustomText variant="label" className="text-xs tracking-wider" darkInvert>
               {state}
             </CustomText>
           </View>
         </View>
 
-        {/* Body */}
         <View className="px-4 py-5">
-          {/* Amounts */}
           <View className="flex-row items-baseline mb-4">
             <CustomText variant="h2">₹{formattedSpend}</CustomText>
             <CustomText variant="p" className="text-muted-foreground ml-2">
@@ -184,15 +171,13 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
             </CustomText>
           </View>
 
-          {/* Progress Bar */}
-          <View className="h-8 border-2 border-black bg-muted/20 overflow-hidden">
+          <View className="h-8 border-2 border-border bg-muted/20 overflow-hidden">
             <AnimatedView
-              className="h-full border-r-2 border-black"
+              className="h-full border-r-2 border-border"
               style={progressAnimatedStyle}
             />
           </View>
 
-          {/* Percentage Text */}
           <View className="flex-row justify-between mt-2">
             <CustomText variant="muted" className="text-xs">
               {spendPercentage.toFixed(1)}% used

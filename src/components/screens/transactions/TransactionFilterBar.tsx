@@ -36,6 +36,7 @@ const FilterTab: React.FC<FilterTabProps> = memo(({ label, value, isActive, onPr
     >
       <CustomText
         variant="label"
+        darkInvert={isActive}
       >
         {label}
       </CustomText>

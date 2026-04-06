@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthState } from '@/hooks/useUserAuth';
 import BottomSheetProvider from '@/components/providers/BottomSheetProvider';
+import ThemeProvider from '@/components/providers/ThemeProvider';
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ function RootLayoutNav() {
       <Stack.Screen name="transaction/add" options={{ headerShown: false }} />
       <Stack.Screen name="transaction/edit" options={{ headerShown: false }} />
       <Stack.Screen name="transaction/view" options={{ headerShown: false }} />
+      <Stack.Screen name="profile/index" options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -85,9 +87,11 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <BottomSheetProvider>
-            <RootLayoutNav />
-          </BottomSheetProvider>
+          <ThemeProvider>
+            <BottomSheetProvider>
+              <RootLayoutNav />
+            </BottomSheetProvider>
+          </ThemeProvider>
         </SafeAreaProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

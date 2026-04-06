@@ -1,15 +1,17 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
+import { getThemeColors } from '@/utils/themeColors';
 
 const checkboxVariants = cva('border-2 items-center justify-center', {
   variants: {
     variant: {
-      default: 'border-black',
-      outline: 'border-black bg-transparent',
-      solid: 'border-black',
+      default: 'border-border',
+      outline: 'border-border bg-transparent',
+      solid: 'border-border',
     },
     size: {
       sm: 'w-4 h-4',
@@ -36,12 +38,6 @@ const checkedBgVariants = cva('', {
   },
 });
 
-const checkIconColors: Record<NonNullable<VariantProps<typeof checkboxVariants>['variant']>, string> = {
-  default: '#000000',
-  outline: '#000000',
-  solid: '#ffffff',
-};
-
 const checkIconSizes: Record<NonNullable<VariantProps<typeof checkboxVariants>['size']>, number> = {
   sm: 10,
   md: 12,
@@ -65,6 +61,10 @@ const Checkbox: React.FC<CheckboxProps> = ({
   size = 'md',
   className,
 }) => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = getThemeColors(isDark);
+
   const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
   const isControlled = checked !== undefined;
   const isChecked = isControlled ? checked : internalChecked;
@@ -87,10 +87,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
     [variant, size, isChecked, disabled, className],
   );
 
-  const iconColor = useMemo(
-    () => checkIconColors[variant ?? 'default'],
-    [variant],
-  );
+  const iconColor = variant === 'solid' ? colors.foreground : colors.border;
 
   const iconSize = useMemo(
     () => checkIconSizes[size ?? 'md'],

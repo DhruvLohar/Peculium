@@ -6,7 +6,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
+import { getThemeColors } from '@/utils/themeColors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -18,7 +20,7 @@ const SHADOW_SIZE: Record<string, number> = {
 };
 
 export const buttonVariants = cva(
-  'flex-row justify-center items-center border-2 border-black',
+  'flex-row justify-center items-center border-2 border-border',
   {
     variants: {
       variant: {
@@ -83,6 +85,10 @@ const Button: React.FC<ButtonProps> = ({
   textClassName,
   onPress,
 }) => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = getThemeColors(isDark);
+
   const offset = SHADOW_SIZE[size ?? 'md'];
   const translate = useSharedValue(0);
 
@@ -102,8 +108,8 @@ const Button: React.FC<ButtonProps> = ({
       { translateY: translate.value * offset },
     ],
     boxShadow: hasShadow
-      ? `${offset - translate.value * offset}px ${offset - translate.value * offset}px 0px black`
-      : '0px 0px 0px black',
+      ? `${offset - translate.value * offset}px ${offset - translate.value * offset}px 0px ${colors.border}`
+      : '0px 0px 0px transparent',
   }));
 
   const containerClass = useMemo(

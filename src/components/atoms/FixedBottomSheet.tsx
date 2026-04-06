@@ -7,8 +7,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useColorScheme } from 'nativewind';
 import { useBottomSheetStore } from '@/store/bottomSheetStore';
 import { usePortalStore } from '@/store/portalStore';
+import { getThemeColors } from '@/utils/themeColors';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -40,6 +42,10 @@ function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<st
 
   const isOpen = entry?.isOpen ?? false;
   const args = (entry?.args ?? {}) as TArgs;
+
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
+  const bgColor = colorScheme === 'dark' ? '#1c1c1e' : '#ffffff';
 
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const backdropOpacity = useSharedValue(0);
@@ -115,11 +121,11 @@ function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<st
               left: 0,
               right: 0,
               height: sheetHeight,
-              backgroundColor: 'white',
+              backgroundColor: bgColor,
               borderTopWidth: 3,
               borderLeftWidth: 3,
               borderRightWidth: 3,
-              borderColor: 'black',
+              borderColor: colors.border,
               zIndex: 100,
             },
             sheetStyle,
@@ -127,7 +133,7 @@ function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<st
         >
           {/* Handle */}
           <View className="items-center pt-3 pb-2">
-            <View style={{ width: 48, height: 5, backgroundColor: 'black' }} />
+            <View style={{ width: 48, height: 5, backgroundColor: colors.border }} />
           </View>
 
           {/* Content */}

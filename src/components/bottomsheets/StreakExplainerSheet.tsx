@@ -27,14 +27,14 @@ const StreakExplainerContent: React.FC = () => {
       </View>
 
       {/* How it works */}
-      <View className="bg-primary/20 border-2 border-black p-4 mb-4">
+      <View className="bg-primary/20 border-2 border-border p-4 mb-4">
         <CustomText variant="h4" className="mb-3">
           How It Works
         </CustomText>
 
         <View className="gap-3">
           <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-black bg-primary items-center justify-center">
+            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
               <CustomText variant="label" className="text-xs">1</CustomText>
             </View>
             <View className="flex-1">
@@ -45,7 +45,7 @@ const StreakExplainerContent: React.FC = () => {
           </View>
 
           <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-black bg-primary items-center justify-center">
+            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
               <CustomText variant="label" className="text-xs">2</CustomText>
             </View>
             <View className="flex-1">
@@ -56,7 +56,7 @@ const StreakExplainerContent: React.FC = () => {
           </View>
 
           <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-black bg-primary items-center justify-center">
+            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
               <CustomText variant="label" className="text-xs">3</CustomText>
             </View>
             <View className="flex-1">
@@ -67,7 +67,7 @@ const StreakExplainerContent: React.FC = () => {
           </View>
 
           <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-black bg-primary items-center justify-center">
+            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
               <CustomText variant="label" className="text-xs">4</CustomText>
             </View>
             <View className="flex-1">
@@ -80,9 +80,9 @@ const StreakExplainerContent: React.FC = () => {
       </View>
 
       {/* Benefit */}
-      <View className="border-2 border-black p-4 mb-6">
+      <View className="border-2 border-border p-4 mb-6">
         <View className="flex-row items-center gap-2 mb-2">
-          <FireIcon size={16} color="#000" />
+          <FireIcon size={16} color="#e63946" />
           <CustomText variant="h4">Why Track Daily?</CustomText>
         </View>
         <CustomText variant="p" className="text-sm">

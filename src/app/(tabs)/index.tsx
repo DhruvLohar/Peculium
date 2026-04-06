@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { ScrollView, RefreshControl, View } from 'react-native';
+import { ScrollView, RefreshControl, View, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Container } from '@/components/Container';
 import CustomText from '@/components/atoms/CustomText';
 import BarChart from '@/components/atoms/BarChart';
@@ -16,6 +17,7 @@ import { useMonthlyBudget } from '@/hooks/useMonthlyBudget';
 import { useStreak } from '@/hooks/useStreak';
 
 const Home: React.FC = () => {
+  const router = useRouter();
   const { data: user } = useUser();
   const { stats, isRefetching, refetch } = useDashboard();
   const { chartData, isRefetching: isChartRefetching, refetch: refetchChart } = useLast7DaysSpending();
@@ -35,6 +37,10 @@ const Home: React.FC = () => {
   );
 
   const initial = useMemo(() => displayName[0]?.toUpperCase() ?? '?', [displayName]);
+
+  const handleNavigateToProfile = useCallback(() => {
+    router.push('/profile');
+  }, [router]);
 
   const handleRefresh = useCallback(() => {
     refetch();
@@ -60,11 +66,14 @@ const Home: React.FC = () => {
       >
         {/* Header */}
         <View className="flex-row items-center gap-3 pt-8 pb-6">
-          <View className="w-12 h-12 bg-primary border-2 border-black items-center justify-center">
-            <CustomText variant="h4" className="leading-none">
+          <Pressable
+            onPress={handleNavigateToProfile}
+            className="w-12 h-12 bg-primary border-2 border-border items-center justify-center"
+          >
+            <CustomText variant="h4" className="leading-none" darkInvert>
               {initial}
             </CustomText>
-          </View>
+          </Pressable>
           <View>
             <CustomText variant="label" className="text-xs tracking-widest">
               GOOD MORNING
@@ -113,7 +122,7 @@ const Home: React.FC = () => {
               tooltipHeaders={['DAY', 'SPENT']}
             />
           ) : (
-            <View className="h-60 items-center justify-center bg-muted/10 border-2 border-black">
+            <View className="h-60 items-center justify-center bg-muted/10 border-2 border-border">
               <CustomText variant="muted">No spending data available</CustomText>
             </View>
           )}

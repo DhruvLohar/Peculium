@@ -24,8 +24,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
     <View className="flex-row gap-3" style={{ height: 190 }}>
 
       {/* Left — Balance */}
-      <View className="flex-1 border-2 border-black bg-background p-4 justify-between">
-        {/* Decorative accent block */}
+      <View className="flex-1 border-2 border-border bg-card p-4 justify-between">
         <View className="flex-1 bg-primary mb-4" />
         <View>
           <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
@@ -41,12 +40,12 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
       <View className="flex-1 gap-3">
 
         {/* Income */}
-        <View className="flex-1 border-2 border-black bg-background p-4">
+        <View className="flex-1 border-2 border-border bg-card p-4">
           <View className="flex-row justify-between items-start">
             <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
               INCOME
             </CustomText>
-            <View className="w-5 h-5 bg-green-500" />
+            <View className="w-5 h-5 bg-safe" />
           </View>
           <CustomText variant="h3" className="mt-2">
             {incomeStr}
@@ -54,7 +53,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
         </View>
 
         {/* Expense */}
-        <View className="flex-1 border-2 border-black bg-background p-4">
+        <View className="flex-1 border-2 border-border bg-card p-4">
           <View className="flex-row justify-between items-start">
             <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
               EXPENSE

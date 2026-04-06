@@ -1,6 +1,8 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { LayoutChangeEvent, Pressable, View } from 'react-native';
 import Svg, { Line, Rect } from 'react-native-svg';
+import { useColorScheme } from 'nativewind';
+import { getThemeColors } from '@/utils/themeColors';
 import Animated, {
   Easing,
   useAnimatedProps,
@@ -150,10 +152,12 @@ interface StackedTooltipProps {
   segments: StackedBarSegment[];
   values: Record<string, number>;
   visible: boolean;
+  borderColor: string;
+  bgColor: string;
 }
 
 const StackedTooltip: React.FC<StackedTooltipProps> = memo(
-  ({ x, y, label, segments, values, visible }) => {
+  ({ x, y, label, segments, values, visible, borderColor, bgColor }) => {
     const opacity = useSharedValue(0);
 
     useEffect(() => {
@@ -178,11 +182,11 @@ const StackedTooltip: React.FC<StackedTooltipProps> = memo(
             position: 'absolute',
             left: x,
             top: y,
-            boxShadow: '3px 3px 0 0 #000000',
+            boxShadow: `3px 3px 0 0 ${borderColor}`,
           },
           animatedStyle,
         ]}
-        className="bg-white border-2 border-black px-3 py-2 min-w-[130px]"
+        style={{ backgroundColor: bgColor, borderWidth: 2, borderColor }} className="px-3 py-2 min-w-[130px]"
         pointerEvents="none"
       >
         <CustomText variant="label" className="text-xs font-sans-bold mb-2">
@@ -193,7 +197,7 @@ const StackedTooltip: React.FC<StackedTooltipProps> = memo(
             <View className="flex-row items-center">
               <View
                 style={{ width: 10, height: 10, backgroundColor: seg.color, marginRight: 6 }}
-                className="border border-black"
+                className="border border-border"
               />
               <CustomText variant="label" className="text-xs text-muted-foreground">
                 {seg.key}
@@ -204,7 +208,7 @@ const StackedTooltip: React.FC<StackedTooltipProps> = memo(
             </CustomText>
           </View>
         ))}
-        <View className="border-t border-black mt-1 pt-1 flex-row justify-between">
+        <View className="border-t border-border mt-1 pt-1 flex-row justify-between">
           <CustomText variant="label" className="text-xs text-muted-foreground">
             Total
           </CustomText>
@@ -226,6 +230,10 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
   animationDuration = 600,
   className,
 }) => {
+  const { colorScheme } = useColorScheme();
+  const themeColors = getThemeColors(colorScheme === 'dark');
+  const cardBg = colorScheme === 'dark' ? '#242424' : '#ffffff';
+
   const [chartWidth, setChartWidth] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -397,7 +405,7 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                       width={barWidth}
                       height={barH}
                       fill="none"
-                      stroke="#000000"
+                      stroke={themeColors.border}
                       strokeWidth={2}
                     />
                   );
@@ -450,6 +458,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
             segments={segments}
             values={tooltipData.values}
             visible={selectedIndex !== null}
+            borderColor={themeColors.border}
+            bgColor={cardBg}
           />
         )}
       </View>

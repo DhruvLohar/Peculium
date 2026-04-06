@@ -32,9 +32,9 @@ const loaderVariants = cva('flex-row gap-1', {
 });
 
 const dotBgVariants: Record<NonNullable<VariantProps<typeof loaderVariants>['variant']>, string> = {
-  default: 'bg-primary border-black',
-  secondary: 'bg-secondary border-black',
-  outline: 'bg-transparent border-black',
+  default: 'bg-primary border-border',
+  secondary: 'bg-secondary border-border',
+  outline: 'bg-transparent border-border',
 };
 
 const dotSizeVariants: Record<NonNullable<VariantProps<typeof loaderVariants>['size']>, string> = {

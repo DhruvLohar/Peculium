@@ -26,6 +26,7 @@ const textVariants = cva('text-foreground', {
 export interface CustomTextProps extends TextProps, VariantProps<typeof textVariants> {
   className?: string;
   style?: React.CSSProperties;
+  darkInvert?: boolean;
 }
 
 const CustomText: React.FC<CustomTextProps> = ({ variant = 'p', className, children, ...props }) => {
@@ -35,7 +36,7 @@ const CustomText: React.FC<CustomTextProps> = ({ variant = 'p', className, child
   );
 
   return (
-    <Text className={textClass} style={props.style} {...props}>
+    <Text className={cn(textClass, props.darkInvert && 'dark:text-background')} style={props.style} {...props}>
       {children}
     </Text>
   );

@@ -2,7 +2,9 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { TextInput, type TextInputProps, View } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useColorScheme } from 'nativewind';
 import CustomText from './CustomText';
+import { getThemeColors } from '@/utils/themeColors';
 
 interface AmountInputProps extends Pick<TextInputProps, 'onBlur' | 'onFocus'> {
   value: string;
@@ -18,14 +20,15 @@ const formatWithCommas = (num: string): string => {
   return parts.join('.');
 };
 
-const removeCommas = (str: string): string => {
-  return str.replace(/,/g, '');
-};
+const removeCommas = (str: string): string => str.replace(/,/g, '');
 
 const AmountInput: React.FC<AmountInputProps> = ({ value, onChangeText, onBlur, onFocus, isInvalid = false }) => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = getThemeColors(isDark);
+
   const borderWidth = useSharedValue(1);
 
-  // Memoize the displayed value (with commas)
   const displayValue = useMemo(() => {
     const cleanValue = removeCommas(value);
     if (!cleanValue || cleanValue === '') return '';
@@ -35,34 +38,13 @@ const AmountInput: React.FC<AmountInputProps> = ({ value, onChangeText, onBlur, 
   const handleChangeText = useCallback(
     (text: string) => {
       const cleanText = removeCommas(text);
-      
-      // Allow empty string
-      if (cleanText === '') {
-        onChangeText('');
-        return;
-      }
-
-      // Only allow numbers and one decimal point
-      if (!/^\d*\.?\d*$/.test(cleanText)) {
-        return;
-      }
-
-      // Restrict to 2 decimal places
+      if (cleanText === '') { onChangeText(''); return; }
+      if (!/^\d*\.?\d*$/.test(cleanText)) return;
       const parts = cleanText.split('.');
-      if (parts.length > 2) {
-        return;
-      }
-      if (parts[1] && parts[1].length > 2) {
-        return;
-      }
-
-      // Check max value
+      if (parts.length > 2) return;
+      if (parts[1] && parts[1].length > 2) return;
       const numValue = parseFloat(cleanText);
-      if (numValue > MAX_VALUE) {
-        return;
-      }
-
-      // Pass clean value (without commas) to parent for validation
+      if (numValue > MAX_VALUE) return;
       onChangeText(cleanText);
     },
     [onChangeText],
@@ -86,15 +68,15 @@ const AmountInput: React.FC<AmountInputProps> = ({ value, onChangeText, onBlur, 
 
   const animatedStyle = useAnimatedStyle(() => ({
     borderBottomWidth: borderWidth.value,
-    borderBottomColor: isInvalid ? '#e63946' : '#000',
+    borderBottomColor: isInvalid ? colors.destructive : colors.border,
   }));
 
   return (
     <Animated.View style={[{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6 }, animatedStyle]}>
-      <MaterialIcons 
+      <MaterialIcons
         name="currency-rupee"
         size={24}
-        color="black"
+        color={isInvalid ? colors.destructive : colors.foreground}
         style={{ marginRight: 8, transform: [{ translateY: 6 }] }}
       />
       <TextInput
@@ -104,8 +86,8 @@ const AmountInput: React.FC<AmountInputProps> = ({ value, onChangeText, onBlur, 
         onBlur={handleBlur}
         keyboardType="decimal-pad"
         placeholder="0.00"
-        placeholderTextColor="#aeaeae"
-        style={{ flex: 1, fontSize: 44, fontWeight: '700', color: isInvalid ? '#e63946' : '#000' }}
+        placeholderTextColor={colors.muted}
+        style={{ flex: 1, fontSize: 44, fontWeight: '700', color: isInvalid ? colors.destructive : colors.foreground }}
       />
     </Animated.View>
   );

@@ -1,9 +1,11 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
 import Slider from '@/components/atoms/Slider';
 import { useMicroSpend } from '@/hooks/useMicroSpend';
+import { getThemeColors } from '@/utils/themeColors';
 
 const MIN = 100;
 const MAX = 800;
@@ -13,6 +15,8 @@ const DEFAULT = 100;
 const AnalyzeMicroSpend: React.FC = () => {
   const [threshold, setThreshold] = useState(DEFAULT);
   const { bleedTxns, totalBleed } = useMicroSpend(threshold);
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
 
   const handleValueChange = useCallback((value: number) => {
     setThreshold(value);
@@ -24,18 +28,20 @@ const AnalyzeMicroSpend: React.FC = () => {
   );
 
   return (
-    <View className="border-2 border-black bg-white" style={{ boxShadow: '4px 4px 0 0 #000' }}>
-
-      {/* Section 1: Header */}
-      <View className="bg-destructive/10 border-b-2 border-black px-4 py-3 flex-row items-center gap-3">
-        <MaterialIcons name="warning" size={20} color="#000" />
+    <View
+      className="border-2 border-border bg-card"
+      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}
+    >
+      {/* Header */}
+      <View className="bg-destructive/10 border-b-2 border-border px-4 py-3 flex-row items-center gap-3">
+        <MaterialIcons name="warning" size={20} color={colors.foreground} />
         <CustomText variant="label" className="text-xs tracking-widest">
           MICRO SPEND BLEED
         </CustomText>
       </View>
 
-      {/* Section 2: Shock data */}
-      <View className="px-4 py-4 border-b-2 border-black">
+      {/* Shock data */}
+      <View className="px-4 py-4 border-b-2 border-border">
         <CustomText variant="label" className="text-xs tracking-widest text-muted-foreground mb-1">
           {bleedTxns.length} TRANSACTIONS UNDER ₹{threshold}
         </CustomText>
@@ -44,11 +50,11 @@ const AnalyzeMicroSpend: React.FC = () => {
         </CustomText>
       </View>
 
-      {/* Section 3: Swarm window */}
-      <View className="px-3 py-3 bg-muted/10 border-b-2 border-black">
+      {/* Swarm window */}
+      <View className="px-3 py-3 bg-muted/10 border-b-2 border-border">
         <ScrollView
           style={{ height: 120 }}
-          className="border-2 border-black bg-white p-2"
+          className="border-2 border-border bg-background p-2"
           scrollEnabled
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
@@ -64,8 +70,8 @@ const AnalyzeMicroSpend: React.FC = () => {
               {bleedTxns.map((_, i) => (
                 <View
                   key={i}
-                  style={{ width: 14, height: 14, boxShadow: '1px 1px 0 0 #000' }}
-                  className="bg-destructive border border-black"
+                  style={{ width: 14, height: 14, boxShadow: `1px 1px 0 0 ${colors.border}` }}
+                  className="bg-destructive border border-border"
                 />
               ))}
             </View>
@@ -73,15 +79,14 @@ const AnalyzeMicroSpend: React.FC = () => {
         </ScrollView>
       </View>
 
-      {/* Section 4: Slider control */}
+      {/* Slider control */}
       <View className="px-4 py-4 bg-primary">
-        {/* Label row */}
         <View className="flex-row justify-between items-end mb-4">
-          <CustomText variant="label" className="text-xs tracking-widest">
+          <CustomText variant="label" className="text-xs tracking-widest" darkInvert>
             SET LIMIT
           </CustomText>
-          <View className="border-b-2 border-black pb-0.5">
-            <CustomText variant="h4">₹{threshold}</CustomText>
+          <View className="border-b-2 border-primary-foreground pb-0.5">
+            <CustomText variant="h4" darkInvert>₹{threshold}</CustomText>
           </View>
         </View>
 
@@ -94,17 +99,11 @@ const AnalyzeMicroSpend: React.FC = () => {
           rangeClassName="bg-secondary"
         />
 
-        {/* Min / Max labels */}
         <View className="flex-row justify-between mt-2">
-          <CustomText variant="label" className="text-xs opacity-60">
-            ₹{MIN}
-          </CustomText>
-          <CustomText variant="label" className="text-xs opacity-60">
-            ₹{MAX}
-          </CustomText>
+          <CustomText variant="label" className="text-xs opacity-60" darkInvert>₹{MIN}</CustomText>
+          <CustomText variant="label" className="text-xs opacity-60" darkInvert>₹{MAX}</CustomText>
         </View>
       </View>
-
     </View>
   );
 };

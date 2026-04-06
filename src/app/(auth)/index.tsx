@@ -51,7 +51,7 @@ const OnboardingScreen: React.FC = () => {
   }, [currentIndex, router]);
 
   const handleSkip = useCallback(() => {
-    router.replace("/(tabs)");
+    router.replace("/login");
   }, [router]);
 
   const renderSlide = useCallback(({ item }: { item: Slide }) => {
@@ -59,7 +59,7 @@ const OnboardingScreen: React.FC = () => {
       <View style={{ width }} className="flex-1 px-8 pb-20">
         {/* Image placeholder */}
         <View className="flex-1 items-center justify-center mb-8">
-          <View className="w-full h-96 bg-accent border-4 border-black items-center justify-center shadow-md">
+          <View className="w-full h-96 bg-accent border-4 border-border items-center justify-center shadow-md">
             <CustomText variant="muted" className="text-center">
               Image Placeholder
             </CustomText>

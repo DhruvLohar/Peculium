@@ -11,5 +11,5 @@ export const Container: React.FC<ContainerProps> = ({ children, className }) => 
 };
 
 const styles = {
-  container: 'flex flex-1 p-safe bg-white px-4',
+  container: 'flex flex-1 p-safe bg-background px-4',
 };

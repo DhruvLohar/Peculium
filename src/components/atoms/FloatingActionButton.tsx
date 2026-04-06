@@ -6,14 +6,16 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
+import { getThemeColors } from '@/utils/themeColors';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SHADOW_SIZE = 5;
 
 const fabVariants = cva(
-  'absolute bottom-8 right-6 items-center justify-center border-2 border-black rounded-full',
+  'absolute bottom-8 right-6 items-center justify-center border-2 border-border rounded-full',
   {
     variants: {
       variant: {
@@ -49,6 +51,8 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   className,
   onPress,
 }) => {
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
   const translate = useSharedValue(0);
 
   const handlePressIn = useCallback(() => {
@@ -64,7 +68,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
       { translateX: translate.value * SHADOW_SIZE },
       { translateY: translate.value * SHADOW_SIZE },
     ],
-    boxShadow: `${SHADOW_SIZE - translate.value * SHADOW_SIZE}px ${SHADOW_SIZE - translate.value * SHADOW_SIZE}px 0px black`,
+    boxShadow: `${SHADOW_SIZE - translate.value * SHADOW_SIZE}px ${SHADOW_SIZE - translate.value * SHADOW_SIZE}px 0px ${colors.border}`,
   }));
 
   const containerClass = useMemo(
