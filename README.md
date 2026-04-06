@@ -1,14 +1,13 @@
 # Peculium
 
-> _Latin: savings, property_
+> _I googled Latin words for savings_
 
 A minimal, fast expense tracker built with React Native and Expo.
 
 ---
 
-## Screenshots
+## App Walkthrough
 
-[3 screenshots will go here]
 
 ### Built with AI Assistance
 
