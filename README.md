@@ -7,7 +7,7 @@ A minimal, fast expense tracker built with React Native and Expo.
 ---
 
 ## App Walkthrough
-> When you first create an account, I pre-seed a transaction for last week of a salary credit :)
+> [Click here to install the app for android](https://drive.google.com/file/d/1fVdNyuGuGgiNIorU3X52DzN7uhGedKr2/view?usp=sharing)
 
 https://github.com/user-attachments/assets/8bb5f2d3-0c22-45e9-ba3b-0e7e309f2992
 
