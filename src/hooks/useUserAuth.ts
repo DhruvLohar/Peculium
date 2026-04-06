@@ -110,6 +110,16 @@ export const useAuthState = () => {
   }, []);
 
   useEffect(() => {
+    // Bootstrap: check for an existing session immediately so we don't
+    // rely solely on onAuthStateChange (which can race with mutations).
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        updateAuthState(session.user.id);
+      } else {
+        setAuthState('unauthenticated');
+      }
+    });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {

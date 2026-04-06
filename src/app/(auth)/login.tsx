@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useState } from 'react';
+import { useRouter } from 'expo-router';
 import LoginScreen from '@/components/screens/login/LoginScreen';
 import OTPScreen from '@/components/screens/login/OTPScreen';
 import { useUserAuth } from '@/hooks/useUserAuth';
@@ -7,6 +8,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 type Step = 'email' | 'otp';
 
 const LoginPage: React.FC = () => {
+  const router = useRouter();
   const { sendOtp, verifyOtp } = useUserAuth();
   const { trackContinuedToLogin } = useAnalytics();
   const [step, setStep] = useState<Step>('email');
@@ -29,13 +31,20 @@ const LoginPage: React.FC = () => {
   const handleVerifyOtp = useCallback(
     async (otp: string) => {
       try {
-        await verifyOtp.mutateAsync({ email, token: otp });
-        // Navigation is handled reactively by RootLayoutNav via useAuthState
+        const result = await verifyOtp.mutateAsync({ email, token: otp });
+        // Navigate directly after verification succeeds so we don't
+        // depend solely on the reactive onAuthStateChange listener,
+        // which can race with the profile upsert on first app open.
+        if (result.needsOnboarding) {
+          router.replace('/onboarding');
+        } else {
+          router.replace('/(tabs)');
+        }
       } catch (error) {
         console.error(error);
       }
     },
-    [email, verifyOtp],
+    [email, verifyOtp, router],
   );
 
   const handleResendOtp = useCallback(async () => {
