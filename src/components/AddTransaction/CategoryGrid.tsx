@@ -1,26 +1,32 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Dimensions, Pressable, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { type Control, Controller } from 'react-hook-form';
 import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
 import type { AddTransactionFormValues } from '@/utils/schemas';
-import { CATEGORY_LIST } from '@/utils/categoryConfig';
+import { getCategoriesByType } from '@/utils/categoryConfig';
 import { getThemeColors } from '@/utils/themeColors';
+import type { TransactionType } from '@/hooks/useTransactions';
 
 interface CategoryGridProps {
   control: Control<AddTransactionFormValues>;
+  type?: TransactionType;
 }
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TILE_SIZE = Math.floor((SCREEN_WIDTH - 32 - 24) / 4);
 
-const CategoryGrid: React.FC<CategoryGridProps> = ({ control }) => {
+const CategoryGrid: React.FC<CategoryGridProps> = ({ control, type }) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const colors = getThemeColors(isDark);
   const unselectedBg = isDark ? '#242424' : '#ffffff';
   const unselectedFg = isDark ? '#888888' : '#5a5a5a';
+
+  const filteredCategories = useMemo(() => {
+    return type ? getCategoriesByType(type) : [];
+  }, [type]);
 
   return (
     <Controller
@@ -28,7 +34,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ control }) => {
       name="category"
       render={({ field: { value, onChange } }) => (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-          {CATEGORY_LIST.map((cat) => {
+          {filteredCategories.map((cat) => {
             const selected = value === cat.value;
             return (
               <Pressable

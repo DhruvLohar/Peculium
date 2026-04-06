@@ -8,6 +8,25 @@ import { useBottomSheet } from '@/hooks/useBottomSheet';
 
 export const STREAK_EXPLAINER_SHEET_ID = 'streak-explainer';
 
+const STREAK_STEPS = [
+  {
+    number: 1,
+    description: 'Add at least one transaction each day',
+  },
+  {
+    number: 2,
+    description: 'Your streak increases by 1 each consecutive day',
+  },
+  {
+    number: 3,
+    description: 'Miss a day and your streak resets to 0',
+  },
+  {
+    number: 4,
+    description: 'Your longest streak is saved as your best record',
+  },
+];
+
 const StreakExplainerContent: React.FC = () => {
   const { close } = useBottomSheet(STREAK_EXPLAINER_SHEET_ID);
 
@@ -33,49 +52,20 @@ const StreakExplainerContent: React.FC = () => {
         </CustomText>
 
         <View className="gap-3">
-          <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
-              <CustomText variant="label" className="text-xs">1</CustomText>
+          {STREAK_STEPS.map((step) => (
+            <View key={step.number} className="flex-row gap-3">
+              <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
+                <CustomText variant="label" className="text-xs" darkInvert>
+                  {step.number}
+                </CustomText>
+              </View>
+              <View className="flex-1">
+                <CustomText variant="p" className="text-sm">
+                  {step.description}
+                </CustomText>
+              </View>
             </View>
-            <View className="flex-1">
-              <CustomText variant="p" className="text-sm">
-                Add at least one transaction each day
-              </CustomText>
-            </View>
-          </View>
-
-          <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
-              <CustomText variant="label" className="text-xs">2</CustomText>
-            </View>
-            <View className="flex-1">
-              <CustomText variant="p" className="text-sm">
-                Your streak increases by 1 each consecutive day
-              </CustomText>
-            </View>
-          </View>
-
-          <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
-              <CustomText variant="label" className="text-xs">3</CustomText>
-            </View>
-            <View className="flex-1">
-              <CustomText variant="p" className="text-sm">
-                Miss a day and your streak resets to 0
-              </CustomText>
-            </View>
-          </View>
-
-          <View className="flex-row gap-3">
-            <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
-              <CustomText variant="label" className="text-xs">4</CustomText>
-            </View>
-            <View className="flex-1">
-              <CustomText variant="p" className="text-sm">
-                Your longest streak is saved as your best record
-              </CustomText>
-            </View>
-          </View>
+          ))}
         </View>
       </View>
 

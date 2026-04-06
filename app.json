@@ -1,9 +1,11 @@
 {
   "expo": {
-    "name": "peculium",
+    "name": "Peculium",
     "slug": "peculium",
     "version": "1.0.0",
     "scheme": "peculium",
+    "description": "A minimal, fast expense tracker. Latin: savings, property.",
+    "owner": "dhruvlohar",
     "platforms": [
       "ios",
       "android"
@@ -38,13 +40,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dhruvlohar.peculium"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "backgroundColor": "#ffdb33"
+      },
+      "package": "com.dhruvlohar.peculium"
     }
   }
 }

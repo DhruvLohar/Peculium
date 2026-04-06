@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useRef, useState } from "react";
-import { View, FlatList, Dimensions, Pressable, type NativeSyntheticEvent, type NativeScrollEvent } from "react-native";
+import React, { memo, useCallback, useRef, useState, useMemo } from "react";
+import { View, FlatList, Dimensions, Pressable, Image, type NativeSyntheticEvent, type NativeScrollEvent } from "react-native";
 import { useRouter } from "expo-router";
 import CustomText from "@/components/atoms/CustomText";
 import Button from "@/components/atoms/Button";
@@ -10,6 +10,7 @@ interface Slide {
   id: string;
   title: string;
   subtitle: string;
+  image: ReturnType<typeof require>;
 }
 
 const slides: Slide[] = [
@@ -17,16 +18,19 @@ const slides: Slide[] = [
     id: "1",
     title: "Main Character Energy.",
     subtitle: "Your money shouldn't be a mystery. Ditch the boring spreadsheets and take absolute control of your daily cash.",
+    image: require("../../../assets/illustration/maincharacter.png"),
   },
   {
     id: "2",
     title: "Make Every Cent Sweat.",
     subtitle: "Log expenses in seconds. Turn your chaotic spending habits into beautiful, brutalist charts that actually make sense.",
+    image: require("../../../assets/illustration/chartsmakesense.png"),
   },
   {
     id: "3",
     title: "Lock Down The \n Vault.",
-    subtitle: "Set ruthless budgets, build daily saving streaks, and secure the bag. It is time to build your private fund.",
+    subtitle: "Set ruthless budgets, build daily streaks, and secure the bag. It is time to build your private fund.",
+    image: require("../../../assets/illustration/lockthevault.png"),
   },
 ];
 
@@ -54,16 +58,21 @@ const OnboardingScreen: React.FC = () => {
     router.replace("/login");
   }, [router]);
 
+  const imageSize = useMemo(() => (width * 0.8), []);
+
   const renderSlide = useCallback(({ item }: { item: Slide }) => {
     return (
       <View style={{ width }} className="flex-1 px-8 pb-20">
-        {/* Image placeholder */}
+        {/* Image */}
         <View className="flex-1 items-center justify-center mb-8">
-          <View className="w-full h-96 bg-accent border-4 border-border items-center justify-center shadow-md">
-            <CustomText variant="muted" className="text-center">
-              Image Placeholder
-            </CustomText>
-          </View>
+          <Image
+            source={item.image}
+            style={{
+              width: imageSize,
+              height: imageSize,
+            }}
+            resizeMode="contain"
+          />
         </View>
 
         {/* Content */}
@@ -77,7 +86,7 @@ const OnboardingScreen: React.FC = () => {
         </View>
       </View>
     );
-  }, []);
+  }, [imageSize]);
 
   const renderDots = useCallback(() => {
     return (

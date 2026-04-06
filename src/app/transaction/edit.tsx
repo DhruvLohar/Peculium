@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo, useEffect } from 'react';
 import { ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Container } from '@/components/Container';
 import ScreenHeader from '@/components/ScreenHeader';
@@ -62,6 +62,8 @@ const EditTransactionScreen: React.FC = () => {
       });
     }
   }, [transaction, reset]);
+
+  const currentType = useWatch({ control, name: 'type' });
 
   const onUpdate = useCallback(
     (values: AddTransactionFormValues) => {
@@ -149,7 +151,7 @@ const EditTransactionScreen: React.FC = () => {
         {/* Category */}
         <View className="mt-6 mb-2">
           <Label className="mb-3">SELECT CATEGORY</Label>
-          <CategoryGrid control={control} />
+          <CategoryGrid control={control} type={currentType} />
           {errors.category && (
             <CustomText className="text-xs text-destructive mt-1.5">
               {errors.category.message}

@@ -62,7 +62,7 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
       return {
         spendPercentage: percentage,
         state: 'TIGHT' as BudgetState,
-        headerBg: 'bg-accent',
+        headerBg: 'bg-primary/10',
         badgeBg: 'bg-primary',
         fillColor: '#ffdb33',
       };

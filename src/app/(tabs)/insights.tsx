@@ -1,19 +1,42 @@
-import React, { memo } from 'react';
-import { View } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { ScrollView, View, RefreshControl } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import { Container } from '@/components/Container';
-import CustomText from '@/components/atoms/CustomText';
+import ScreenHeader from '@/components/ScreenHeader';
+import AnalyzeCategorySpend from '@/components/Insights/AnalyzeCategorySpend';
+import WeeklyComparison from '@/components/Insights/WeeklyComparison';
+import { useWeeklyComparison } from '@/hooks/useWeeklyComparison';
+import { getThemeColors } from '@/utils/themeColors';
 
 const InsightsScreen: React.FC = () => {
+  const { refetch, isRefetching } = useWeeklyComparison();
+  const { colorScheme } = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
+
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   return (
     <Container>
-      <View className="items-start justify-start pt-8">
-        <CustomText variant="h2">
-          Insights
-        </CustomText>
-        <CustomText variant="muted" className="text-center">
-          Don't trip over your finances. YOU DID IT.
-        </CustomText>
-      </View>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+            colors={[colors.foreground]}
+            tintColor={colors.foreground}
+          />
+        }
+      >
+        <ScreenHeader title="Insights" subtitle="Where your money actually goes" />
+        <View className="gap-6 pb-10">
+          <AnalyzeCategorySpend />
+          <WeeklyComparison />
+        </View>
+      </ScrollView>
     </Container>
   );
 };
