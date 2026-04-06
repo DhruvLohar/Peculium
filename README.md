@@ -11,10 +11,6 @@ A minimal, fast expense tracker built with React Native and Expo.
 
 https://github.com/user-attachments/assets/8bb5f2d3-0c22-45e9-ba3b-0e7e309f2992
 
-### Built with AI Assistance
-
-The architecture and core idea are 100% my own. AI agents (Claude, Copilot) + CLAUDE.md conventions enabled 5x faster development—writing only the essential logic while AI handled scaffolding, schema design, and component structure. Leveraging smart prompting + architectural docs keeps code quality high while accelerating delivery.
-
 ---
 
 ## How It's Built
@@ -50,3 +46,10 @@ Powered by **Supabase** (PostgreSQL)
 - `profiles` — User onboarding state, current/longest spending streaks
 - `transactions` — Income/expense entries with 8 categories, timestamps, notes
 - `monthly_budgets` — Per-month spend limits (one budget per user per month)
+- `analytics_events` — To track simple on-click, on-page-view events
+
+---
+
+## Built with AI Assistance
+
+The architecture and core idea are 100% my own. AI agents (Claude, Copilot) + CLAUDE.md conventions enabled 5x faster development—writing only the essential logic while AI handled scaffolding, schema design, and component structure. Leveraging smart prompting + architectural docs keeps code quality high while accelerating delivery.
