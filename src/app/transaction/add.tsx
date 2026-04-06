@@ -16,11 +16,13 @@ import CategoryGrid from '@/components/AddTransaction/CategoryGrid';
 import { addTransactionSchema, type AddTransactionFormValues } from '@/utils/schemas';
 import { useAddTransaction } from '@/hooks/useTransactions';
 import { useUpdateStreak } from '@/hooks/useStreak';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const AddTransactionScreen: React.FC = () => {
   const router = useRouter();
   const { mutate: addTransaction, isPending, error } = useAddTransaction();
   const { mutate: updateStreak } = useUpdateStreak();
+  const { trackAddTransaction } = useAnalytics();
 
   const {
     control,
@@ -49,10 +51,10 @@ const AddTransactionScreen: React.FC = () => {
           notes: values.notes || undefined,
           transaction_date: new Date(values.transaction_date).toISOString(),
         },
-        { onSuccess: () => { updateStreak(); router.back(); } },
+        { onSuccess: () => { trackAddTransaction({ type: values.type, category: values.category, amount: values.amount }); updateStreak(); router.back(); } },
       );
     },
-    [addTransaction, router],
+    [addTransaction, router, updateStreak, trackAddTransaction],
   );
 
   return (

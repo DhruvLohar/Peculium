@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { View, ScrollView } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { useColorScheme } from 'nativewind';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Container } from '@/components/Container';
 import ScreenHeader from '@/components/ScreenHeader';
 import CustomText from '@/components/atoms/CustomText';
@@ -12,6 +12,7 @@ import { useUser } from '@/hooks/useUser';
 import { useThemeContext } from '@/components/providers/ThemeProvider';
 import { getThemeColors } from '@/utils/themeColors';
 import supabase from '@/utils/supabase';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const ProfileScreen: React.FC = () => {
   const { data: user } = useUser();
@@ -19,6 +20,12 @@ const ProfileScreen: React.FC = () => {
   const { colorScheme } = useColorScheme();
   const colors = getThemeColors(colorScheme === 'dark');
   const router = useRouter();
+
+  const { trackProfileViewed, trackToggledTheme } = useAnalytics();
+
+  useFocusEffect(useCallback(() => {
+    trackProfileViewed();
+  }, [trackProfileViewed]));
 
   const displayName = (user?.user_metadata?.display_name as string | undefined) ?? '';
   const email = user?.email ?? '';
@@ -36,9 +43,10 @@ const ProfileScreen: React.FC = () => {
 
   const handleToggleTheme = useCallback(
     (_val: boolean) => {
+      trackToggledTheme(isDark ? 'light' : 'dark');
       void toggleTheme();
     },
-    [toggleTheme],
+    [toggleTheme, trackToggledTheme, isDark],
   );
 
   const handleLogout = useCallback(() => {

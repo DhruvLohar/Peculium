@@ -39,6 +39,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          device_id: string | null
+          event: Database["public"]["Enums"]["app_event_type"]
+          event_data: Json
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_id?: string | null
+          event: Database["public"]["Enums"]["app_event_type"]
+          event_data?: Json
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_id?: string | null
+          event?: Database["public"]["Enums"]["app_event_type"]
+          event_data?: Json
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       monthly_budgets: {
         Row: {
           amount: number
@@ -137,6 +164,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      app_event_type:
+        | "AppOpened"
+        | "ContinuedToLogin"
+        | "SkippedToLogin"
+        | "AddTransaction"
+        | "EditTransaction"
+        | "DeleteTransaction"
+        | "UpdateMonthlyBudget"
+        | "ProfileViewed"
+        | "ToggledTheme"
       transaction_category:
         | "Home"
         | "Groceries"
@@ -277,6 +314,17 @@ export const Constants = {
   },
   public: {
     Enums: {
+      app_event_type: [
+        "AppOpened",
+        "ContinuedToLogin",
+        "SkippedToLogin",
+        "AddTransaction",
+        "EditTransaction",
+        "DeleteTransaction",
+        "UpdateMonthlyBudget",
+        "ProfileViewed",
+        "ToggledTheme",
+      ],
       transaction_category: [
         "Home",
         "Groceries",

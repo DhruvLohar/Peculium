@@ -2,11 +2,13 @@ import React, { memo, useCallback, useState } from 'react';
 import LoginScreen from '@/components/screens/login/LoginScreen';
 import OTPScreen from '@/components/screens/login/OTPScreen';
 import { useUserAuth } from '@/hooks/useUserAuth';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 type Step = 'email' | 'otp';
 
 const LoginPage: React.FC = () => {
   const { sendOtp, verifyOtp } = useUserAuth();
+  const { trackContinuedToLogin } = useAnalytics();
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
 
@@ -15,12 +17,13 @@ const LoginPage: React.FC = () => {
       setEmail(emailInput);
       try {
         await sendOtp.mutateAsync(emailInput);
+        trackContinuedToLogin(emailInput);
         setStep('otp');
       } catch (error) {
         console.error(error);
       }
     },
-    [sendOtp],
+    [sendOtp, trackContinuedToLogin],
   );
 
   const handleVerifyOtp = useCallback(

@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useCallback, useEffect } from 'react';
+import { Platform } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { ArchivoBlack_400Regular } from '@expo-google-fonts/archivo-black';
 import {
@@ -15,6 +16,8 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthState } from '@/hooks/useUserAuth';
+import { useDeviceId } from '@/hooks/useDeviceId';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import BottomSheetProvider from '@/components/providers/BottomSheetProvider';
 import ThemeProvider from '@/components/providers/ThemeProvider';
 
@@ -60,6 +63,9 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
+  useDeviceId();
+
+  const { trackAppOpened } = useAnalytics();
   const [loaded, error] = useFonts({
     ArchivoBlack_400Regular,
     SpaceGrotesk_300Light,
@@ -76,8 +82,9 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded || error) {
       void hideSplashScreen();
+      trackAppOpened({ platform: Platform.OS, app_version: '1.0.0' });
     }
-  }, [error, hideSplashScreen, loaded]);
+  }, [error, hideSplashScreen, loaded, trackAppOpened]);
 
   if (!loaded && !error) {
     return null;

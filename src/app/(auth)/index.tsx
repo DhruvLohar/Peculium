@@ -3,6 +3,7 @@ import { View, FlatList, Dimensions, Pressable, Image, type NativeSyntheticEvent
 import { useRouter } from "expo-router";
 import CustomText from "@/components/atoms/CustomText";
 import Button from "@/components/atoms/Button";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const { width } = Dimensions.get("window");
 
@@ -38,6 +39,7 @@ const OnboardingScreen: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
+  const { trackSkippedToLogin } = useAnalytics();
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -55,8 +57,9 @@ const OnboardingScreen: React.FC = () => {
   }, [currentIndex, router]);
 
   const handleSkip = useCallback(() => {
+    trackSkippedToLogin();
     router.replace("/login");
-  }, [router]);
+  }, [router, trackSkippedToLogin]);
 
   const imageSize = useMemo(() => (width * 0.8), []);
 

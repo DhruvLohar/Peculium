@@ -16,6 +16,7 @@ import TypeToggle from '@/components/AddTransaction/TypeToggle';
 import CategoryGrid from '@/components/AddTransaction/CategoryGrid';
 import { addTransactionSchema, type AddTransactionFormValues } from '@/utils/schemas';
 import { useTransaction, useUpdateTransaction, useDeleteTransaction } from '@/hooks/useTransactions';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import {
   CONFIRM_TRANSACTION_DELETE_SHEET_ID,
@@ -30,6 +31,7 @@ const EditTransactionScreen: React.FC = () => {
   const { data: transaction, isLoading } = useTransaction(id ?? null);
   const { mutate: updateTransaction, isPending: isUpdating } = useUpdateTransaction();
   const { mutate: deleteTransaction, isPending: isDeleting } = useDeleteTransaction();
+  const { trackEditTransaction, trackDeleteTransaction } = useAnalytics();
   const { open: openDeleteConfirm } = useBottomSheet<ConfirmTransactionDeleteArgs>(
     CONFIRM_TRANSACTION_DELETE_SHEET_ID,
   );
@@ -78,10 +80,10 @@ const EditTransactionScreen: React.FC = () => {
           notes: values.notes || undefined,
           transaction_date: new Date(values.transaction_date).toISOString(),
         },
-        { onSuccess: () => router.back() },
+        { onSuccess: () => { trackEditTransaction({ transaction_id: id, type: values.type, category: values.category, amount: values.amount }); router.back(); } },
       );
     },
-    [id, updateTransaction, router],
+    [id, updateTransaction, router, trackEditTransaction],
   );
 
   const onDelete = useCallback(() => {
@@ -89,10 +91,11 @@ const EditTransactionScreen: React.FC = () => {
 
     openDeleteConfirm({
       onConfirm: () => {
+        trackDeleteTransaction(id);
         deleteTransaction(id, { onSuccess: () => router.back() });
       },
     });
-  }, [id, openDeleteConfirm, deleteTransaction, router]);
+  }, [id, openDeleteConfirm, deleteTransaction, router, trackDeleteTransaction]);
 
   if (isLoading) {
     return (

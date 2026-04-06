@@ -7,6 +7,8 @@ A minimal, fast expense tracker built with React Native and Expo.
 ---
 
 ## App Walkthrough
+> When you first create an account, I pre-seed a transaction for last week of a salary credit :)
+
 https://github.com/user-attachments/assets/8bb5f2d3-0c22-45e9-ba3b-0e7e309f2992
 
 ### Built with AI Assistance
@@ -19,9 +21,10 @@ The architecture and core idea are 100% my own. AI agents (Claude, Copilot) + CL
 
 - **Expo** — React Native framework
 - **Performance** — `React.memo`, `useCallback`, `useMemo` on every component
-- **Data** — Supabase + TanStack Query
+- **Data** — Supabase + TanStack Query for deduplication n caching 
 - **UI** — Portal system for bottom sheets, Neo-Brutalism design system
 - **Forms** — Zod + React Hook Form
+- **Analytics** — Using simple db analytics table to track how you use my app 👀 
 >Learnt these architectural practices during my freelancing + internships
 
 ---
@@ -47,9 +50,3 @@ Powered by **Supabase** (PostgreSQL)
 - `profiles` — User onboarding state, current/longest spending streaks
 - `transactions` — Income/expense entries with 8 categories, timestamps, notes
 - `monthly_budgets` — Per-month spend limits (one budget per user per month)
-
-**Demo Login**
-
-To see a pre-seeded user with transaction history:
-- Email: `dhruvlohar09@gmail.com`
-- OTP: Enter any number (magic links enabled)
