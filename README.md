@@ -7,7 +7,7 @@ A minimal, fast expense tracker built with React Native and Expo.
 ---
 
 ## App Walkthrough
-
+https://github.com/user-attachments/assets/8bb5f2d3-0c22-45e9-ba3b-0e7e309f2992
 
 ### Built with AI Assistance
 
