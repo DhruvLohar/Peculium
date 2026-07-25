@@ -29,7 +29,6 @@ const WeeklyComparison: React.FC = () => {
     let lastP = total === 0 ? 50 : (lastWeek.amount / total) * 100;
     let currentP = total === 0 ? 50 : (thisWeek.amount / total) * 100;
     
-    // Cap at 75% max to prevent extreme visual imbalance
     const MAX_PERCENT = 60;
     const MIN_PERCENT = 40;
     
@@ -122,7 +121,7 @@ const WeeklyComparison: React.FC = () => {
       </View>
 
       {/* Tug of War Visualization */}
-      <View className="overflow-hidden" style={{ height: 360 }}>
+      <View className="overflow-hidden" style={{ height: 400 }}>
         {/* TOP HALF: Last Week */}
         <View
           className="bg-zinc-900 w-full flex-col justify-between p-5"

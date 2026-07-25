@@ -2,12 +2,12 @@ import { create } from 'zustand';
 
 export interface BottomSheetEntry {
   isOpen: boolean;
-  args: Record<string, unknown>;
+  args: object;
 }
 
 interface BottomSheetStore {
   sheets: Record<string, BottomSheetEntry>;
-  open: (id: string, args?: Record<string, unknown>) => void;
+  open: (id: string, args?: object) => void;
   close: (id: string) => void;
   register: (id: string) => void;
   unregister: (id: string) => void;

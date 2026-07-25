@@ -15,6 +15,7 @@ import {
   TRANSACTION_FILTERS_SHEET_ID,
   TransactionFiltersSheet,
   type TransactionFilterArgs,
+  type LastNDays,
 } from '@/components/bottomsheets/TransactionFilters';
 import { useInfiniteTransactions } from '@/hooks/useTransactions';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
@@ -66,6 +67,7 @@ const HistoryScreen: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterOption>('ALL');
   const [sheetType, setSheetType] = useState<TransactionType | null>(null);
   const [sheetCategories, setSheetCategories] = useState<TransactionCategory[]>([]);
+  const [sheetLastNDays, setSheetLastNDays] = useState<LastNDays>(null);
 
   const { open: openFilters } = useBottomSheet<TransactionFilterArgs>(TRANSACTION_FILTERS_SHEET_ID);
 
@@ -93,9 +95,10 @@ const HistoryScreen: React.FC = () => {
   );
 
   const handleApplyFilters = useCallback(
-    ({ type, categories }: { type: TransactionType | null; categories: TransactionCategory[] }) => {
+    ({ type, categories, lastNDays }: { type: TransactionType | null; categories: TransactionCategory[]; lastNDays: LastNDays }) => {
       setSheetType(type);
       setSheetCategories(categories);
+      setSheetLastNDays(lastNDays);
     },
     [],
   );
@@ -105,8 +108,9 @@ const HistoryScreen: React.FC = () => {
       onApply: handleApplyFilters,
       currentType: sheetType,
       currentCategories: sheetCategories,
+      currentLastNDays: sheetLastNDays,
     });
-  }, [openFilters, handleApplyFilters, sheetType, sheetCategories]);
+  }, [openFilters, handleApplyFilters, sheetType, sheetCategories, sheetLastNDays]);
 
   const filtered = useMemo(() => {
     let result = allTransactions;
@@ -128,6 +132,13 @@ const HistoryScreen: React.FC = () => {
       result = result.filter((t) => sheetCategories.includes(t.category));
     }
 
+    if (sheetLastNDays) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - sheetLastNDays);
+      cutoff.setHours(0, 0, 0, 0);
+      result = result.filter((t) => new Date(t.transaction_date) >= cutoff);
+    }
+
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -138,9 +149,19 @@ const HistoryScreen: React.FC = () => {
     }
 
     return result;
-  }, [allTransactions, activeFilter, sheetType, sheetCategories, search]);
+  }, [allTransactions, activeFilter, sheetType, sheetCategories, sheetLastNDays, search]);
 
   const groups = useMemo(() => groupByDate(filtered), [filtered]);
+
+  const { totalIncome, totalExpense } = useMemo(() => {
+    let inc = 0;
+    let exp = 0;
+    for (const t of filtered) {
+      if (t.type === 'INCOME') inc += t.amount;
+      else exp += t.amount;
+    }
+    return { totalIncome: inc, totalExpense: exp };
+  }, [filtered]);
 
   const handleCardPress = useCallback((id: string) => {
     router.push(`/transaction/edit?id=${id}`);
@@ -169,7 +190,7 @@ const HistoryScreen: React.FC = () => {
 
   return (
     <Container>
-      <View className="pt-8 pb-10">
+      <View className="pt-8 pb-4">
         <View className="items-start mb-4">
           <CustomText variant="h2">
             Transactions
@@ -181,6 +202,24 @@ const HistoryScreen: React.FC = () => {
         <TransactionSearchBar value={search} onChangeText={setSearch} onFilterPress={handleOpenFilters} />
         <View className="mt-6">
           <TransactionFilterBar active={activeFilter} onChange={setActiveFilter} />
+        </View>
+        <View className="flex-row mt-4">
+
+          <CustomText variant="h6" className="text-md font-sans-bold">
+            NET :{" "}
+          </CustomText>
+          
+          <CustomText variant="h6" className="text-md font-sans-bold text-green-500">
+            +₹{totalIncome.toLocaleString('en-IN')}
+          </CustomText>
+
+          <CustomText variant="h6" className="text-md font-sans-bold">
+            {" "};{" "}
+          </CustomText>
+          
+          <CustomText variant="h6" className="text-md font-sans-bold text-red-500">
+            -₹{totalExpense.toLocaleString('en-IN')}
+          </CustomText>
         </View>
       </View>
 

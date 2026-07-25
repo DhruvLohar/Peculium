@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import supabase from '../utils/supabase';
+import type { Database } from '../utils/database.types';
+
+type TransactionRow = Database['public']['Tables']['transactions']['Row'];
 
 interface MicroSpendResult {
-  bleedTxns: number[];
+  bleedTxns: TransactionRow[];
   totalBleed: number;
   isLoading: boolean;
   isRefetching: boolean;
@@ -27,20 +30,20 @@ export const useMicroSpend = (threshold: number): MicroSpendResult => {
 
       const { data, error } = await supabase
         .from('transactions')
-        .select('amount')
+        .select('*')
         .eq('user_id', user.id)
         .eq('type', 'EXPENSE')
         .gte('transaction_date', start)
         .lt('transaction_date', end);
 
       if (error) throw new Error(error.message);
-      return (data ?? []).map((t) => t.amount);
+      return (data ?? []) as TransactionRow[];
     },
   });
 
   const { bleedTxns, totalBleed } = useMemo(() => {
-    const filtered = (query.data ?? []).filter((amount) => amount <= threshold);
-    const sum = filtered.reduce((acc, curr) => acc + curr, 0);
+    const filtered = (query.data ?? []).filter((t) => t.amount <= threshold);
+    const sum = filtered.reduce((acc, curr) => acc + curr.amount, 0);
     return { bleedTxns: filtered, totalBleed: sum };
   }, [query.data, threshold]);
 

@@ -1,11 +1,16 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
+import { useRouter } from 'expo-router';
 import CustomText from '@/components/atoms/CustomText';
 import Slider from '@/components/atoms/Slider';
 import { useMicroSpend } from '@/hooks/useMicroSpend';
 import { getThemeColors } from '@/utils/themeColors';
+import { CATEGORY_CONFIG } from '@/utils/categoryConfig';
+import type { Database } from '@/utils/database.types';
+
+type TransactionCategory = Database['public']['Enums']['transaction_category'];
 
 const MIN = 100;
 const MAX = 800;
@@ -17,10 +22,15 @@ const AnalyzeMicroSpend: React.FC = () => {
   const { bleedTxns, totalBleed } = useMicroSpend(threshold);
   const { colorScheme } = useColorScheme();
   const colors = getThemeColors(colorScheme === 'dark');
+  const router = useRouter();
 
   const handleValueChange = useCallback((value: number) => {
     setThreshold(value);
   }, []);
+
+  const handleCardPress = useCallback((id: string) => {
+    router.push(`/transaction/edit?id=${id}`);
+  }, [router]);
 
   const formattedTotal = useMemo(
     () => totalBleed.toLocaleString('en-IN'),
@@ -67,13 +77,20 @@ const AnalyzeMicroSpend: React.FC = () => {
             </View>
           ) : (
             <View className="flex-row flex-wrap gap-1">
-              {bleedTxns.map((_, i) => (
-                <View
-                  key={i}
-                  style={{ width: 14, height: 14, boxShadow: `1px 1px 0 0 ${colors.border}` }}
-                  className="bg-destructive border border-border"
-                />
-              ))}
+              {bleedTxns.map((txn) => {
+                const config = CATEGORY_CONFIG[txn.category as TransactionCategory] ?? CATEGORY_CONFIG.Other;
+                return (
+                  <TouchableOpacity
+                    key={txn.id}
+                    onPress={() => handleCardPress(txn.id)}
+                    activeOpacity={0.7}
+                    style={{ width: 28, height: 28, backgroundColor: config.bg, boxShadow: `1px 1px 0 0 ${colors.border}` }}
+                    className="items-center justify-center border border-border"
+                  >
+                    <MaterialIcons name={config.icon as any} size={14} color="#fff" />
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           )}
         </ScrollView>

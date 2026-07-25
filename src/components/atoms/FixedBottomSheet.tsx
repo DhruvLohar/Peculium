@@ -20,14 +20,14 @@ const SPRING_CONFIG = {
   mass: 0.8,
 };
 
-interface FixedBottomSheetProps<TArgs extends Record<string, unknown> = Record<string, unknown>> {
+interface FixedBottomSheetProps<TArgs extends object = object> {
   id: string;
   children: (args: TArgs) => React.ReactNode;
   /** Max sheet height as fraction of screen height. Default: 0.6 */
   maxHeight?: number;
 }
 
-function FixedBottomSheetInner<TArgs extends Record<string, unknown> = Record<string, unknown>>({
+function FixedBottomSheetInner<TArgs extends object = object>({
   id,
   children,
   maxHeight = 0.6,

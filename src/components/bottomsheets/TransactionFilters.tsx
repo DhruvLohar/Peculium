@@ -11,10 +11,14 @@ import type { TransactionCategory, TransactionType } from '@/hooks/useTransactio
 
 export const TRANSACTION_FILTERS_SHEET_ID = 'transaction-filters';
 
+export const LAST_N_DAYS_OPTIONS = [3, 14, 30, 60, 90] as const;
+export type LastNDays = (typeof LAST_N_DAYS_OPTIONS)[number] | null;
+
 export interface TransactionFilterArgs {
-  onApply: (filters: { type: TransactionType | null; categories: TransactionCategory[] }) => void;
+  onApply: (filters: { type: TransactionType | null; categories: TransactionCategory[]; lastNDays: LastNDays }) => void;
   currentType?: TransactionType | null;
   currentCategories?: TransactionCategory[];
+  currentLastNDays?: LastNDays;
 }
 
 // ─── Chip ────────────────────────────────────────────────────────────────────
@@ -87,10 +91,12 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
   onApply,
   currentType = null,
   currentCategories = [],
+  currentLastNDays = null,
 }) => {
   const { close } = useBottomSheet(TRANSACTION_FILTERS_SHEET_ID);
   const [selectedType, setSelectedType] = useState<TransactionType | null>(currentType);
   const [selectedCategories, setSelectedCategories] = useState<TransactionCategory[]>(currentCategories);
+  const [selectedLastNDays, setSelectedLastNDays] = useState<LastNDays>(currentLastNDays);
 
   const toggleType = useCallback((type: TransactionType) => {
     setSelectedType((prev) => (prev === type ? null : type));
@@ -102,15 +108,20 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
     );
   }, []);
 
+  const toggleLastNDays = useCallback((n: (typeof LAST_N_DAYS_OPTIONS)[number]) => {
+    setSelectedLastNDays((prev) => (prev === n ? null : n));
+  }, []);
+
   const handleClear = useCallback(() => {
     setSelectedType(null);
     setSelectedCategories([]);
+    setSelectedLastNDays(null);
   }, []);
 
   const handleApply = useCallback(() => {
-    onApply({ type: selectedType, categories: selectedCategories });
+    onApply({ type: selectedType, categories: selectedCategories, lastNDays: selectedLastNDays });
     close();
-  }, [onApply, close, selectedType, selectedCategories]);
+  }, [onApply, close, selectedType, selectedCategories, selectedLastNDays]);
 
   return (
     <View style={{ flex: 1, paddingHorizontal: 20 }}>
@@ -125,6 +136,21 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
                 label={type}
                 selected={selectedType === type}
                 onPress={() => toggleType(type)}
+              />
+            ))}
+          </View>
+        </View>
+
+        {/* Last N Days */}
+        <View style={{ marginBottom: 24 }}>
+          <SectionLabel>Time period</SectionLabel>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            {LAST_N_DAYS_OPTIONS.map((n) => (
+              <Chip
+                key={n}
+                label={`Last ${n} days`}
+                selected={selectedLastNDays === n}
+                onPress={() => toggleLastNDays(n)}
               />
             ))}
           </View>
