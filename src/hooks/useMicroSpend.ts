@@ -34,7 +34,8 @@ export const useMicroSpend = (threshold: number): MicroSpendResult => {
         .eq('user_id', user.id)
         .eq('type', 'EXPENSE')
         .gte('transaction_date', start)
-        .lt('transaction_date', end);
+        .lt('transaction_date', end)
+        .order('amount', { ascending: false });
 
       if (error) throw new Error(error.message);
       return (data ?? []) as TransactionRow[];

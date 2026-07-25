@@ -206,21 +206,21 @@ const EditTransactionScreen: React.FC = () => {
             <View className="w-[48%]">
               <Button 
                 size="lg" 
-                variant="default" 
-                onPress={handleSubmit(onUpdate)} 
-                disabled={isUpdating || isDeleting}
-              >
-                {isUpdating ? 'Updating...' : 'Update'}
-              </Button>
-            </View>
-            <View className="w-[48%]">
-              <Button 
-                size="lg" 
                 variant="destructive" 
                 onPress={onDelete} 
                 disabled={isUpdating || isDeleting}
               >
                 {isDeleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </View>
+            <View className="w-[48%]">
+              <Button 
+                size="lg" 
+                variant="default" 
+                onPress={handleSubmit(onUpdate)} 
+                disabled={isUpdating || isDeleting}
+              >
+                {isUpdating ? 'Updating...' : 'Update'}
               </Button>
             </View>
           </View>

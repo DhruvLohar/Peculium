@@ -31,7 +31,7 @@ const InsightsScreen: React.FC = () => {
           />
         }
       >
-        <ScreenHeader title="Insights" subtitle="Where your money actually goes" />
+        <ScreenHeader title="Insights" subtitle="Where your money actually goes" showBackButton={false} />
         <View className="gap-6 pb-10">
           <AnalyzeCategorySpend />
           <WeeklyComparison />
