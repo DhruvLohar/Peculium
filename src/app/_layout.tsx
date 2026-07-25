@@ -2,7 +2,7 @@ import '../../global.css';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { ArchivoBlack_400Regular } from '@expo-google-fonts/archivo-black';
@@ -23,6 +23,7 @@ import ThemeProvider from '@/components/providers/ThemeProvider';
 
 const queryClient = new QueryClient();
 
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
@@ -31,11 +32,13 @@ function RootLayoutNav() {
   const authState = useAuthState();
 
   useEffect(() => {
+    // 1. Wait until auth state is fully resolved
     if (authState === 'loading') return;
 
     const inAuth = segments[0] === '(auth)';
     const inOnboarding = segments[0] === 'onboarding';
 
+    // 2. Handle routing based on auth state
     if (authState === 'unauthenticated' && !inAuth) {
       router.replace('/(auth)');
     } else if (authState === 'needs-onboarding' && !inOnboarding) {
@@ -43,6 +46,11 @@ function RootLayoutNav() {
     } else if (authState === 'authenticated' && inAuth) {
       router.replace('/(tabs)');
     }
+
+    // 3. Hide splash screen AFTER routing decision is made
+    requestAnimationFrame(() => {
+      SplashScreen.hideAsync();
+    });
   }, [authState, segments, router]);
 
   return (
@@ -75,21 +83,18 @@ export default function RootLayout() {
     SpaceGrotesk_700Bold,
   });
 
-  const hideSplashScreen = useCallback(async () => {
-    await SplashScreen.hideAsync();
-  }, []);
-
   useEffect(() => {
     if (loaded || error) {
-      void hideSplashScreen();
       trackAppOpened({ platform: Platform.OS, app_version: '1.0.0' });
     }
-  }, [error, hideSplashScreen, loaded, trackAppOpened]);
+  }, [error, loaded, trackAppOpened]);
 
+  // Prevent rendering until fonts are loaded
   if (!loaded && !error) {
     return null;
   }
 
+  // Once fonts are loaded, RootLayoutNav mounts, evaluates auth, and then drops the splash screen
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
