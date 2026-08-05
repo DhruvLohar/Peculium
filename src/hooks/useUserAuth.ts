@@ -46,11 +46,12 @@ export const useUserAuth = () => {
         .single();
 
       if (profileError || !profile) {
-        await supabase.from('profiles').upsert({
+        const { error: upsertError } = await supabase.from('profiles').upsert({
           id: userId,
           has_onboarded: false,
           updated_at: new Date().toISOString(),
         });
+        if (upsertError) throw new Error(upsertError.message);
         return { needsOnboarding: true };
       }
 
@@ -89,11 +90,15 @@ export const useUserAuth = () => {
  * Checks the profiles table to determine if onboarding is needed
  */
 export const resolveAuthState = async (userId: string): Promise<AuthState> => {
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('has_onboarded')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
 
   return profile?.has_onboarded ? 'authenticated' : 'needs-onboarding';
 };
@@ -105,20 +110,31 @@ export const useAuthState = () => {
   const [authState, setAuthState] = useState<AuthState>('loading');
 
   const updateAuthState = useCallback(async (userId: string) => {
-    const state = await resolveAuthState(userId);
-    setAuthState(state);
+    try {
+      const state = await resolveAuthState(userId);
+      setAuthState(state);
+    } catch (error) {
+      console.error('Failed to resolve auth state:', error);
+      setAuthState('authenticated');
+    }
   }, []);
 
   useEffect(() => {
     // Bootstrap: check for an existing session immediately so we don't
     // rely solely on onAuthStateChange (which can race with mutations).
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        updateAuthState(session.user.id);
-      } else {
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        if (session) {
+          updateAuthState(session.user.id);
+        } else {
+          setAuthState('unauthenticated');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to read auth session:', error);
         setAuthState('unauthenticated');
-      }
-    });
+      });
 
     const {
       data: { subscription },

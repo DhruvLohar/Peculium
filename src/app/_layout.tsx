@@ -24,7 +24,7 @@ import ThemeProvider from '@/components/providers/ThemeProvider';
 const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 function RootLayoutNav() {
   const router = useRouter();
@@ -32,25 +32,23 @@ function RootLayoutNav() {
   const authState = useAuthState();
 
   useEffect(() => {
-    // 1. Wait until auth state is fully resolved
     if (authState === 'loading') return;
 
-    const inAuth = segments[0] === '(auth)';
-    const inOnboarding = segments[0] === 'onboarding';
+    const rootSegment = segments[0];
 
-    // 2. Handle routing based on auth state
-    if (authState === 'unauthenticated' && !inAuth) {
-      router.replace('/(auth)');
-    } else if (authState === 'needs-onboarding' && !inOnboarding) {
-      router.replace('/onboarding');
-    } else if (authState === 'authenticated' && inAuth) {
-      router.replace('/(tabs)');
+    try {
+      if (authState === 'unauthenticated' && rootSegment !== '(auth)') {
+        router.replace('/(auth)');
+      } else if (authState === 'needs-onboarding' && rootSegment !== 'onboarding') {
+        router.replace('/onboarding');
+      } else if (authState === 'authenticated' && (rootSegment === '(auth)' || rootSegment == null)) {
+        router.replace('/(tabs)');
+      }
+    } catch (error) {
+      console.error('Failed to route after auth resolution:', error);
+    } finally {
+      void SplashScreen.hideAsync();
     }
-
-    // 3. Hide splash screen AFTER routing decision is made
-    requestAnimationFrame(() => {
-      SplashScreen.hideAsync();
-    });
   }, [authState, segments, router]);
 
   return (
