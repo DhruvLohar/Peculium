@@ -14,7 +14,7 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { useAuthState } from '@/hooks/useUserAuth';
 import { useDeviceId } from '@/hooks/useDeviceId';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -30,9 +30,10 @@ function RootLayoutNav() {
   const router = useRouter();
   const segments = useSegments();
   const authState = useAuthState();
+  const navigationState = useRootNavigationState();
 
   useEffect(() => {
-    if (authState === 'loading') return;
+    if (authState === 'loading' || !navigationState?.key) return;
 
     const rootSegment = segments[0];
 
@@ -49,7 +50,7 @@ function RootLayoutNav() {
     } finally {
       void SplashScreen.hideAsync();
     }
-  }, [authState, segments, router]);
+  }, [authState, segments, router, navigationState?.key]);
 
   return (
     <Stack>
