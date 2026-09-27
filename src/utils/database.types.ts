@@ -183,6 +183,20 @@ export type Database = {
         | "Salary"
         | "Health"
         | "Other"
+        | "Drinks"
+        | "Snacks"
+        | "Subscriptions"
+        | "Entertainment"
+        | "Shopping"
+        | "Transport"
+        | "Bills"
+        | "PersonalCare"
+        | "Fitness"
+        | "Freelance"
+        | "Refund"
+        | "Allowance"
+        | "Gifts"
+        | "Investments"
       transaction_type: "INCOME" | "EXPENSE"
     }
     CompositeTypes: {
@@ -334,6 +348,20 @@ export const Constants = {
         "Salary",
         "Health",
         "Other",
+        "Drinks",
+        "Snacks",
+        "Subscriptions",
+        "Entertainment",
+        "Shopping",
+        "Transport",
+        "Bills",
+        "PersonalCare",
+        "Fitness",
+        "Freelance",
+        "Refund",
+        "Allowance",
+        "Gifts",
+        "Investments",
       ],
       transaction_type: ["INCOME", "EXPENSE"],
     },

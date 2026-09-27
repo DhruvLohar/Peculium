@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Constants } from './database.types';
 
 export const emailSchema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -27,10 +28,9 @@ export const addTransactionSchema = z.object({
   amount: z.coerce
     .number({ invalid_type_error: 'Enter a valid amount' })
     .positive('Amount must be greater than 0'),
-  category: z.enum(
-    ['Home', 'Groceries', 'Rent', 'Food', 'Travel', 'Salary', 'Health', 'Other'] as const,
-    { required_error: 'Please select a category' },
-  ),
+  category: z.enum(Constants.public.Enums.transaction_category, {
+    required_error: 'Please select a category',
+  }),
   transaction_date: z.string().min(1, 'Date is required'),
   notes: z.string().optional(),
 });

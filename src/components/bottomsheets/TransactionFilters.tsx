@@ -6,6 +6,7 @@ import Button from '@/components/atoms/Button';
 import FixedBottomSheet from '@/components/atoms/FixedBottomSheet';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { Constants } from '@/utils/database.types';
+import { CATEGORY_CONFIG } from '@/utils/categoryConfig';
 import { getThemeColors } from '@/utils/themeColors';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
 
@@ -163,7 +164,7 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
             {CATEGORIES.map((cat) => (
               <Chip
                 key={cat}
-                label={cat}
+                label={CATEGORY_CONFIG[cat]?.label ?? cat}
                 selected={selectedCategories.includes(cat)}
                 onPress={() => toggleCategory(cat)}
               />

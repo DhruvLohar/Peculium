@@ -12,7 +12,21 @@ export const TREEMAP_COLORS: Record<TransactionCategory, string> = {
   Home:      '#60a5fa', // Blue
   Salary:    '#22c55e', // Green
   Health:    '#f472b6', // Pink
-  Other:     '#d4d4d8', // Gray
+  Drinks:        '#a16207', // Coffee
+  Snacks:        '#fdba74', // Peach
+  Subscriptions: '#8b5cf6', // Violet
+  Entertainment: '#e879f9', // Fuchsia
+  Shopping:      '#f43f5e', // Rose
+  Transport:     '#2dd4bf', // Teal
+  Bills:         '#94a3b8', // Slate
+  PersonalCare:  '#f9a8d4', // Light Pink
+  Fitness:       '#84cc16', // Lime
+  Freelance:     '#10b981', // Emerald
+  Refund:        '#38bdf8', // Sky
+  Allowance:     '#fde047', // Light Yellow
+  Gifts:         '#fb7185', // Coral
+  Investments:   '#4ade80', // Mint
+  Other:         '#d4d4d8', // Gray
 };
 
 export interface CategorySpendItem {
