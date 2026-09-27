@@ -26,8 +26,7 @@ const TypeToggle: React.FC<TypeToggleProps> = ({ control }) => (
             variant={value === t.value ? 'default' : 'outline'}
             size="md"
             className="w-[48%]"
-            onPress={() => onChange(t.value)}
-          >
+            onPress={() => onChange(t.value)}>
             {t.label}
           </Button>
         ))}

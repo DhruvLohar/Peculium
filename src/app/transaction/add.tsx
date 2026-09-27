@@ -13,7 +13,11 @@ import Button from '@/components/atoms/Button';
 import CustomText from '@/components/atoms/CustomText';
 import TypeToggle from '@/components/AddTransaction/TypeToggle';
 import CategoryGrid from '@/components/AddTransaction/CategoryGrid';
-import { addTransactionSchema, type AddTransactionFormValues } from '@/utils/schemas';
+import {
+  addTransactionSchema,
+  type AddTransactionFormValues,
+  type AddTransactionFormOutput,
+} from '@/utils/schemas';
 import { useAddTransaction } from '@/hooks/useTransactions';
 import { useUpdateStreak } from '@/hooks/useStreak';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -28,7 +32,7 @@ const AddTransactionScreen: React.FC = () => {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<AddTransactionFormValues>({
+  } = useForm<AddTransactionFormValues, unknown, AddTransactionFormOutput>({
     resolver: zodResolver(addTransactionSchema),
     defaultValues: {
       type: 'EXPENSE',
@@ -42,7 +46,7 @@ const AddTransactionScreen: React.FC = () => {
   const currentType = useWatch({ control, name: 'type' });
 
   const onSubmit = useCallback(
-    (values: AddTransactionFormValues) => {
+    (values: AddTransactionFormOutput) => {
       addTransaction(
         {
           amount: values.amount,
@@ -51,109 +55,126 @@ const AddTransactionScreen: React.FC = () => {
           notes: values.notes || undefined,
           transaction_date: new Date(values.transaction_date).toISOString(),
         },
-        { onSuccess: () => { trackAddTransaction({ type: values.type, category: values.category, amount: values.amount }); updateStreak(); router.back(); } },
+        {
+          onSuccess: () => {
+            trackAddTransaction({
+              type: values.type,
+              category: values.category,
+              amount: values.amount,
+            });
+            updateStreak();
+            router.back();
+          },
+        }
       );
     },
-    [addTransaction, router, updateStreak, trackAddTransaction],
+    [addTransaction, router, updateStreak, trackAddTransaction]
   );
 
   return (
     <Container>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-        <ScreenHeader title="Add Transaction" subtitle="Track your income and expenses" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          <ScreenHeader title="Add Transaction" subtitle="Track your income and expenses" />
 
-        {/* Type Toggle */}
-        <TypeToggle control={control} />
+          {/* Type Toggle */}
+          <TypeToggle control={control} />
 
-        {/* Amount */}
-        <View className="mt-8 mb-2">
-          <Controller
-            control={control}
-            name="amount"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <AmountInput
-                value={value ? String(value) : ''}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                isInvalid={!!errors.amount}
-              />
+          {/* Amount */}
+          <View className="mb-2 mt-8">
+            <Controller
+              control={control}
+              name="amount"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <AmountInput
+                  value={value ? String(value) : ''}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  isInvalid={!!errors.amount}
+                />
+              )}
+            />
+            {errors.amount ? (
+              <CustomText className="mt-1 text-xs text-destructive">
+                {errors.amount.message}
+              </CustomText>
+            ) : (
+              <CustomText variant="muted" className="mt-1.5 text-[11px] tracking-[1px]">
+                ENTER TRANSACTION AMOUNT
+              </CustomText>
             )}
-          />
-          {errors.amount ? (
-            <CustomText className="text-xs text-destructive mt-1">
-              {errors.amount.message}
-            </CustomText>
-          ) : (
-            <CustomText variant="muted" className="text-[11px] tracking-[1px] mt-1.5">
-              ENTER TRANSACTION AMOUNT
-            </CustomText>
+          </View>
+
+          {/* Category */}
+          <View className="mb-2 mt-6">
+            <Label className="mb-3">SELECT CATEGORY</Label>
+            <CategoryGrid control={control} type={currentType} />
+            {errors.category && (
+              <CustomText className="mt-1.5 text-xs text-destructive">
+                {errors.category.message}
+              </CustomText>
+            )}
+          </View>
+
+          {/* Date & Time */}
+          <View className="mt-6">
+            <Controller
+              control={control}
+              name="transaction_date"
+              render={({ field: { value, onChange } }) => (
+                <DateTimeInput
+                  label="DATE & TIME"
+                  value={value}
+                  onChange={onChange}
+                  isInvalid={!!errors.transaction_date}
+                  errorMessage={errors.transaction_date?.message}
+                />
+              )}
+            />
+          </View>
+
+          {/* Notes */}
+          <View className="mt-4 gap-3">
+            <Label>NOTES</Label>
+            <Controller
+              control={control}
+              name="notes"
+              render={({ field: { value, onChange, onBlur } }) => (
+                <Input
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Optional description..."
+                  multiline
+                  numberOfLines={3}
+                  className="h-20 pt-3"
+                  style={{ textAlignVertical: 'top' }}
+                />
+              )}
+            />
+          </View>
+
+          {/* Error from mutation */}
+          {error && (
+            <CustomText className="mt-2 text-xs text-destructive">{error.message}</CustomText>
           )}
-        </View>
 
-        {/* Category */}
-        <View className="mt-6 mb-2">
-          <Label className="mb-3">SELECT CATEGORY</Label>
-          <CategoryGrid control={control} type={currentType} />
-          {errors.category && (
-            <CustomText className="text-xs text-destructive mt-1.5">
-              {errors.category.message}
-            </CustomText>
-          )}
-        </View>
-
-        {/* Date & Time */}
-        <View className="mt-6">
-          <Controller
-            control={control}
-            name="transaction_date"
-            render={({ field: { value, onChange } }) => (
-              <DateTimeInput
-                label="DATE & TIME"
-                value={value}
-                onChange={onChange}
-                isInvalid={!!errors.transaction_date}
-                errorMessage={errors.transaction_date?.message}
-              />
-            )}
-          />
-        </View>
-
-        {/* Notes */}
-        <View className="mt-4 gap-3">
-          <Label>NOTES</Label>
-          <Controller
-            control={control}
-            name="notes"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <Input
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder="Optional description..."
-                multiline
-                numberOfLines={3}
-                className="h-20 pt-3"
-                style={{ textAlignVertical: 'top' }}
-              />
-            )}
-          />
-        </View>
-
-        {/* Error from mutation */}
-        {error && (
-          <CustomText className="text-xs text-destructive mt-2">
-            {error.message}
-          </CustomText>
-        )}
-
-        {/* Submit */}
-        <View className="mt-8 mb-10">
-          <Button size="lg" variant="default" onPress={handleSubmit(onSubmit)} disabled={isPending}>
-            {isPending ? 'Saving...' : 'Save Transaction'}
-          </Button>
-        </View>
-      </ScrollView>
+          {/* Submit */}
+          <View className="mb-10 mt-8">
+            <Button
+              size="lg"
+              variant="default"
+              onPress={handleSubmit(onSubmit)}
+              disabled={isPending}>
+              {isPending ? 'Saving...' : 'Save Transaction'}
+            </Button>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </Container>
   );

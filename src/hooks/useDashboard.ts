@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 import type { Database } from '../utils/database.types';
 
 type TransactionRow = Database['public']['Tables']['transactions']['Row'];
@@ -25,15 +25,14 @@ export const useDashboard = (filters?: DashboardFilters) => {
   const query = useQuery({
     queryKey: ['dashboard', filters],
     queryFn: async (): Promise<TransactionRow[]> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       let query = supabase
         .from('transactions')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED');
 
       // Month + year filter: gte start of month, lt start of next month
       if (filters?.month && filters?.year) {

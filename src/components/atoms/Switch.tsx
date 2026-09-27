@@ -1,10 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { Pressable, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const AnimatedView = Animated.View;
 
@@ -41,13 +37,12 @@ const Switch: React.FC<SwitchProps> = ({ value, onValueChange, disabled = false 
   return (
     <Pressable onPress={handlePress} disabled={disabled}>
       <View
-        className={`w-14 h-7 border-2 border-border ${
+        className={`h-7 w-14 border-2 border-border ${
           value ? 'bg-primary' : 'bg-muted'
         } ${disabled ? 'opacity-50' : ''}`}
-        style={{ boxShadow: '2px 2px 0 0 var(--border)' }}
-      >
+        style={{ boxShadow: '2px 2px 0 0 var(--border)' }}>
         <AnimatedView
-          className="w-5 h-5 bg-foreground border-2 border-border absolute top-[1px] left-[1px]"
+          className="absolute left-[1px] top-[1px] h-5 w-5 border-2 border-border bg-foreground"
           style={thumbStyle}
         />
       </View>

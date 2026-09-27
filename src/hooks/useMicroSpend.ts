@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 import type { Database } from '../utils/database.types';
 
 type TransactionRow = Database['public']['Tables']['transactions']['Row'];
@@ -20,9 +20,7 @@ export const useMicroSpend = (threshold: number): MicroSpendResult => {
   const query = useQuery({
     queryKey: ['micro-spend', monthYear],
     queryFn: async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -32,6 +30,7 @@ export const useMicroSpend = (threshold: number): MicroSpendResult => {
         .from('transactions')
         .select('*')
         .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED')
         .eq('type', 'EXPENSE')
         .gte('transaction_date', start)
         .lt('transaction_date', end)

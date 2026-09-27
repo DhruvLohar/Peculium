@@ -29,9 +29,12 @@ const InsightsScreen: React.FC = () => {
             colors={[colors.foreground]}
             tintColor={colors.foreground}
           />
-        }
-      >
-        <ScreenHeader title="Insights" subtitle="Where your money actually goes" showBackButton={false} />
+        }>
+        <ScreenHeader
+          title="Insights"
+          subtitle="Where your money actually goes"
+          showBackButton={false}
+        />
         <View className="gap-6 pb-10">
           <AnalyzeCategorySpend />
           <WeeklyComparison />

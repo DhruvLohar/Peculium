@@ -102,12 +102,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 
   const containerClass = useMemo(
     () => cn(progressVariants({ variant, size }), className),
-    [variant, size, className],
+    [variant, size, className]
   );
 
   const indicatorClass = useMemo(
     () => cn(progressIndicatorVariants({ color }), indicatorClassName),
-    [color, indicatorClassName],
+    [color, indicatorClassName]
   );
 
   return (

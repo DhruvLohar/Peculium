@@ -7,8 +7,18 @@ import { useWeeklyComparison } from '@/hooks/useWeeklyComparison';
 import { getThemeColors } from '@/utils/themeColors';
 
 const MONTH_NAMES = [
-  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC',
 ];
 
 const WeeklyComparison: React.FC = () => {
@@ -28,10 +38,10 @@ const WeeklyComparison: React.FC = () => {
     const total = lastWeek.amount + thisWeek.amount;
     let lastP = total === 0 ? 50 : (lastWeek.amount / total) * 100;
     let currentP = total === 0 ? 50 : (thisWeek.amount / total) * 100;
-    
+
     const MAX_PERCENT = 60;
     const MIN_PERCENT = 40;
-    
+
     if (lastP > MAX_PERCENT) {
       lastP = MAX_PERCENT;
       currentP = MIN_PERCENT;
@@ -39,10 +49,11 @@ const WeeklyComparison: React.FC = () => {
       currentP = MAX_PERCENT;
       lastP = MIN_PERCENT;
     }
-    
+
     const diff = thisWeek.amount - lastWeek.amount;
-    const diffP = lastWeek.amount === 0 ? 100 : Math.round(Math.abs(diff) / lastWeek.amount * 100);
-    
+    const diffP =
+      lastWeek.amount === 0 ? 100 : Math.round((Math.abs(diff) / lastWeek.amount) * 100);
+
     return {
       lastPercent: lastP,
       currentPercent: currentP,
@@ -66,12 +77,12 @@ const WeeklyComparison: React.FC = () => {
   // Format week date range
   const formatWeekLabel = useMemo(() => {
     if (!lastWeek || !thisWeek) return { last: '---', current: '---' };
-    
+
     const lastStart = new Date(lastWeek.startDate);
     const lastEnd = new Date(lastWeek.endDate);
     const thisStart = new Date(thisWeek.startDate);
     const thisEnd = new Date(thisWeek.endDate);
-    
+
     return {
       last: `${MONTH_NAMES[lastStart.getMonth()]} ${lastStart.getDate()}-${lastEnd.getDate()}`,
       current: `${MONTH_NAMES[thisStart.getMonth()]} ${thisStart.getDate()}-${thisEnd.getDate()}`,
@@ -82,9 +93,8 @@ const WeeklyComparison: React.FC = () => {
     return (
       <View
         className="border border-border bg-card"
-        style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}
-      >
-        <View className="border-b border-border px-4 py-3 flex-row items-center justify-between">
+        style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}>
+        <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
           <View className="flex-row items-center gap-3">
             <MaterialIcons name="compare-arrows" size={20} color={colors.foreground} />
             <CustomText variant="label" className="text-xs tracking-widest">
@@ -92,7 +102,7 @@ const WeeklyComparison: React.FC = () => {
             </CustomText>
           </View>
         </View>
-        <View className="p-8 items-center">
+        <View className="items-center p-8">
           <CustomText variant="muted" className="text-xs tracking-widest">
             LOADING...
           </CustomText>
@@ -108,10 +118,9 @@ const WeeklyComparison: React.FC = () => {
   return (
     <View
       className="border border-border bg-card"
-      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}
-    >
+      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}>
       {/* Header */}
-      <View className="border-b border-border px-4 py-3 flex-row items-center justify-between">
+      <View className="flex-row items-center justify-between border-b border-border px-4 py-3">
         <View className="flex-row items-center gap-3">
           <MaterialIcons name="compare-arrows" size={20} color={colors.foreground} />
           <CustomText variant="label" className="text-xs tracking-widest">
@@ -124,37 +133,33 @@ const WeeklyComparison: React.FC = () => {
       <View className="overflow-hidden" style={{ height: 400 }}>
         {/* TOP HALF: Last Week */}
         <View
-          className="bg-zinc-900 w-full flex-col justify-between p-5"
-          style={{ flexBasis: `${lastPercent}%` }}
-        >
-          <View className="flex-row justify-between items-start">
+          className="w-full flex-col justify-between bg-zinc-900 p-5"
+          style={{ flexBasis: `${lastPercent}%` }}>
+          <View className="flex-row items-start justify-between">
             <CustomText
-              className="text-zinc-500 text-xs tracking-widest pt-2"
-              style={{ fontWeight: '900' }}
-            >
+              className="pt-2 text-xs tracking-widest text-zinc-500"
+              style={{ fontWeight: '900' }}>
               LAST WEEK
             </CustomText>
 
             {/* Delta Badge */}
             {!isEqual && (
               <View
-                className="bg-background border-2 border-border px-2 py-1"
-                style={{ boxShadow: `2px 2px 0 0 ${colors.border}` }}
-              >
+                className="border-2 border-border bg-background px-2 py-1"
+                style={{ boxShadow: `2px 2px 0 0 ${colors.border}` }}>
                 <View className="flex-row items-center gap-1">
                   <MaterialIcons
                     name={isOver ? 'arrow-upward' : 'arrow-downward'}
                     size={16}
                     color={isOver ? '#ef4444' : '#a3e635'}
                   />
-                  <CustomText className="text-foreground text-base" style={{ fontWeight: '900' }}>
+                  <CustomText className="text-base text-foreground" style={{ fontWeight: '900' }}>
                     {diffPercent}%
                   </CustomText>
                 </View>
                 <CustomText
-                  className="text-zinc-500 text-[10px] tracking-widest"
-                  style={{ fontWeight: '900' }}
-                >
+                  className="text-[10px] tracking-widest text-zinc-500"
+                  style={{ fontWeight: '900' }}>
                   {isOver ? 'MORE' : 'LESS'}
                 </CustomText>
               </View>
@@ -162,16 +167,14 @@ const WeeklyComparison: React.FC = () => {
 
             {isEqual && (
               <View
-                className="bg-background border-2 border-border px-2 py-1"
-                style={{ boxShadow: `2px 2px 0 0 ${colors.border}` }}
-              >
-                <CustomText className="text-foreground text-base" style={{ fontWeight: '900' }}>
+                className="border-2 border-border bg-background px-2 py-1"
+                style={{ boxShadow: `2px 2px 0 0 ${colors.border}` }}>
+                <CustomText className="text-base text-foreground" style={{ fontWeight: '900' }}>
                   0%
                 </CustomText>
                 <CustomText
-                  className="text-zinc-500 text-[10px] tracking-widest"
-                  style={{ fontWeight: '900' }}
-                >
+                  className="text-[10px] tracking-widest text-zinc-500"
+                  style={{ fontWeight: '900' }}>
                   MATCH
                 </CustomText>
               </View>
@@ -182,14 +185,12 @@ const WeeklyComparison: React.FC = () => {
             <CustomText
               className="text-zinc-300"
               style={{ fontSize: 48, fontWeight: '900', letterSpacing: -2, lineHeight: 56 }}
-              numberOfLines={1}
-            >
+              numberOfLines={1}>
               ₹{lastWeek?.amount.toLocaleString('en-IN') ?? '0'}
             </CustomText>
             <CustomText
-              className="text-zinc-600 text-xs tracking-wide mt-1"
-              style={{ fontWeight: '700' }}
-            >
+              className="mt-1 text-xs tracking-wide text-zinc-600"
+              style={{ fontWeight: '700' }}>
               {formatWeekLabel.last}
             </CustomText>
           </View>
@@ -197,27 +198,26 @@ const WeeklyComparison: React.FC = () => {
 
         {/* Dashed line separator */}
         <View
-          className="absolute w-full border-t-4 border-dashed border-border z-10"
+          className="absolute z-10 w-full border-t-4 border-dashed border-border"
           style={{ top: `${lastPercent}%` }}
         />
 
         {/* BOTTOM HALF: This Week */}
         <View
           className="w-full flex-col justify-between p-5"
-          style={{ flexBasis: `${currentPercent}%`, backgroundColor: currentBg }}
-        >
-          <View className="flex-row justify-between items-start pt-2">
+          style={{ flexBasis: `${currentPercent}%`, backgroundColor: currentBg }}>
+          <View className="flex-row items-start justify-between pt-2">
             <CustomText
               className="text-[10px] tracking-widest opacity-60"
-              style={{ fontWeight: '900', color: textColor }}
-            >
+              style={{ fontWeight: '900', color: textColor }}>
               THIS WEEK
             </CustomText>
             <View
               className="border-2 border-border px-2 py-0.5"
-              style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}
-            >
-              <CustomText className="text-xs tracking-wider" style={{ fontWeight: '900', color: '#000' }}>
+              style={{ backgroundColor: 'rgba(255,255,255,0.5)' }}>
+              <CustomText
+                className="text-xs tracking-wider"
+                style={{ fontWeight: '900', color: '#000' }}>
                 {msg}
               </CustomText>
             </View>
@@ -225,15 +225,19 @@ const WeeklyComparison: React.FC = () => {
 
           <View>
             <CustomText
-              style={{ fontSize: 48, fontWeight: '900', letterSpacing: -2, lineHeight: 56, color: textColor }}
-              numberOfLines={1}
-            >
+              style={{
+                fontSize: 48,
+                fontWeight: '900',
+                letterSpacing: -2,
+                lineHeight: 56,
+                color: textColor,
+              }}
+              numberOfLines={1}>
               ₹{thisWeek?.amount.toLocaleString('en-IN') ?? '0'}
             </CustomText>
             <CustomText
-              className="text-xs tracking-wide mt-1"
-              style={{ fontWeight: '700', color: textColor, opacity: 0.7 }}
-            >
+              className="mt-1 text-xs tracking-wide"
+              style={{ fontWeight: '700', color: textColor, opacity: 0.7 }}>
               {formatWeekLabel.current}
             </CustomText>
           </View>

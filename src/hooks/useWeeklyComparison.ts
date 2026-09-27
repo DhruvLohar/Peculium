@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 
 export interface WeeklySpending {
   label: string;
@@ -38,17 +38,15 @@ export const useWeeklyComparison = () => {
   return useQuery({
     queryKey: ['weekly-comparison'],
     queryFn: async (): Promise<{ thisWeek: WeeklySpending; lastWeek: WeeklySpending }> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const now = new Date();
-      
+
       // This week boundaries (Sunday to Saturday)
       const thisWeekStart = getWeekStart(now);
       const thisWeekEnd = getWeekEnd(now);
-      
+
       // Last week boundaries (7 days before this week)
       const lastWeekStart = new Date(thisWeekStart);
       lastWeekStart.setDate(lastWeekStart.getDate() - 7);
@@ -63,6 +61,7 @@ export const useWeeklyComparison = () => {
         .from('transactions')
         .select('amount, transaction_date')
         .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED')
         .eq('type', 'EXPENSE')
         .gte('transaction_date', thisWeekStart.toISOString())
         .lte('transaction_date', thisWeekEnd.toISOString());
@@ -74,6 +73,7 @@ export const useWeeklyComparison = () => {
         .from('transactions')
         .select('amount, transaction_date')
         .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED')
         .eq('type', 'EXPENSE')
         .gte('transaction_date', lastWeekStart.toISOString())
         .lte('transaction_date', lastWeekEnd.toISOString());
@@ -81,15 +81,17 @@ export const useWeeklyComparison = () => {
       if (lastWeekError) throw new Error(lastWeekError.message);
 
       // Calculate totals
-      const thisWeekAmount = thisWeekData?.reduce((sum, tx) => {
-        const amount = parseFloat(tx.amount.toString());
-        return sum + amount;
-      }, 0) ?? 0;
-      
-      const lastWeekAmount = lastWeekData?.reduce((sum, tx) => {
-        const amount = parseFloat(tx.amount.toString());
-        return sum + amount;
-      }, 0) ?? 0;
+      const thisWeekAmount =
+        thisWeekData?.reduce((sum, tx) => {
+          const amount = parseFloat(tx.amount.toString());
+          return sum + amount;
+        }, 0) ?? 0;
+
+      const lastWeekAmount =
+        lastWeekData?.reduce((sum, tx) => {
+          const amount = parseFloat(tx.amount.toString());
+          return sum + amount;
+        }, 0) ?? 0;
 
       console.log('This Week Amount:', thisWeekAmount, 'Count:', thisWeekData?.length ?? 0);
       console.log('Last Week Amount:', lastWeekAmount, 'Count:', lastWeekData?.length ?? 0);

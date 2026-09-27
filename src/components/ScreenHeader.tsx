@@ -33,7 +33,7 @@ const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   }, [onBack, router]);
 
   return (
-    <View className="pt-8 pb-6">
+    <View className="pb-6 pt-8">
       {showBackButton && (
         <Button size="icon" variant="outline" onPress={handleBack} className="mb-4 self-start">
           <MaterialIcons name="arrow-back" size={12} color={colors.foreground} />

@@ -8,6 +8,7 @@ import ScreenHeader from '@/components/ScreenHeader';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
 import Switch from '@/components/atoms/Switch';
+import SmsCaptureToggle from '@/components/Profile/SmsCaptureToggle';
 import { useUser } from '@/hooks/useUser';
 import { useThemeContext } from '@/components/providers/ThemeProvider';
 import { getThemeColors } from '@/utils/themeColors';
@@ -23,9 +24,11 @@ const ProfileScreen: React.FC = () => {
 
   const { trackProfileViewed, trackToggledTheme } = useAnalytics();
 
-  useFocusEffect(useCallback(() => {
-    trackProfileViewed();
-  }, [trackProfileViewed]));
+  useFocusEffect(
+    useCallback(() => {
+      trackProfileViewed();
+    }, [trackProfileViewed])
+  );
 
   const displayName = (user?.user_metadata?.display_name as string | undefined) ?? '';
   const email = user?.email ?? '';
@@ -46,7 +49,7 @@ const ProfileScreen: React.FC = () => {
       trackToggledTheme(isDark ? 'light' : 'dark');
       void toggleTheme();
     },
-    [toggleTheme, trackToggledTheme, isDark],
+    [toggleTheme, trackToggledTheme, isDark]
   );
 
   const handleLogout = useCallback(() => {
@@ -59,11 +62,10 @@ const ProfileScreen: React.FC = () => {
         <ScreenHeader title="Profile" subtitle="Manage your account" />
 
         {/* Avatar */}
-        <View className="items-center mt-4 mb-8">
+        <View className="mb-8 mt-4 items-center">
           <View
-            className="w-20 h-20 bg-primary border-2 border-border items-center justify-center"
-            style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}
-          >
+            className="h-20 w-20 items-center justify-center border-2 border-border bg-primary"
+            style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}>
             <CustomText variant="h2" className="leading-none" darkInvert>
               {initial}
             </CustomText>
@@ -77,33 +79,33 @@ const ProfileScreen: React.FC = () => {
         </View>
 
         {/* Settings */}
-        <View className="gap-4 mr-1">
+        <View className="mr-1 gap-4">
           <CustomText variant="label" className="text-xs tracking-widest">
             PREFERENCES
           </CustomText>
 
           <View
-            className="flex-row items-center justify-between p-4 bg-card border-2 border-border"
-            style={{ boxShadow: `3px 3px 0 0 ${colors.border}` }}
-          >
+            className="flex-row items-center justify-between border-2 border-border bg-card p-4"
+            style={{ boxShadow: `3px 3px 0 0 ${colors.border}` }}>
             <View>
-              <CustomText variant="body">Dark Mode</CustomText>
-              <CustomText variant="muted" className="text-xs mt-0.5">
+              <CustomText variant="p">Dark Mode</CustomText>
+              <CustomText variant="muted" className="mt-0.5 text-xs">
                 {isDark ? 'Dark theme enabled' : 'Light theme enabled'}
               </CustomText>
             </View>
             <Switch value={isDark} onValueChange={handleToggleTheme} />
           </View>
+
+          <SmsCaptureToggle />
         </View>
 
         {/* Logout */}
-        <View className="mt-10 mb-8 mr-1">
+        <View className="mb-8 mr-1 mt-10">
           <Button
             variant="destructive"
             size="lg"
             onPress={handleLogout}
-            disabled={logout.isPending}
-          >
+            disabled={logout.isPending}>
             {logout.isPending ? 'Logging out...' : 'Log Out'}
           </Button>
         </View>

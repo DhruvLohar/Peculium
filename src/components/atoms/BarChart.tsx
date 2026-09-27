@@ -36,7 +36,7 @@ export interface BarChartProps {
 
 function computeYAxisScale(data: BarChartDataPoint[], tickCount: number = 5) {
   const maxValue = Math.max(...data.map((d) => d.value), 0);
-  
+
   if (maxValue === 0) {
     return { max: 10, ticks: [0, 2, 4, 6, 8, 10] };
   }
@@ -110,13 +110,24 @@ interface AnimatedBarProps {
 }
 
 const AnimatedBar: React.FC<AnimatedBarProps> = memo(
-  ({ x, value, maxValue, barWidth, chartHeight, color, borderColor, delay, duration, isSelected }) => {
+  ({
+    x,
+    value,
+    maxValue,
+    barWidth,
+    chartHeight,
+    color,
+    borderColor,
+    delay,
+    duration,
+    isSelected,
+  }) => {
     const progress = useSharedValue(0);
 
     useEffect(() => {
       progress.value = withDelay(
         delay,
-        withTiming(1, { duration, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration, easing: Easing.out(Easing.cubic) })
       );
     }, [delay, duration, progress]);
 
@@ -153,7 +164,7 @@ const AnimatedBar: React.FC<AnimatedBarProps> = memo(
         />
       </>
     );
-  },
+  }
 );
 
 AnimatedBar.displayName = 'AnimatedBar';
@@ -171,51 +182,52 @@ interface TooltipProps {
   bgColor: string;
 }
 
-const Tooltip: React.FC<TooltipProps> = memo(({ x, y, name, value, headers, visible, borderColor, bgColor }) => {
-  const opacity = useSharedValue(0);
+const Tooltip: React.FC<TooltipProps> = memo(
+  ({ x, y, name, value, headers, visible, borderColor, bgColor }) => {
+    const opacity = useSharedValue(0);
 
-  useEffect(() => {
-    opacity.value = withTiming(visible ? 1 : 0, { duration: 150 });
-  }, [visible, opacity]);
+    useEffect(() => {
+      opacity.value = withTiming(visible ? 1 : 0, { duration: 150 });
+    }, [visible, opacity]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
+    const animatedStyle = useAnimatedStyle(() => ({
+      opacity: opacity.value,
+    }));
 
-  if (!visible) return null;
+    if (!visible) return null;
 
-  return (
-    <AnimatedView
-      style={[
-        {
-          position: 'absolute',
-          left: x,
-          top: y,
-          boxShadow: `3px 3px 0 0 ${borderColor}`,
-          backgroundColor: bgColor,
-          borderWidth: 2,
-          borderColor,
-        },
-        animatedStyle,
-      ]}
-      className="px-3 py-2 min-w-[120px]"
-      pointerEvents="none"
-    >
-      <View className="flex-row justify-between mb-1">
-        <CustomText variant="label" className="text-xs text-muted-foreground mr-4">
-          {headers[0]}
-        </CustomText>
-        <CustomText variant="label" className="text-xs text-muted-foreground">
-          {headers[1]}
-        </CustomText>
-      </View>
-      <View className="flex-row justify-between">
-        <CustomText className="text-sm font-sans-medium mr-4">{name}</CustomText>
-        <CustomText className="text-sm font-sans-bold">{value}</CustomText>
-      </View>
-    </AnimatedView>
-  );
-});
+    return (
+      <AnimatedView
+        style={[
+          {
+            position: 'absolute',
+            left: x,
+            top: y,
+            boxShadow: `3px 3px 0 0 ${borderColor}`,
+            backgroundColor: bgColor,
+            borderWidth: 2,
+            borderColor,
+          },
+          animatedStyle,
+        ]}
+        className="min-w-[120px] px-3 py-2"
+        pointerEvents="none">
+        <View className="mb-1 flex-row justify-between">
+          <CustomText variant="label" className="mr-4 text-xs text-muted-foreground">
+            {headers[0]}
+          </CustomText>
+          <CustomText variant="label" className="text-xs text-muted-foreground">
+            {headers[1]}
+          </CustomText>
+        </View>
+        <View className="flex-row justify-between">
+          <CustomText className="mr-4 font-sans-medium text-sm">{name}</CustomText>
+          <CustomText className="font-sans-bold text-sm">{value}</CustomText>
+        </View>
+      </AnimatedView>
+    );
+  }
+);
 
 Tooltip.displayName = 'Tooltip';
 
@@ -247,7 +259,7 @@ const BarChart: React.FC<BarChartProps> = ({
   const xAxisHeight = 24;
   const chartHeight = height - xAxisHeight;
   const svgWidth = Math.max(chartWidth - yAxisWidth, 0);
-  
+
   const barGap = 12;
   const barWidth = useMemo(() => {
     if (data.length === 0) return 0;
@@ -279,7 +291,7 @@ const BarChart: React.FC<BarChartProps> = ({
     const bar = bars[selectedIndex];
     const barCenterX = yAxisWidth + bar.x + barWidth / 2;
     const barTopY = chartHeight - (bar.point.value / max) * chartHeight;
-    
+
     const tooltipWidth = 120;
     const tooltipHeight = 60;
     const gap = 12;
@@ -320,12 +332,8 @@ const BarChart: React.FC<BarChartProps> = ({
                     height: LABEL_HEIGHT,
                     justifyContent: 'center',
                     paddingRight: 8,
-                  }}
-                >
-                  <CustomText
-                    variant="label"
-                    className="text-xs text-muted-foreground text-right"
-                  >
+                  }}>
+                  <CustomText variant="label" className="text-right text-xs text-muted-foreground">
                     {tick}
                   </CustomText>
                 </View>
@@ -388,9 +396,8 @@ const BarChart: React.FC<BarChartProps> = ({
                 left: x,
                 width: barWidth,
                 alignItems: 'center',
-              }}
-            >
-              <CustomText variant="label" className="text-xs text-muted-foreground mt-1">
+              }}>
+              <CustomText variant="label" className="mt-1 text-xs text-muted-foreground">
                 {point.label}
               </CustomText>
             </View>

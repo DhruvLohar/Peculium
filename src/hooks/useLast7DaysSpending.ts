@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 import type { BarChartDataPoint } from '../components/atoms/BarChart';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -17,15 +17,14 @@ export const useLast7DaysSpending = () => {
   const query = useQuery({
     queryKey: ['last-7-days-spending', startOfPeriod.toISOString().slice(0, 10)],
     queryFn: async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('transactions')
         .select('amount, type, transaction_date')
         .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED')
         .eq('type', 'EXPENSE')
         .gte('transaction_date', startOfPeriod.toISOString())
         .lte('transaction_date', endOfDay.toISOString());
@@ -46,7 +45,7 @@ export const useLast7DaysSpending = () => {
 
     // Create buckets for each day
     const buckets: Record<string, number> = {};
-    dates.forEach(d => {
+    dates.forEach((d) => {
       const key = d.toISOString().slice(0, 10);
       buckets[key] = 0;
     });
@@ -66,7 +65,7 @@ export const useLast7DaysSpending = () => {
     const yesterdayStr = yesterday.toISOString().slice(0, 10);
 
     // Map dates to chart data points (in order from oldest to newest)
-    return dates.map(date => {
+    return dates.map((date) => {
       const dateStr = date.toISOString().slice(0, 10);
       const value = buckets[dateStr] || 0;
       let label: string;

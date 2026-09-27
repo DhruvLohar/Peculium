@@ -122,9 +122,24 @@ export const useAuthState = () => {
   useEffect(() => {
     // Bootstrap: check for an existing session immediately so we don't
     // rely solely on onAuthStateChange (which can race with mutations).
+    // getSession() can hang forever if Supabase's internal refresh lock was
+    // left held (e.g. app backgrounded mid-refresh), so guard it with a
+    // timeout instead of leaving the splash screen stuck.
+    let settled = false;
+    const timeoutId = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        console.warn('Auth session check timed out; treating as unauthenticated.');
+        setAuthState('unauthenticated');
+      }
+    }, 8000);
+
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
         if (session) {
           updateAuthState(session.user.id);
         } else {
@@ -132,6 +147,9 @@ export const useAuthState = () => {
         }
       })
       .catch((error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
         console.error('Failed to read auth session:', error);
         setAuthState('unauthenticated');
       });
@@ -146,7 +164,11 @@ export const useAuthState = () => {
       await updateAuthState(session.user.id);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      settled = true;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, [updateAuthState]);
 
   return authState;

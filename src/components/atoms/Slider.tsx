@@ -60,7 +60,7 @@ const Slider: React.FC<SliderProps> = ({
       const percentage = (initialValue - min) / (max - min);
       position.value = percentage * trackWidth;
     },
-    [width, position, initialValue, min, max],
+    [width, position, initialValue, min, max]
   );
 
   const notifyValueChange = useCallback(
@@ -69,7 +69,7 @@ const Slider: React.FC<SliderProps> = ({
       const clampedValue = Math.max(min, Math.min(max, steppedValue));
       onValueChange?.(clampedValue);
     },
-    [onValueChange, step, min, max],
+    [onValueChange, step, min, max]
   );
 
   const panGesture = useMemo(
@@ -91,7 +91,7 @@ const Slider: React.FC<SliderProps> = ({
         .onEnd(() => {
           isDragging.value = false;
         }),
-    [disabled, isDragging, position, width, min, max, notifyValueChange, onValueChange],
+    [disabled, isDragging, position, width, min, max, notifyValueChange, onValueChange]
   );
 
   const THUMB_HALF = 12;
@@ -104,24 +104,21 @@ const Slider: React.FC<SliderProps> = ({
     width: position.value,
   }));
 
-  const containerClass = useMemo(
-    () => cn('relative w-full py-2', className),
-    [className],
-  );
+  const containerClass = useMemo(() => cn('relative w-full py-2', className), [className]);
 
   const trackClass = useMemo(
     () =>
       cn(
         'relative w-full bg-muted/20 border-2 border-border',
         disabled && 'opacity-50',
-        trackClassName,
+        trackClassName
       ),
-    [disabled, trackClassName],
+    [disabled, trackClassName]
   );
 
   const rangeClass = useMemo(
     () => cn('absolute h-full bg-primary', rangeClassName),
-    [rangeClassName],
+    [rangeClassName]
   );
 
   const thumbClass = useMemo(
@@ -129,9 +126,9 @@ const Slider: React.FC<SliderProps> = ({
       cn(
         'absolute -top-2 w-6 h-6 border-2 border-border bg-background shadow-sm',
         disabled && 'opacity-50',
-        thumbClassName,
+        thumbClassName
       ),
-    [disabled, thumbClassName],
+    [disabled, thumbClassName]
   );
 
   return (

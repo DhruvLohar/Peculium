@@ -39,67 +39,62 @@ export const useAuth = () => {
     }
   }, []);
 
-  const verifyOtp = useCallback(
-    async (email: string, token: string): Promise<VerifyOtpResult> => {
-      setIsLoading(true);
-      setError(null);
+  const verifyOtp = useCallback(async (email: string, token: string): Promise<VerifyOtpResult> => {
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        // Verify the OTP
-        const { data, error: verifyError } = await supabase.auth.verifyOtp({
-          email,
-          token,
-          type: 'email',
-        });
+    try {
+      // Verify the OTP
+      const { data, error: verifyError } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: 'email',
+      });
 
-        if (verifyError || !data.user) {
-          const errorMessage = verifyError?.message || 'Verification failed';
-          setError(errorMessage);
-          setIsLoading(false);
-          return { success: false, needsOnboarding: false, error: errorMessage };
-        }
-
-        const userId = data.user.id;
-
-        // Check if profile exists and get onboarding status
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('has_onboarded')
-          .eq('id', userId)
-          .single();
-
-        // If profile doesn't exist, create it
-        if (profileError || !profile) {
-          const { error: upsertError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: userId,
-              has_onboarded: false,
-              updated_at: new Date().toISOString(),
-            });
-
-          if (upsertError) {
-            console.error('Failed to create profile:', upsertError);
-          }
-
-          setIsLoading(false);
-          return { success: true, needsOnboarding: true };
-        }
-
-        setIsLoading(false);
-        return {
-          success: true,
-          needsOnboarding: !profile.has_onboarded,
-        };
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Verification failed';
+      if (verifyError || !data.user) {
+        const errorMessage = verifyError?.message || 'Verification failed';
         setError(errorMessage);
         setIsLoading(false);
         return { success: false, needsOnboarding: false, error: errorMessage };
       }
-    },
-    [],
-  );
+
+      const userId = data.user.id;
+
+      // Check if profile exists and get onboarding status
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('has_onboarded')
+        .eq('id', userId)
+        .single();
+
+      // If profile doesn't exist, create it
+      if (profileError || !profile) {
+        const { error: upsertError } = await supabase.from('profiles').upsert({
+          id: userId,
+          has_onboarded: false,
+          updated_at: new Date().toISOString(),
+        });
+
+        if (upsertError) {
+          console.error('Failed to create profile:', upsertError);
+        }
+
+        setIsLoading(false);
+        return { success: true, needsOnboarding: true };
+      }
+
+      setIsLoading(false);
+      return {
+        success: true,
+        needsOnboarding: !profile.has_onboarded,
+      };
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Verification failed';
+      setError(errorMessage);
+      setIsLoading(false);
+      return { success: false, needsOnboarding: false, error: errorMessage };
+    }
+  }, []);
 
   const completeOnboarding = useCallback(async (name: string): Promise<boolean> => {
     setIsLoading(true);

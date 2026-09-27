@@ -49,8 +49,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ control, type }) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 4,
-                }}
-              >
+                }}>
                 <MaterialIcons
                   name={cat.icon as any}
                   size={24}
@@ -63,8 +62,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ control, type }) => {
                     letterSpacing: 0.5,
                     color: selected ? '#000' : unselectedFg,
                     textAlign: 'center',
-                  }}
-                >
+                  }}>
                   {cat.label}
                 </CustomText>
               </Pressable>

@@ -40,7 +40,7 @@ const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) =
       await upsertBudget.mutateAsync(data.amount);
       close();
     },
-    [upsertBudget, close],
+    [upsertBudget, close]
   );
 
   return (
@@ -56,7 +56,7 @@ const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) =
       </View>
 
       {/* Form */}
-      <View className="gap-4 mb-5">
+      <View className="mb-5 gap-4">
         <View>
           <Controller
             control={control}
@@ -70,7 +70,7 @@ const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) =
             )}
           />
           {errors.amount && (
-            <CustomText variant="muted" className="text-xs text-destructive mt-1">
+            <CustomText variant="muted" className="mt-1 text-xs text-destructive">
               {errors.amount.message}
             </CustomText>
           )}
@@ -89,8 +89,7 @@ const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) =
             variant="default"
             size="lg"
             onPress={handleSubmit(onSubmit) as any}
-            disabled={upsertBudget.isPending}
-          >
+            disabled={upsertBudget.isPending}>
             {upsertBudget.isPending ? 'Saving...' : 'Save'}
           </Button>
         </View>

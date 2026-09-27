@@ -25,7 +25,7 @@ export const useTheme = () => {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme).catch(console.error);
       setColorScheme(newTheme);
     },
-    [setColorScheme],
+    [setColorScheme]
   );
 
   const toggleTheme = useCallback(async () => {

@@ -25,7 +25,7 @@ const LoginPage: React.FC = () => {
         console.error(error);
       }
     },
-    [sendOtp, trackContinuedToLogin],
+    [sendOtp, trackContinuedToLogin]
   );
 
   const handleVerifyOtp = useCallback(
@@ -44,14 +44,14 @@ const LoginPage: React.FC = () => {
         console.error(error);
       }
     },
-    [email, verifyOtp, router],
+    [email, verifyOtp, router]
   );
 
   const handleResendOtp = useCallback(async () => {
     try {
       await sendOtp.mutateAsync(email);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }, [email, sendOtp]);
 

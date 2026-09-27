@@ -8,11 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
@@ -43,7 +39,8 @@ const AccordionItemContext = createContext<AccordionItemContextValue | null>(nul
 
 function useAccordionItem() {
   const ctx = useContext(AccordionItemContext);
-  if (!ctx) throw new Error('AccordionHeader / AccordionContent must be used inside <Accordion.Item>');
+  if (!ctx)
+    throw new Error('AccordionHeader / AccordionContent must be used inside <Accordion.Item>');
   return ctx;
 }
 
@@ -81,12 +78,12 @@ const AccordionRoot: React.FC<AccordionProps> = ({
         return next;
       });
     },
-    [type, collapsible],
+    [type, collapsible]
   );
 
   const contextValue = useMemo(
     () => ({ type, collapsible, openItems, toggle }),
-    [type, collapsible, openItems, toggle],
+    [type, collapsible, openItems, toggle]
   );
 
   return (
@@ -110,15 +107,14 @@ const AccordionItem: React.FC<AccordionItemProps> = memo(({ value, children, cla
 
   const itemContext = useMemo(
     () => ({ value, isOpen, toggle: handleToggle }),
-    [value, isOpen, handleToggle],
+    [value, isOpen, handleToggle]
   );
 
   return (
     <AccordionItemContext.Provider value={itemContext}>
       <View
-        className={cn('border-2 border-border bg-card overflow-hidden', className)}
-        style={{ boxShadow: '4px 4px 0px var(--border)' }}
-      >
+        className={cn('overflow-hidden border-2 border-border bg-card', className)}
+        style={{ boxShadow: '4px 4px 0px var(--border)' }}>
         {children}
       </View>
     </AccordionItemContext.Provider>
@@ -149,9 +145,8 @@ const AccordionHeader: React.FC<AccordionHeaderProps> = memo(({ children, classN
   return (
     <Pressable
       onPress={toggle}
-      className={cn('flex-row flex-1 items-center justify-between px-4 py-3', className)}
-    >
-      <Text className="font-head flex-1 text-foreground">{children}</Text>
+      className={cn('flex-1 flex-row items-center justify-between px-4 py-3', className)}>
+      <Text className="flex-1 font-head text-foreground">{children}</Text>
       <Animated.View style={chevronStyle}>
         <Feather name="chevron-down" size={16} color={colors.foreground} />
       </Animated.View>
@@ -189,9 +184,8 @@ const AccordionContent: React.FC<AccordionContentProps> = memo(({ children, clas
           const h = e.nativeEvent.layout.height;
           if (h > 0 && h !== contentHeight) setContentHeight(h);
         }}
-        className="absolute left-0 right-0 top-0"
-      >
-        <View className={cn('px-4 pb-4 pt-2 bg-card', className)}>
+        className="absolute left-0 right-0 top-0">
+        <View className={cn('bg-card px-4 pb-4 pt-2', className)}>
           <Text className="font-sans text-muted-foreground">{children}</Text>
         </View>
       </View>

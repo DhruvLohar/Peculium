@@ -82,24 +82,19 @@ const Checkbox: React.FC<CheckboxProps> = ({
         checkboxVariants({ variant, size }),
         isChecked && checkedBgVariants({ variant }),
         disabled && 'opacity-50',
-        className,
+        className
       ),
-    [variant, size, isChecked, disabled, className],
+    [variant, size, isChecked, disabled, className]
   );
 
   const iconColor = variant === 'solid' ? colors.foreground : colors.border;
 
-  const iconSize = useMemo(
-    () => checkIconSizes[size ?? 'md'],
-    [size],
-  );
+  const iconSize = useMemo(() => checkIconSizes[size ?? 'md'], [size]);
 
   return (
     <Pressable onPress={handlePress} disabled={disabled}>
       <View className={containerClass}>
-        {isChecked && (
-          <Feather name="check" size={iconSize} color={iconColor} />
-        )}
+        {isChecked && <Feather name="check" size={iconSize} color={iconColor} />}
       </View>
     </Pressable>
   );

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 import type { StackedBarChartDataPoint } from '../components/atoms/StackedBarChart';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -17,15 +17,14 @@ export const useWeeklyChart = () => {
   const query = useQuery({
     queryKey: ['weekly-chart', startOfWeek.toISOString().slice(0, 10)],
     queryFn: async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('transactions')
         .select('amount, type, transaction_date')
         .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED')
         .gte('transaction_date', startOfWeek.toISOString())
         .lte('transaction_date', endOfDay.toISOString());
 

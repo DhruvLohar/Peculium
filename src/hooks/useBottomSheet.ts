@@ -1,17 +1,12 @@
 import { useCallback } from 'react';
 import { useBottomSheetStore } from '@/store/bottomSheetStore';
 
-export function useBottomSheet<TArgs extends object = Record<string, unknown>>(
-  id: string,
-) {
+export function useBottomSheet<TArgs extends object = Record<string, unknown>>(id: string) {
   const open = useBottomSheetStore((s) => s.open);
   const close = useBottomSheetStore((s) => s.close);
   const entry = useBottomSheetStore((s) => s.sheets[id]);
 
-  const openSheet = useCallback(
-    (args?: TArgs) => open(id, args),
-    [id, open],
-  );
+  const openSheet = useCallback((args?: TArgs) => open(id, args), [id, open]);
 
   const closeSheet = useCallback(() => close(id), [id, close]);
 

@@ -7,9 +7,7 @@ const ViewTransactionScreen: React.FC = () => {
   return (
     <Container>
       <View className="flex-1 items-center justify-center">
-        <CustomText variant="h1">
-          Hello World
-        </CustomText>
+        <CustomText variant="h1">Hello World</CustomText>
       </View>
     </Container>
   );

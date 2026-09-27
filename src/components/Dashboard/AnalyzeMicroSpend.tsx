@@ -28,22 +28,21 @@ const AnalyzeMicroSpend: React.FC = () => {
     setThreshold(value);
   }, []);
 
-  const handleCardPress = useCallback((id: string) => {
-    router.push(`/transaction/edit?id=${id}`);
-  }, [router]);
-
-  const formattedTotal = useMemo(
-    () => totalBleed.toLocaleString('en-IN'),
-    [totalBleed],
+  const handleCardPress = useCallback(
+    (id: string) => {
+      router.push(`/transaction/edit?id=${id}`);
+    },
+    [router]
   );
+
+  const formattedTotal = useMemo(() => totalBleed.toLocaleString('en-IN'), [totalBleed]);
 
   return (
     <View
       className="border-2 border-border bg-card"
-      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}
-    >
+      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}>
       {/* Header */}
-      <View className="bg-destructive/10 border-b-2 border-border px-4 py-3 flex-row items-center gap-3">
+      <View className="bg-destructive/10 flex-row items-center gap-3 border-b-2 border-border px-4 py-3">
         <MaterialIcons name="warning" size={20} color={colors.foreground} />
         <CustomText variant="label" className="text-xs tracking-widest">
           MICRO SPEND BLEED
@@ -51,8 +50,8 @@ const AnalyzeMicroSpend: React.FC = () => {
       </View>
 
       {/* Shock data */}
-      <View className="px-4 py-4 border-b-2 border-border">
-        <CustomText variant="label" className="text-xs tracking-widest text-muted-foreground mb-1">
+      <View className="border-b-2 border-border px-4 py-4">
+        <CustomText variant="label" className="mb-1 text-xs tracking-widest text-muted-foreground">
           {bleedTxns.length} TRANSACTIONS UNDER ₹{threshold}
         </CustomText>
         <CustomText variant="h1" className="leading-none" numberOfLines={1}>
@@ -61,32 +60,36 @@ const AnalyzeMicroSpend: React.FC = () => {
       </View>
 
       {/* Swarm window */}
-      <View className="px-3 py-3 bg-muted/10 border-b-2 border-border">
+      <View className="bg-muted/10 border-b-2 border-border px-3 py-3">
         <ScrollView
           style={{ height: 120 }}
           className="border-2 border-border bg-background p-2"
           scrollEnabled
           showsVerticalScrollIndicator={false}
-          nestedScrollEnabled
-        >
+          nestedScrollEnabled>
           {bleedTxns.length === 0 ? (
             <View style={{ height: 104 }} className="items-center justify-center">
-              <CustomText variant="muted" className="text-xs tracking-widest uppercase">
+              <CustomText variant="muted" className="text-xs uppercase tracking-widest">
                 No leaks detected
               </CustomText>
             </View>
           ) : (
             <View className="flex-row flex-wrap gap-1">
               {bleedTxns.map((txn) => {
-                const config = CATEGORY_CONFIG[txn.category as TransactionCategory] ?? CATEGORY_CONFIG.Other;
+                const config =
+                  CATEGORY_CONFIG[txn.category as TransactionCategory] ?? CATEGORY_CONFIG.Other;
                 return (
                   <TouchableOpacity
                     key={txn.id}
                     onPress={() => handleCardPress(txn.id)}
                     activeOpacity={0.7}
-                    style={{ width: 28, height: 28, backgroundColor: config.bg, boxShadow: `1px 1px 0 0 ${colors.border}` }}
-                    className="items-center justify-center border border-border"
-                  >
+                    style={{
+                      width: 28,
+                      height: 28,
+                      backgroundColor: config.bg,
+                      boxShadow: `1px 1px 0 0 ${colors.border}`,
+                    }}
+                    className="items-center justify-center border border-border">
                     <MaterialIcons name={config.icon as any} size={14} color="#fff" />
                   </TouchableOpacity>
                 );
@@ -97,13 +100,15 @@ const AnalyzeMicroSpend: React.FC = () => {
       </View>
 
       {/* Slider control */}
-      <View className="px-4 py-4 bg-primary">
-        <View className="flex-row justify-between items-end mb-4">
+      <View className="bg-primary px-4 py-4">
+        <View className="mb-4 flex-row items-end justify-between">
           <CustomText variant="label" className="text-xs tracking-widest" darkInvert>
             SET LIMIT
           </CustomText>
           <View className="border-b-2 border-primary-foreground pb-0.5">
-            <CustomText variant="h4" darkInvert>₹{threshold}</CustomText>
+            <CustomText variant="h4" darkInvert>
+              ₹{threshold}
+            </CustomText>
           </View>
         </View>
 
@@ -116,9 +121,13 @@ const AnalyzeMicroSpend: React.FC = () => {
           rangeClassName="bg-secondary"
         />
 
-        <View className="flex-row justify-between mt-2">
-          <CustomText variant="label" className="text-xs opacity-60" darkInvert>₹{MIN}</CustomText>
-          <CustomText variant="label" className="text-xs opacity-60" darkInvert>₹{MAX}</CustomText>
+        <View className="mt-2 flex-row justify-between">
+          <CustomText variant="label" className="text-xs opacity-60" darkInvert>
+            ₹{MIN}
+          </CustomText>
+          <CustomText variant="label" className="text-xs opacity-60" darkInvert>
+            ₹{MAX}
+          </CustomText>
         </View>
       </View>
     </View>

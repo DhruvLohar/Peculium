@@ -35,10 +35,8 @@ const OnboardingNameScreen: React.FC<OnboardingNameScreenProps> = ({
   return (
     <Container>
       {/* Header Section - Top Left */}
-      <View className="pt-8 pb-12">
-        <Text className="font-head text-4xl mb-2 text-foreground">
-          peculium
-        </Text>
+      <View className="pb-12 pt-8">
+        <Text className="mb-2 font-head text-4xl text-foreground">peculium</Text>
         <CustomText variant="p" className="text-muted-foreground">
           Main Character Energy!
         </CustomText>
@@ -48,11 +46,11 @@ const OnboardingNameScreen: React.FC<OnboardingNameScreenProps> = ({
       <View className="flex-1 justify-center">
         <View className="gap-6">
           <View>
-            <Text className="font-head text-3xl text-foreground mb-2">
+            <Text className="mb-2 font-head text-3xl text-foreground">
               What should we call you?
             </Text>
             <CustomText variant="p" className="text-muted-foreground">
-              Let's personalize your experience
+              Let&apos;s personalize your experience
             </CustomText>
           </View>
 
@@ -73,14 +71,14 @@ const OnboardingNameScreen: React.FC<OnboardingNameScreenProps> = ({
               )}
             />
             {errors.name && (
-              <CustomText variant="p" className="text-destructive mt-2">
+              <CustomText variant="p" className="mt-2 text-destructive">
                 {errors.name.message}
               </CustomText>
             )}
           </View>
 
           {serverError && (
-            <CustomText variant="p" className="text-destructive -mt-2">
+            <CustomText variant="p" className="-mt-2 text-destructive">
               {serverError}
             </CustomText>
           )}
@@ -89,8 +87,7 @@ const OnboardingNameScreen: React.FC<OnboardingNameScreenProps> = ({
             onPress={handleSubmit(handleFormSubmit)}
             variant="default"
             size="lg"
-            disabled={isLoading}
-          >
+            disabled={isLoading}>
             {isLoading ? 'Setting up...' : 'Continue'}
           </Button>
         </View>

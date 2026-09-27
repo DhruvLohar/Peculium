@@ -7,7 +7,11 @@ interface ContainerProps {
 }
 
 export const Container: React.FC<ContainerProps> = ({ children, className }) => {
-  return <View className={cn(styles.container, className)} style={{ paddingLeft: 16, paddingRight: 16 }}>{children}</View>;
+  return (
+    <View className={cn(styles.container, className)} style={{ paddingLeft: 16, paddingRight: 16 }}>
+      {children}
+    </View>
+  );
 };
 
 const styles = {

@@ -1,10 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { Pressable } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
@@ -33,7 +29,7 @@ const fabVariants = cva(
       variant: 'default',
       size: 'md',
     },
-  },
+  }
 );
 
 export interface FloatingActionButtonProps extends VariantProps<typeof fabVariants> {
@@ -73,7 +69,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 
   const containerClass = useMemo(
     () => cn(fabVariants({ variant, size }), disabled && 'opacity-60', className),
-    [variant, size, disabled, className],
+    [variant, size, disabled, className]
   );
 
   return (
@@ -83,8 +79,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
       onPressOut={handlePressOut}
       disabled={disabled}
       className={containerClass}
-      style={animatedStyle}
-    >
+      style={animatedStyle}>
       {children}
     </AnimatedPressable>
   );

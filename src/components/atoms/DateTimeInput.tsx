@@ -48,7 +48,7 @@ const DateTimeInput: React.FC<DateTimeInputProps> = ({
         onChange(newDate.toISOString());
       }
     },
-    [onChange, date],
+    [onChange, date]
   );
 
   const handleTimeChange = useCallback(
@@ -61,16 +61,28 @@ const DateTimeInput: React.FC<DateTimeInputProps> = ({
         onChange(newDate.toISOString());
       }
     },
-    [onChange, date],
+    [onChange, date]
   );
 
-  const displayDate = useMemo(() => date.toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
-  }), [date]);
+  const displayDate = useMemo(
+    () =>
+      date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }),
+    [date]
+  );
 
-  const displayTime = useMemo(() => date.toLocaleTimeString('en-US', {
-    hour: '2-digit', minute: '2-digit', hour12: true,
-  }), [date]);
+  const displayTime = useMemo(
+    () =>
+      date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      }),
+    [date]
+  );
 
   const iconColor = isInvalid ? colors.destructive : colors.foreground;
 
@@ -81,9 +93,8 @@ const DateTimeInput: React.FC<DateTimeInputProps> = ({
       <View className="flex-row gap-2">
         <Pressable
           onPress={() => setShowDate(true)}
-          className="flex-1 flex-row items-center justify-between border-2 border-border py-2 px-4 bg-background"
-          style={isInvalid ? { borderColor: colors.destructive } : undefined}
-        >
+          className="flex-1 flex-row items-center justify-between border-2 border-border bg-background px-4 py-2"
+          style={isInvalid ? { borderColor: colors.destructive } : undefined}>
           <CustomText className={isInvalid ? 'text-destructive' : 'text-foreground'}>
             {displayDate}
           </CustomText>
@@ -92,9 +103,8 @@ const DateTimeInput: React.FC<DateTimeInputProps> = ({
 
         <Pressable
           onPress={() => setShowTime(true)}
-          className="flex-1 flex-row items-center justify-between border-2 border-border py-2 px-4 bg-background"
-          style={isInvalid ? { borderColor: colors.destructive } : undefined}
-        >
+          className="flex-1 flex-row items-center justify-between border-2 border-border bg-background px-4 py-2"
+          style={isInvalid ? { borderColor: colors.destructive } : undefined}>
           <CustomText className={isInvalid ? 'text-destructive' : 'text-foreground'}>
             {displayTime}
           </CustomText>
@@ -103,7 +113,7 @@ const DateTimeInput: React.FC<DateTimeInputProps> = ({
       </View>
 
       {isInvalid && errorMessage && (
-        <CustomText className="text-xs text-destructive mt-1">{errorMessage}</CustomText>
+        <CustomText className="mt-1 text-xs text-destructive">{errorMessage}</CustomText>
       )}
 
       {showDate && (

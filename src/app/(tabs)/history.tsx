@@ -1,5 +1,13 @@
 import React, { memo, useState, useMemo, useCallback } from 'react';
-import { ScrollView, RefreshControl, View, ActivityIndicator, Text, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import {
+  ScrollView,
+  RefreshControl,
+  View,
+  ActivityIndicator,
+  Text,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Container } from '@/components/Container';
 import CustomText from '@/components/atoms/CustomText';
@@ -32,9 +40,7 @@ function getDateLabel(dateStr: string): string {
   if (date.toDateString() === today.toDateString()) return 'TODAY';
   if (date.toDateString() === yesterday.toDateString()) return 'YESTERDAY';
 
-  return date
-    .toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
-    .toUpperCase();
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }).toUpperCase();
 }
 
 function getStartOfWeek(): Date {
@@ -47,9 +53,7 @@ function getStartOfWeek(): Date {
   return start;
 }
 
-function groupByDate(
-  transactions: TransactionRow[],
-): { label: string; data: TransactionRow[] }[] {
+function groupByDate(transactions: TransactionRow[]): { label: string; data: TransactionRow[] }[] {
   const grouped = new Map<string, TransactionRow[]>();
 
   for (const t of transactions) {
@@ -71,36 +75,37 @@ const HistoryScreen: React.FC = () => {
 
   const { open: openFilters } = useBottomSheet<TransactionFilterArgs>(TRANSACTION_FILTERS_SHEET_ID);
 
-  const {
-    data,
-    isLoading,
-    isFetchingNextPage,
-    hasNextPage,
-    fetchNextPage,
-    refetch,
-    isRefetching,
-  } = useInfiniteTransactions();
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, refetch, isRefetching } =
+    useInfiniteTransactions();
 
   // Flatten all pages into single array
   const allTransactions = useMemo(
     () => data?.pages.flatMap((page) => page.transactions) ?? [],
-    [data],
+    [data]
   );
 
   // Refetch transactions when screen comes into focus
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [refetch]),
+    }, [refetch])
   );
 
   const handleApplyFilters = useCallback(
-    ({ type, categories, lastNDays }: { type: TransactionType | null; categories: TransactionCategory[]; lastNDays: LastNDays }) => {
+    ({
+      type,
+      categories,
+      lastNDays,
+    }: {
+      type: TransactionType | null;
+      categories: TransactionCategory[];
+      lastNDays: LastNDays;
+    }) => {
       setSheetType(type);
       setSheetCategories(categories);
       setSheetLastNDays(lastNDays);
     },
-    [],
+    []
   );
 
   const handleOpenFilters = useCallback(() => {
@@ -129,7 +134,7 @@ const HistoryScreen: React.FC = () => {
     }
 
     if (sheetCategories.length > 0) {
-      result = result.filter((t) => sheetCategories.includes(t.category));
+      result = result.filter((t) => t.category != null && sheetCategories.includes(t.category));
     }
 
     if (sheetLastNDays) {
@@ -142,9 +147,7 @@ const HistoryScreen: React.FC = () => {
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
-        (t) =>
-          t.notes?.toLowerCase().includes(q) ||
-          t.category.toLowerCase().includes(q),
+        (t) => t.notes?.toLowerCase().includes(q) || t.category?.toLowerCase().includes(q)
       );
     }
 
@@ -163,9 +166,12 @@ const HistoryScreen: React.FC = () => {
     return { totalIncome: inc, totalExpense: exp };
   }, [filtered]);
 
-  const handleCardPress = useCallback((id: string) => {
-    router.push(`/transaction/edit?id=${id}`);
-  }, [router]);
+  const handleCardPress = useCallback(
+    (id: string) => {
+      router.push(`/transaction/edit?id=${id}`);
+    },
+    [router]
+  );
 
   const handleAddTransaction = useCallback(() => {
     router.push('/transaction/add');
@@ -174,49 +180,50 @@ const HistoryScreen: React.FC = () => {
   const handleScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-      
+
       // Check if user is near bottom (within 200px)
       const paddingToBottom = 200;
       const isCloseToBottom =
-        layoutMeasurement.height + contentOffset.y >=
-        contentSize.height - paddingToBottom;
+        layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
 
       if (isCloseToBottom && hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     },
-    [hasNextPage, isFetchingNextPage, fetchNextPage],
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
   );
 
   return (
     <Container>
-      <View className="pt-8 pb-4">
-        <View className="items-start mb-4">
-          <CustomText variant="h2">
-            Transactions
-          </CustomText>
+      <View className="pb-4 pt-8">
+        <View className="mb-4 items-start">
+          <CustomText variant="h2">Transactions</CustomText>
           <CustomText variant="muted" className="text-center">
             Manage your finance, so you can live your life.
           </CustomText>
         </View>
-        <TransactionSearchBar value={search} onChangeText={setSearch} onFilterPress={handleOpenFilters} />
+        <TransactionSearchBar
+          value={search}
+          onChangeText={setSearch}
+          onFilterPress={handleOpenFilters}
+        />
         <View className="mt-6">
           <TransactionFilterBar active={activeFilter} onChange={setActiveFilter} />
         </View>
-        <View className="flex-row mt-4">
-
+        <View className="mt-4 flex-row">
           <CustomText variant="h6" className="text-md font-sans-bold">
-            NET :{" "}
+            NET :{' '}
           </CustomText>
-          
+
           <CustomText variant="h6" className="text-md font-sans-bold text-green-500">
             +₹{totalIncome.toLocaleString('en-IN')}
           </CustomText>
 
           <CustomText variant="h6" className="text-md font-sans-bold">
-            {" "};{" "}
+            {' '}
+            ;{' '}
           </CustomText>
-          
+
           <CustomText variant="h6" className="text-md font-sans-bold text-red-500">
             -₹{totalExpense.toLocaleString('en-IN')}
           </CustomText>
@@ -234,8 +241,7 @@ const HistoryScreen: React.FC = () => {
             tintColor="#ffdb33"
             colors={['#ffdb33']}
           />
-        }
-      >
+        }>
         {isLoading ? (
           <View className="items-center justify-center py-20">
             <Loader />
@@ -256,17 +262,17 @@ const HistoryScreen: React.FC = () => {
                 onCardPress={handleCardPress}
               />
             ))}
-            
+
             {/* Loading indicator for next page */}
             {isFetchingNextPage && (
-              <View className="py-4 items-center">
+              <View className="items-center py-4">
                 <ActivityIndicator size="small" color="#ffdb33" />
               </View>
             )}
-            
+
             {/* End of list indicator */}
             {!hasNextPage && filtered.length > 0 && (
-              <View className="py-4 items-center">
+              <View className="items-center py-4">
                 <CustomText variant="muted" className="text-xs">
                   No more transactions
                 </CustomText>

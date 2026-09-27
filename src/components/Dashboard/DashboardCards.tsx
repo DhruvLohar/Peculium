@@ -9,10 +9,13 @@ interface DashboardCardsProps {
 }
 
 function formatAmount(n: number): string {
-  return '₹' + Math.abs(n).toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  return (
+    '₹' +
+    Math.abs(n).toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  );
 }
 
 const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expense }) => {
@@ -22,10 +25,9 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
 
   return (
     <View className="flex-row gap-3" style={{ height: 190 }}>
-
       {/* Left — Balance */}
-      <View className="flex-1 border-2 border-border bg-card p-4 justify-between">
-        <View className="flex-1 bg-primary mb-4" />
+      <View className="flex-1 justify-between border-2 border-border bg-card p-4">
+        <View className="mb-4 flex-1 bg-primary" />
         <View>
           <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
             BALANCE
@@ -38,14 +40,13 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
 
       {/* Right column */}
       <View className="flex-1 gap-3">
-
         {/* Income */}
         <View className="flex-1 border-2 border-border bg-card p-4">
-          <View className="flex-row justify-between items-start">
+          <View className="flex-row items-start justify-between">
             <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
               INCOME
             </CustomText>
-            <View className="w-5 h-5 bg-safe" />
+            <View className="h-5 w-5 bg-safe" />
           </View>
           <CustomText variant="h3" className="mt-2">
             {incomeStr}
@@ -54,17 +55,16 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
 
         {/* Expense */}
         <View className="flex-1 border-2 border-border bg-card p-4">
-          <View className="flex-row justify-between items-start">
+          <View className="flex-row items-start justify-between">
             <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
               EXPENSE
             </CustomText>
-            <View className="w-5 h-5 bg-destructive" />
+            <View className="h-5 w-5 bg-destructive" />
           </View>
           <CustomText variant="h3" className="mt-2">
             {expenseStr}
           </CustomText>
         </View>
-
       </View>
     </View>
   );

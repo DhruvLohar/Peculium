@@ -13,7 +13,7 @@ const OnboardingPage: React.FC = () => {
         // error surfaced via completeOnboarding.error
       }
     },
-    [completeOnboarding],
+    [completeOnboarding]
   );
 
   return (

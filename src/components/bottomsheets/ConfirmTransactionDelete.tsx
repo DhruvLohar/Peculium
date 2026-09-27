@@ -56,7 +56,9 @@ export default memo(ConfirmTransactionDelete);
 
 // Self-contained sheet — mount anywhere, renders via portal above everything
 export const ConfirmTransactionDeleteSheet = memo(() => (
-  <FixedBottomSheet<ConfirmTransactionDeleteArgs> id={CONFIRM_TRANSACTION_DELETE_SHEET_ID} maxHeight={0.25}>
+  <FixedBottomSheet<ConfirmTransactionDeleteArgs>
+    id={CONFIRM_TRANSACTION_DELETE_SHEET_ID}
+    maxHeight={0.25}>
     {(args) => <ConfirmTransactionDelete {...args} />}
   </FixedBottomSheet>
 ));

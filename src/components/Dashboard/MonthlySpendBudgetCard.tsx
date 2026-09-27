@@ -1,10 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Pressable, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
@@ -115,9 +111,8 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
         onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        style={cardAnimatedStyle}
-      >
-        <View className="bg-card border-2 border-border">
+        style={cardAnimatedStyle}>
+        <View className="border-2 border-border bg-card">
           <View className={cn('border-b-2 border-border px-4 py-3', headerBg)}>
             <View className="flex-row items-center gap-2">
               <MaterialIcons name="account-balance-wallet" size={20} color={colors.foreground} />
@@ -126,9 +121,11 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
               </CustomText>
             </View>
           </View>
-          <View className="px-4 py-8 items-center">
+          <View className="items-center px-4 py-8">
             <MaterialIcons name="trending-up" size={48} color={colors.muted} />
-            <CustomText variant="h4" className="mt-4 mb-2">No Budget Set</CustomText>
+            <CustomText variant="h4" className="mb-2 mt-4">
+              No Budget Set
+            </CustomText>
             <CustomText variant="muted" className="text-center text-sm">
               Tap to set your monthly spending limit
             </CustomText>
@@ -143,10 +140,13 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
       onPress={handlePress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={cardAnimatedStyle}
-    >
-      <View className="bg-card border-2 border-border">
-        <View className={cn('border-b-2 border-border px-4 py-3 flex-row justify-between items-center', headerBg)}>
+      style={cardAnimatedStyle}>
+      <View className="border-2 border-border bg-card">
+        <View
+          className={cn(
+            'flex-row items-center justify-between border-b-2 border-border px-4 py-3',
+            headerBg
+          )}>
           <View className="flex-row items-center gap-2">
             <MaterialIcons name="account-balance-wallet" size={20} color={colors.foreground} />
             <CustomText variant="label" className="text-xs tracking-widest">
@@ -155,8 +155,7 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
           </View>
           <View
             className={cn('border-2 border-border px-3 py-1', badgeBg)}
-            style={{ boxShadow: `1px 1px 0 0 ${colors.border}` }}
-          >
+            style={{ boxShadow: `1px 1px 0 0 ${colors.border}` }}>
             <CustomText variant="label" className="text-xs tracking-wider" darkInvert>
               {state}
             </CustomText>
@@ -164,21 +163,21 @@ const MonthlySpendBudgetCard: React.FC<MonthlySpendBudgetCardProps> = ({
         </View>
 
         <View className="px-4 py-5">
-          <View className="flex-row items-baseline mb-4">
+          <View className="mb-4 flex-row items-baseline">
             <CustomText variant="h2">₹{formattedSpend}</CustomText>
-            <CustomText variant="p" className="text-muted-foreground ml-2">
+            <CustomText variant="p" className="ml-2 text-muted-foreground">
               / ₹{formattedBudget}
             </CustomText>
           </View>
 
-          <View className="h-8 border-2 border-border bg-muted/20 overflow-hidden">
+          <View className="bg-muted/20 h-8 overflow-hidden border-2 border-border">
             <AnimatedView
               className="h-full border-r-2 border-border"
               style={progressAnimatedStyle}
             />
           </View>
 
-          <View className="flex-row justify-between mt-2">
+          <View className="mt-2 flex-row justify-between">
             <CustomText variant="muted" className="text-xs">
               {spendPercentage.toFixed(1)}% used
             </CustomText>

@@ -116,7 +116,7 @@ const AnimatedStackSegment: React.FC<AnimatedStackSegmentProps> = memo(
     useEffect(() => {
       progress.value = withDelay(
         delay,
-        withTiming(1, { duration, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration, easing: Easing.out(Easing.cubic) })
       );
     }, [delay, duration, progress]);
 
@@ -130,15 +130,8 @@ const AnimatedStackSegment: React.FC<AnimatedStackSegmentProps> = memo(
       };
     });
 
-    return (
-      <AnimatedRect
-        x={x}
-        width={barWidth}
-        fill={color}
-        animatedProps={animatedProps}
-      />
-    );
-  },
+    return <AnimatedRect x={x} width={barWidth} fill={color} animatedProps={animatedProps} />;
+  }
 );
 
 AnimatedStackSegment.displayName = 'AnimatedStackSegment';
@@ -170,7 +163,7 @@ const StackedTooltip: React.FC<StackedTooltipProps> = memo(
 
     const total = useMemo(
       () => segments.reduce((sum, seg) => sum + (values[seg.key] ?? 0), 0),
-      [segments, values],
+      [segments, values]
     );
 
     if (!visible) return null;
@@ -183,17 +176,19 @@ const StackedTooltip: React.FC<StackedTooltipProps> = memo(
             left: x,
             top: y,
             boxShadow: `3px 3px 0 0 ${borderColor}`,
+            backgroundColor: bgColor,
+            borderWidth: 2,
+            borderColor,
           },
           animatedStyle,
         ]}
-        style={{ backgroundColor: bgColor, borderWidth: 2, borderColor }} className="px-3 py-2 min-w-[130px]"
-        pointerEvents="none"
-      >
-        <CustomText variant="label" className="text-xs font-sans-bold mb-2">
+        className="min-w-[130px] px-3 py-2"
+        pointerEvents="none">
+        <CustomText variant="label" className="mb-2 font-sans-bold text-xs">
           {label}
         </CustomText>
         {segments.map((seg) => (
-          <View key={seg.key} className="flex-row items-center justify-between mb-1">
+          <View key={seg.key} className="mb-1 flex-row items-center justify-between">
             <View className="flex-row items-center">
               <View
                 style={{ width: 10, height: 10, backgroundColor: seg.color, marginRight: 6 }}
@@ -203,20 +198,18 @@ const StackedTooltip: React.FC<StackedTooltipProps> = memo(
                 {seg.key}
               </CustomText>
             </View>
-            <CustomText className="text-xs font-sans-bold ml-4">
-              {values[seg.key] ?? 0}
-            </CustomText>
+            <CustomText className="ml-4 font-sans-bold text-xs">{values[seg.key] ?? 0}</CustomText>
           </View>
         ))}
-        <View className="border-t border-border mt-1 pt-1 flex-row justify-between">
+        <View className="mt-1 flex-row justify-between border-t border-border pt-1">
           <CustomText variant="label" className="text-xs text-muted-foreground">
             Total
           </CustomText>
-          <CustomText className="text-xs font-sans-bold">{total}</CustomText>
+          <CustomText className="font-sans-bold text-xs">{total}</CustomText>
         </View>
       </AnimatedView>
     );
-  },
+  }
 );
 
 StackedTooltip.displayName = 'StackedTooltip';
@@ -243,11 +236,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
   }, []);
 
   const totals = useMemo(
-    () =>
-      data.map((point) =>
-        segments.reduce((sum, seg) => sum + (point.values[seg.key] ?? 0), 0),
-      ),
-    [data, segments],
+    () => data.map((point) => segments.reduce((sum, seg) => sum + (point.values[seg.key] ?? 0), 0)),
+    [data, segments]
   );
 
   const maxTotal = useMemo(() => Math.max(...totals, 0), [totals]);
@@ -328,12 +318,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                     height: LABEL_HEIGHT,
                     justifyContent: 'center',
                     paddingRight: 8,
-                  }}
-                >
-                  <CustomText
-                    variant="label"
-                    className="text-xs text-muted-foreground text-right"
-                  >
+                  }}>
+                  <CustomText variant="label" className="text-right text-xs text-muted-foreground">
                     {tick}
                   </CustomText>
                 </View>
@@ -440,9 +426,8 @@ const StackedBarChart: React.FC<StackedBarChartProps> = ({
                 left: x,
                 width: barWidth,
                 alignItems: 'center',
-              }}
-            >
-              <CustomText variant="label" className="text-xs text-muted-foreground mt-1">
+              }}>
+              <CustomText variant="label" className="mt-1 text-xs text-muted-foreground">
                 {point.label}
               </CustomText>
             </View>

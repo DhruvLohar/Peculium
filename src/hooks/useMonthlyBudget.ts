@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 
 // Manual types since monthly_budgets is not in database.types.ts
 interface MonthlyBudgetRow {
@@ -27,9 +27,7 @@ export const useMonthlyBudget = () => {
   const query = useQuery({
     queryKey: ['monthly-budget', currentMonthYear],
     queryFn: async (): Promise<{ amount: number } | null> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -47,9 +45,7 @@ export const useMonthlyBudget = () => {
   // Mutation to upsert budget
   const upsertBudget = useMutation({
     mutationFn: async (amount: number): Promise<void> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase.from('monthly_budgets').upsert(
@@ -61,7 +57,7 @@ export const useMonthlyBudget = () => {
         },
         {
           onConflict: 'user_id,month_year',
-        },
+        }
       );
 
       if (error) throw new Error(error.message);

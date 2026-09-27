@@ -58,10 +58,10 @@ const LoaderDot: React.FC<LoaderDotProps> = memo(({ delay, duration, dotClass })
       withRepeat(
         withSequence(
           withTiming(-6, { duration: duration * 500, easing: Easing.inOut(Easing.ease) }),
-          withTiming(0, { duration: duration * 500, easing: Easing.inOut(Easing.ease) }),
+          withTiming(0, { duration: duration * 500, easing: Easing.inOut(Easing.ease) })
         ),
-        -1,
-      ),
+        -1
+      )
     );
   }, [delay, duration, translateY]);
 
@@ -91,17 +91,12 @@ const Loader: React.FC<LoaderProps> = ({
 }) => {
   const containerClass = useMemo(
     () => cn(loaderVariants({ variant, size }), className),
-    [variant, size, className],
+    [variant, size, className]
   );
 
   const dotClass = useMemo(
-    () =>
-      cn(
-        'border-2',
-        dotBgVariants[variant ?? 'default'],
-        dotSizeVariants[size ?? 'md'],
-      ),
-    [variant, size],
+    () => cn('border-2', dotBgVariants[variant ?? 'default'], dotSizeVariants[size ?? 'md']),
+    [variant, size]
   );
 
   const dots = useMemo(
@@ -109,7 +104,7 @@ const Loader: React.FC<LoaderProps> = ({
       Array.from({ length: count }, (_, i) => (
         <LoaderDot key={i} delay={i * delayStep} duration={duration} dotClass={dotClass} />
       )),
-    [count, delayStep, duration, dotClass],
+    [count, delayStep, duration, dotClass]
   );
 
   return (

@@ -1,10 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { Pressable, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
 import FireIcon from '@/components/icons/FireIcon';

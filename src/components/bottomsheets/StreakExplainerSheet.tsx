@@ -33,11 +33,11 @@ const StreakExplainerContent: React.FC = () => {
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24 }}>
       {/* Header with Icon */}
-      <View className="items-center mb-6">
+      <View className="mb-6 items-center">
         <View className="mb-4">
           <FireIcon size={64} color="#e63946" />
         </View>
-        <CustomText variant="h3" className="text-center mb-2">
+        <CustomText variant="h3" className="mb-2 text-center">
           Daily Streak
         </CustomText>
         <CustomText variant="muted" className="text-center text-sm">
@@ -46,7 +46,7 @@ const StreakExplainerContent: React.FC = () => {
       </View>
 
       {/* How it works */}
-      <View className="bg-primary/20 border-2 border-border p-4 mb-4">
+      <View className="bg-primary/20 mb-4 border-2 border-border p-4">
         <CustomText variant="h4" className="mb-3">
           How It Works
         </CustomText>
@@ -54,7 +54,7 @@ const StreakExplainerContent: React.FC = () => {
         <View className="gap-3">
           {STREAK_STEPS.map((step) => (
             <View key={step.number} className="flex-row gap-3">
-              <View className="w-6 h-6 border-2 border-border bg-primary items-center justify-center">
+              <View className="h-6 w-6 items-center justify-center border-2 border-border bg-primary">
                 <CustomText variant="label" className="text-xs" darkInvert>
                   {step.number}
                 </CustomText>
@@ -70,13 +70,14 @@ const StreakExplainerContent: React.FC = () => {
       </View>
 
       {/* Benefit */}
-      <View className="border-2 border-border p-4 mb-6">
-        <View className="flex-row items-center gap-2 mb-2">
+      <View className="mb-6 border-2 border-border p-4">
+        <View className="mb-2 flex-row items-center gap-2">
           <FireIcon size={16} color="#e63946" />
           <CustomText variant="h4">Why Track Daily?</CustomText>
         </View>
         <CustomText variant="p" className="text-sm">
-          Consistent tracking builds better financial awareness. The more you engage with your money, the better you understand your spending patterns.
+          Consistent tracking builds better financial awareness. The more you engage with your
+          money, the better you understand your spending patterns.
         </CustomText>
       </View>
 

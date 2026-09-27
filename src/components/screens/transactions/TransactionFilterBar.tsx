@@ -30,14 +30,10 @@ const FilterTab: React.FC<FilterTabProps> = memo(({ label, value, isActive, onPr
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      className={`border-2 px-3 py-1 mr-2 ${
-        isActive ? 'bg-primary border-primary' : 'bg-background border-foreground'
-      }`}
-    >
-      <CustomText
-        variant="label"
-        darkInvert={isActive}
-      >
+      className={`mr-2 border-2 px-3 py-1 ${
+        isActive ? 'border-primary bg-primary' : 'border-foreground bg-background'
+      }`}>
+      <CustomText variant="label" darkInvert={isActive}>
         {label}
       </CustomText>
     </TouchableOpacity>

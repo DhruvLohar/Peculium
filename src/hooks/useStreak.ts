@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import supabase from '../utils/supabase';
+import supabase, { getSessionUser } from '../utils/supabase';
 
 interface StreakData {
   current_streak: number;
@@ -14,9 +14,7 @@ export const useStreak = () => {
   return useQuery({
     queryKey: ['streak'],
     queryFn: async (): Promise<StreakData> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -40,9 +38,7 @@ export const useUpdateStreak = () => {
 
   return useMutation({
     mutationFn: async (): Promise<StreakData> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       // Get current streak data

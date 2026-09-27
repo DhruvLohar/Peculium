@@ -117,7 +117,7 @@ const AnimatedBar: React.FC<AnimatedBarProps> = memo(
     useEffect(() => {
       progress.value = withDelay(
         delay,
-        withTiming(1, { duration, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration, easing: Easing.out(Easing.cubic) })
       );
     }, [delay, duration, progress]);
 
@@ -140,7 +140,7 @@ const AnimatedBar: React.FC<AnimatedBarProps> = memo(
         animatedProps={animatedProps}
       />
     );
-  },
+  }
 );
 
 AnimatedBar.displayName = 'AnimatedBar';
@@ -180,17 +180,19 @@ const GroupedTooltip: React.FC<GroupedTooltipProps> = memo(
             left: x,
             top: y,
             boxShadow: `3px 3px 0 0 ${borderColor}`,
+            backgroundColor: bgColor,
+            borderWidth: 2,
+            borderColor,
           },
           animatedStyle,
         ]}
-        style={{ backgroundColor: bgColor, borderWidth: 2, borderColor }} className="px-3 py-2 min-w-[130px]"
-        pointerEvents="none"
-      >
-        <CustomText variant="label" className="text-xs font-sans-bold mb-2">
+        className="min-w-[130px] px-3 py-2"
+        pointerEvents="none">
+        <CustomText variant="label" className="mb-2 font-sans-bold text-xs">
           {label}
         </CustomText>
         {segments.map((seg) => (
-          <View key={seg.key} className="flex-row items-center justify-between mb-1">
+          <View key={seg.key} className="mb-1 flex-row items-center justify-between">
             <View className="flex-row items-center">
               <View
                 style={{ width: 10, height: 10, backgroundColor: seg.color, marginRight: 6 }}
@@ -200,14 +202,12 @@ const GroupedTooltip: React.FC<GroupedTooltipProps> = memo(
                 {seg.key}
               </CustomText>
             </View>
-            <CustomText className="text-xs font-sans-bold ml-4">
-              {values[seg.key] ?? 0}
-            </CustomText>
+            <CustomText className="ml-4 font-sans-bold text-xs">{values[seg.key] ?? 0}</CustomText>
           </View>
         ))}
       </AnimatedView>
     );
-  },
+  }
 );
 
 GroupedTooltip.displayName = 'GroupedTooltip';
@@ -259,7 +259,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
     if (data.length === 0) return 0;
     return Math.max(
       (svgWidth - groupGap * (data.length + 1)) / data.length,
-      segCount * 8 + (segCount - 1) * innerGap,
+      segCount * 8 + (segCount - 1) * innerGap
     );
   }, [svgWidth, data.length, segCount]);
 
@@ -288,9 +288,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
     const group = groups[selectedIndex];
     const groupCenterX = yAxisWidth + group.x + groupWidth / 2;
 
-    const groupMax = Math.max(
-      ...segments.map((seg) => group.point.values[seg.key] ?? 0),
-    );
+    const groupMax = Math.max(...segments.map((seg) => group.point.values[seg.key] ?? 0));
     const barTopY = chartHeight - (groupMax / max) * chartHeight;
 
     const tooltipWidth = 130;
@@ -333,12 +331,8 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
                     height: LABEL_HEIGHT,
                     justifyContent: 'center',
                     paddingRight: 8,
-                  }}
-                >
-                  <CustomText
-                    variant="label"
-                    className="text-xs text-muted-foreground text-right"
-                  >
+                  }}>
+                  <CustomText variant="label" className="text-right text-xs text-muted-foreground">
                     {tick}
                   </CustomText>
                 </View>
@@ -389,7 +383,7 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
                         duration={animationDuration}
                       />
                     );
-                  }),
+                  })
                 )}
               </Svg>
 
@@ -421,9 +415,8 @@ const GroupedBarChart: React.FC<GroupedBarChartProps> = ({
                 left: x,
                 width: groupWidth,
                 alignItems: 'center',
-              }}
-            >
-              <CustomText variant="label" className="text-xs text-muted-foreground mt-1">
+              }}>
+              <CustomText variant="label" className="mt-1 text-xs text-muted-foreground">
                 {point.label}
               </CustomText>
             </View>

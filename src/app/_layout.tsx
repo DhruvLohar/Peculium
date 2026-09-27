@@ -17,7 +17,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { useAuthState } from '@/hooks/useUserAuth';
 import { useDeviceId } from '@/hooks/useDeviceId';
+import { useRequestSmsPermissionOnce } from '@/hooks/useRequestSmsPermissionOnce';
+import { useBankSmsDebugLogs } from '@/hooks/useBankSmsDebugLogs';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useSmsTransactionSync } from '@/hooks/useSmsTransactionSync';
 import BottomSheetProvider from '@/components/providers/BottomSheetProvider';
 import ThemeProvider from '@/components/providers/ThemeProvider';
 
@@ -32,6 +35,8 @@ function RootLayoutNav() {
   const authState = useAuthState();
   const navigationState = useRootNavigationState();
 
+  useSmsTransactionSync(authState === 'authenticated');
+
   useEffect(() => {
     if (authState === 'loading' || !navigationState?.key) return;
 
@@ -42,7 +47,10 @@ function RootLayoutNav() {
         router.replace('/(auth)');
       } else if (authState === 'needs-onboarding' && rootSegment !== 'onboarding') {
         router.replace('/onboarding');
-      } else if (authState === 'authenticated' && (rootSegment === '(auth)' || rootSegment == null)) {
+      } else if (
+        authState === 'authenticated' &&
+        (rootSegment === '(auth)' || rootSegment == null)
+      ) {
         router.replace('/(tabs)');
       }
     } catch (error) {
@@ -60,6 +68,7 @@ function RootLayoutNav() {
       <Stack.Screen name="transaction/add" options={{ headerShown: false }} />
       <Stack.Screen name="transaction/edit" options={{ headerShown: false }} />
       <Stack.Screen name="transaction/view" options={{ headerShown: false }} />
+      <Stack.Screen name="transaction/pending" options={{ headerShown: false }} />
       <Stack.Screen name="profile/index" options={{ headerShown: false }} />
     </Stack>
   );
@@ -71,6 +80,8 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   useDeviceId();
+  useRequestSmsPermissionOnce();
+  useBankSmsDebugLogs();
 
   const { trackAppOpened } = useAnalytics();
   const [loaded, error] = useFonts({

@@ -44,13 +44,16 @@ const OTPScreen: React.FC<OTPScreenProps> = ({
 
   return (
     <Container>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
           {/* Header Section - Top Left */}
-          <View className="pt-8 pb-12">
-            <Text className="font-head text-4xl mb-2 text-foreground">
-              peculium
-            </Text>
+          <View className="pb-12 pt-8">
+            <Text className="mb-2 font-head text-4xl text-foreground">peculium</Text>
             <CustomText variant="p" className="text-muted-foreground">
               Main Character Energy!
             </CustomText>
@@ -60,9 +63,7 @@ const OTPScreen: React.FC<OTPScreenProps> = ({
           <View className="flex-1 justify-center">
             <View className="gap-6">
               <View>
-                <Text className="font-head text-3xl text-foreground mb-2">
-                  Check Your Email
-                </Text>
+                <Text className="mb-2 font-head text-3xl text-foreground">Check Your Email</Text>
                 <CustomText variant="p" className="text-muted-foreground">
                   We sent a code to{' '}
                   <CustomText variant="p" className="font-semibold text-foreground">
@@ -89,14 +90,14 @@ const OTPScreen: React.FC<OTPScreenProps> = ({
                   )}
                 />
                 {errors.otp && (
-                  <CustomText variant="p" className="text-destructive mt-2">
+                  <CustomText variant="p" className="mt-2 text-destructive">
                     {errors.otp.message}
                   </CustomText>
                 )}
               </View>
 
               {serverError && (
-                <CustomText variant="p" className="text-destructive -mt-2">
+                <CustomText variant="p" className="-mt-2 text-destructive">
                   {serverError}
                 </CustomText>
               )}
@@ -105,20 +106,16 @@ const OTPScreen: React.FC<OTPScreenProps> = ({
                 onPress={handleSubmit(handleFormSubmit)}
                 variant="default"
                 size="lg"
-                disabled={isLoading}
-              >
+                disabled={isLoading}>
                 {isLoading ? 'Verifying...' : 'Verify'}
               </Button>
 
-              <View className="flex-row justify-center items-center gap-2">
+              <View className="flex-row items-center justify-center gap-2">
                 <CustomText variant="p" className="text-muted-foreground">
-                  Didn't receive a code?
+                  Didn&apos;t receive a code?
                 </CustomText>
                 <Pressable onPress={handleResend} disabled={isLoading}>
-                  <CustomText
-                    variant="p"
-                    className="font-semibold text-foreground underline"
-                  >
+                  <CustomText variant="p" className="font-semibold text-foreground underline">
                     Resend
                   </CustomText>
                 </Pressable>

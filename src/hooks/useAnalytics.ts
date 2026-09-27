@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import supabase from '@/utils/supabase';
+import supabase, { getSessionUser } from '@/utils/supabase';
 import type { Enums } from '@/utils/database.types';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
 
@@ -13,7 +13,12 @@ type EventDataMap = {
   ContinuedToLogin: { email: string };
   SkippedToLogin: Record<string, never>;
   AddTransaction: { type: TransactionType; category: TransactionCategory; amount: number };
-  EditTransaction: { transaction_id: string; type: TransactionType; category: TransactionCategory; amount: number };
+  EditTransaction: {
+    transaction_id: string;
+    type: TransactionType;
+    category: TransactionCategory;
+    amount: number;
+  };
   DeleteTransaction: { transaction_id: string };
   UpdateMonthlyBudget: { amount: number; month_year: string };
   ProfileViewed: Record<string, never>;
@@ -24,11 +29,11 @@ type EventDataMap = {
 
 async function insertEvent<E extends AppEventType>(
   event: E,
-  event_data: EventDataMap[E],
+  event_data: EventDataMap[E]
 ): Promise<void> {
-  const [device_id, { data: { user } }] = await Promise.all([
+  const [device_id, user] = await Promise.all([
     AsyncStorage.getItem('device_id'),
-    supabase.auth.getUser(),
+    getSessionUser(),
   ]);
 
   await supabase.from('analytics_events').insert({
@@ -54,30 +59,21 @@ export const useAnalytics = () => {
     void insertEvent('SkippedToLogin', {});
   }, []);
 
-  const trackAddTransaction = useCallback(
-    (data: EventDataMap['AddTransaction']) => {
-      void insertEvent('AddTransaction', data);
-    },
-    [],
-  );
+  const trackAddTransaction = useCallback((data: EventDataMap['AddTransaction']) => {
+    void insertEvent('AddTransaction', data);
+  }, []);
 
-  const trackEditTransaction = useCallback(
-    (data: EventDataMap['EditTransaction']) => {
-      void insertEvent('EditTransaction', data);
-    },
-    [],
-  );
+  const trackEditTransaction = useCallback((data: EventDataMap['EditTransaction']) => {
+    void insertEvent('EditTransaction', data);
+  }, []);
 
   const trackDeleteTransaction = useCallback((transaction_id: string) => {
     void insertEvent('DeleteTransaction', { transaction_id });
   }, []);
 
-  const trackUpdateMonthlyBudget = useCallback(
-    (data: EventDataMap['UpdateMonthlyBudget']) => {
-      void insertEvent('UpdateMonthlyBudget', data);
-    },
-    [],
-  );
+  const trackUpdateMonthlyBudget = useCallback((data: EventDataMap['UpdateMonthlyBudget']) => {
+    void insertEvent('UpdateMonthlyBudget', data);
+  }, []);
 
   const trackProfileViewed = useCallback(() => {
     void insertEvent('ProfileViewed', {});

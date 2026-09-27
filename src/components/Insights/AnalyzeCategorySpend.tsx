@@ -19,12 +19,12 @@ const AnalyzeCategorySpend: React.FC = () => {
 
   const selectedBlock = useMemo(
     () => blocks.find((b) => b.category === effectiveCategory) ?? blocks[0] ?? null,
-    [blocks, effectiveCategory],
+    [blocks, effectiveCategory]
   );
 
   const formattedAmount = useMemo(
     () => selectedBlock?.amount.toLocaleString('en-IN') ?? '0',
-    [selectedBlock],
+    [selectedBlock]
   );
 
   const handleSelect = useCallback((category: string) => {
@@ -34,11 +34,10 @@ const AnalyzeCategorySpend: React.FC = () => {
   return (
     <View
       className="border border-border bg-card pr-1"
-      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}
-    >
+      style={{ boxShadow: `4px 4px 0 0 ${colors.border}` }}>
       {/* Header */}
       <View
-        className="border-b border-border px-4 py-3 flex-row items-center justify-between"
+        className="flex-row items-center justify-between border-b border-border px-4 py-3"
         // style={{ backgroundColor: isDark ? '#2e1065' : '#e9d5ff' }}
       >
         <View className="flex-row items-center gap-3">
@@ -52,13 +51,11 @@ const AnalyzeCategorySpend: React.FC = () => {
       {/* Treemap grid */}
       <View
         style={{ height: TREEMAP_HEIGHT, position: 'relative', overflow: 'hidden' }}
-        className="border-b border-border bg-zinc-900"
-      >
+        className="border-b border-border bg-zinc-900">
         {isLoading || blocks.length === 0 ? (
           <View style={{ flex: 1 }} className="items-center justify-center">
             <CustomText
-              style={{ fontSize: 10, fontWeight: '700', letterSpacing: 2, color: '#71717a' }}
-            >
+              style={{ fontSize: 10, fontWeight: '700', letterSpacing: 2, color: '#71717a' }}>
               {isLoading ? 'LOADING...' : 'NO EXPENSE DATA THIS MONTH'}
             </CustomText>
           </View>
@@ -85,8 +82,7 @@ const AnalyzeCategorySpend: React.FC = () => {
                   justifyContent: 'center',
                   padding: 4,
                   zIndex: isSelected ? 10 : 1,
-                }}
-              >
+                }}>
                 {showFull && (
                   <>
                     <CustomText
@@ -96,8 +92,7 @@ const AnalyzeCategorySpend: React.FC = () => {
                         color: '#000',
                         lineHeight: 16,
                         textAlign: 'center',
-                      }}
-                    >
+                      }}>
                       {block.percentage}%
                     </CustomText>
                     <CustomText
@@ -108,8 +103,7 @@ const AnalyzeCategorySpend: React.FC = () => {
                         color: '#000',
                         letterSpacing: 0.5,
                         textAlign: 'center',
-                      }}
-                    >
+                      }}>
                       {block.label}
                     </CustomText>
                   </>
@@ -128,7 +122,7 @@ const AnalyzeCategorySpend: React.FC = () => {
       {/* Terminal readout — always dark */}
       {selectedBlock && (
         <View style={{ backgroundColor: '#111111', padding: 16 }}>
-          <View className="flex-row justify-between items-start mb-4">
+          <View className="mb-4 flex-row items-start justify-between">
             <View>
               <CustomText
                 style={{
@@ -137,8 +131,7 @@ const AnalyzeCategorySpend: React.FC = () => {
                   letterSpacing: 2,
                   color: '#71717a',
                   marginBottom: 4,
-                }}
-              >
+                }}>
                 SELECTED CATEGORY
               </CustomText>
               <View className="flex-row items-center gap-2">
@@ -160,8 +153,7 @@ const AnalyzeCategorySpend: React.FC = () => {
                     textTransform: 'uppercase',
                     letterSpacing: -0.5,
                     maxWidth: 180,
-                  }}
-                >
+                  }}>
                   {selectedBlock.label}
                 </CustomText>
               </View>
@@ -175,8 +167,7 @@ const AnalyzeCategorySpend: React.FC = () => {
                   letterSpacing: 2,
                   color: '#71717a',
                   marginBottom: 4,
-                }}
-              >
+                }}>
                 AREA WEIGHT
               </CustomText>
               <CustomText style={{ fontSize: 22, fontWeight: '900', color: '#ffffff' }}>
@@ -193,16 +184,13 @@ const AnalyzeCategorySpend: React.FC = () => {
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'flex-end',
-            }}
-          >
+            }}>
             <CustomText
-              style={{ fontSize: 10, fontWeight: '700', letterSpacing: 2, color: '#71717a' }}
-            >
+              style={{ fontSize: 10, fontWeight: '700', letterSpacing: 2, color: '#71717a' }}>
               ALLOCATED FUNDS
             </CustomText>
             <CustomText
-              style={{ fontSize: 28, fontWeight: '900', color: '#ffffff', letterSpacing: -1 }}
-            >
+              style={{ fontSize: 28, fontWeight: '900', color: '#ffffff', letterSpacing: -1 }}>
               ₹{formattedAmount}
             </CustomText>
           </View>

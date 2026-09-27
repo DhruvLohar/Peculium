@@ -1,13 +1,20 @@
-import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import supabase from '../utils/supabase';
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
+import supabase, { getSessionUser } from '../utils/supabase';
 import type { Database } from '../utils/database.types';
 
 // Type aliases for cleaner code
-type TransactionRow = Database['public']['Tables']['transactions']['Row'];
+export type TransactionRow = Database['public']['Tables']['transactions']['Row'];
 
 // Use enums from database types
 export type TransactionType = Database['public']['Enums']['transaction_type'];
 export type TransactionCategory = Database['public']['Enums']['transaction_category'];
+export type TransactionStatus = Database['public']['Enums']['transaction_status'];
 
 // Filter interface for querying transactions
 export interface TransactionFilters {
@@ -32,6 +39,25 @@ export type UpdateTransaction = Partial<NewTransaction> & { id: string };
 const PAGE_SIZE = 20;
 
 /**
+ * Invalidates every query that reads transactions, including dashboard/insight aggregates.
+ * Used when a row's status changes, since that moves it in or out of totals.
+ */
+export const invalidateTransactionQueries = (queryClient: QueryClient) => {
+  const keys = [
+    'transactions',
+    'transactions-infinite',
+    'pending-transactions',
+    'transaction',
+    'dashboard',
+    'last-7-days-spending',
+    'weekly-chart',
+    'micro-spend',
+    'weekly-comparison',
+  ];
+  keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }));
+};
+
+/**
  * Infinite query hook to fetch transactions with cursor-based pagination
  * Loads 20 transactions at a time, with infinite scroll support
  */
@@ -39,15 +65,14 @@ export const useTransactions = (filters?: TransactionFilters) => {
   return useQuery({
     queryKey: ['transactions', filters],
     queryFn: async (): Promise<TransactionRow[]> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       let query = supabase
         .from('transactions')
         .select('*')
         .eq('user_id', user.id)
+        .eq('status', 'CONFIRMED')
         .order('transaction_date', { ascending: false });
 
       // Month + year filter: gte start of month, lt start of next month
@@ -72,19 +97,45 @@ export const useTransactions = (filters?: TransactionFilters) => {
 };
 
 /**
+ * Query hook for SMS-captured drafts awaiting a category
+ */
+export const usePendingTransactions = () => {
+  return useQuery({
+    queryKey: ['pending-transactions'],
+    queryFn: async (): Promise<TransactionRow[]> => {
+      const user = await getSessionUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'PENDING_REVIEW')
+        .order('transaction_date', { ascending: false });
+
+      if (error) throw new Error(error.message);
+      return data ?? [];
+    },
+  });
+};
+
+/**
  * Infinite query hook for paginated transactions (for history screen)
  * Uses cursor-based pagination with 20 items per page
+ * Unfiltered by status, so drafts show up here with a badge
  */
 export const useInfiniteTransactions = (filters?: TransactionFilters) => {
   return useInfiniteQuery({
     queryKey: ['transactions-infinite', filters],
-    queryFn: async ({ pageParam }: { pageParam?: string }): Promise<{
+    queryFn: async ({
+      pageParam,
+    }: {
+      pageParam?: string;
+    }): Promise<{
       transactions: TransactionRow[];
       nextCursor: string | null;
     }> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       let query = supabase
@@ -122,7 +173,7 @@ export const useInfiniteTransactions = (filters?: TransactionFilters) => {
       if (error) throw new Error(error.message);
 
       const transactions = data ?? [];
-      
+
       // Generate next cursor from last item
       const nextCursor =
         transactions.length === PAGE_SIZE && transactions.length > 0
@@ -145,9 +196,7 @@ export const useAddTransaction = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: NewTransaction): Promise<TransactionRow> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -169,6 +218,7 @@ export const useAddTransaction = () => {
 
 /**
  * Mutation hook to update an existing transaction
+ * Always marks the row CONFIRMED (the edit form requires a category), so saving a draft confirms it
  * Invalidates all transaction caches on success
  */
 export const useUpdateTransaction = () => {
@@ -177,7 +227,7 @@ export const useUpdateTransaction = () => {
     mutationFn: async ({ id, ...payload }: UpdateTransaction): Promise<TransactionRow> => {
       const { data, error } = await supabase
         .from('transactions')
-        .update({ ...payload, updated_at: new Date().toISOString() })
+        .update({ ...payload, status: 'CONFIRMED', updated_at: new Date().toISOString() })
         .eq('id', id)
         .select()
         .single();
@@ -186,7 +236,7 @@ export const useUpdateTransaction = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateTransactionQueries(queryClient);
     },
   });
 };
@@ -204,7 +254,7 @@ export const useDeleteTransaction = () => {
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      invalidateTransactionQueries(queryClient);
     },
   });
 };
@@ -218,11 +268,7 @@ export const useTransaction = (id: string | null) => {
     queryFn: async (): Promise<TransactionRow | null> => {
       if (!id) return null;
 
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from('transactions').select('*').eq('id', id).single();
 
       if (error) throw new Error(error.message);
       return data;

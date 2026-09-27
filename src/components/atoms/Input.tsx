@@ -32,7 +32,7 @@ const Input: React.FC<InputProps> = ({
       shadowOffset.value = withTiming(0, { duration: 150 });
       onFocus?.(e);
     },
-    [onFocus, shadowOffset],
+    [onFocus, shadowOffset]
   );
 
   const handleBlur = useCallback(
@@ -40,7 +40,7 @@ const Input: React.FC<InputProps> = ({
       shadowOffset.value = withTiming(4, { duration: 150 });
       onBlur?.(e);
     },
-    [onBlur, shadowOffset],
+    [onBlur, shadowOffset]
   );
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -50,7 +50,7 @@ const Input: React.FC<InputProps> = ({
   const inputClass = cn(
     'w-full border-2 border-border px-4 py-2 font-sans text-foreground bg-background',
     isInvalid && 'border-destructive text-destructive',
-    className,
+    className
   );
 
   return (

@@ -107,8 +107,7 @@ function FixedBottomSheetInner<TArgs extends object = object>({
               zIndex: 99,
             },
             backdropStyle,
-          ]}
-        >
+          ]}>
           <Pressable style={{ flex: 1 }} onPress={handleClose} />
         </Animated.View>
 
@@ -129,17 +128,16 @@ function FixedBottomSheetInner<TArgs extends object = object>({
               zIndex: 100,
             },
             sheetStyle,
-          ]}
-        >
+          ]}>
           {/* Handle */}
-          <View className="items-center pt-3 pb-2">
+          <View className="items-center pb-2 pt-3">
             <View style={{ width: 48, height: 5, backgroundColor: colors.border }} />
           </View>
 
           {/* Content */}
           <View style={{ flex: 1 }}>{children(args)}</View>
         </Animated.View>
-      </>,
+      </>
     );
   });
 

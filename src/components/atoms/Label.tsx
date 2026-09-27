@@ -10,7 +10,7 @@ export interface LabelProps extends TextProps {
 const Label: React.FC<LabelProps> = ({ className, disabled = false, children, ...props }) => {
   const labelClass = useMemo(
     () => cn('font-sans text-sm text-foreground leading-none', disabled && 'opacity-50', className),
-    [className, disabled],
+    [className, disabled]
   );
 
   return (

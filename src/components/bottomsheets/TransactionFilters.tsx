@@ -16,7 +16,11 @@ export const LAST_N_DAYS_OPTIONS = [3, 14, 30, 60, 90] as const;
 export type LastNDays = (typeof LAST_N_DAYS_OPTIONS)[number] | null;
 
 export interface TransactionFilterArgs {
-  onApply: (filters: { type: TransactionType | null; categories: TransactionCategory[]; lastNDays: LastNDays }) => void;
+  onApply: (filters: {
+    type: TransactionType | null;
+    categories: TransactionCategory[];
+    lastNDays: LastNDays;
+  }) => void;
   currentType?: TransactionType | null;
   currentCategories?: TransactionCategory[];
   currentLastNDays?: LastNDays;
@@ -47,15 +51,13 @@ const Chip: React.FC<ChipProps> = memo(({ label, selected, onPress }) => {
         boxShadow: selected ? `2px 2px 0px ${colors.border}` : undefined,
         marginRight: 8,
         marginBottom: 8,
-      }}
-    >
+      }}>
       <CustomText
         style={{
           fontWeight: '600',
           fontSize: 13,
           color: selected ? (colorScheme === 'dark' ? '#1a1a1a' : 'white') : colors.foreground,
-        }}
-      >
+        }}>
         {label}
       </CustomText>
     </Pressable>
@@ -76,8 +78,7 @@ const SectionLabel: React.FC<{ children: string }> = memo(({ children }) => {
         letterSpacing: 1.2,
         marginBottom: 10,
         color: colors.muted,
-      }}
-    >
+      }}>
       {children.toUpperCase()}
     </CustomText>
   );
@@ -86,7 +87,7 @@ const SectionLabel: React.FC<{ children: string }> = memo(({ children }) => {
 // ─── Main Content ─────────────────────────────────────────────────────────────
 
 const TYPES: TransactionType[] = ['INCOME', 'EXPENSE'];
-const CATEGORIES = Constants.public.Enums.transaction_category as TransactionCategory[];
+const CATEGORIES: TransactionCategory[] = [...Constants.public.Enums.transaction_category];
 
 const TransactionFilters: React.FC<TransactionFilterArgs> = ({
   onApply,
@@ -96,7 +97,8 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
 }) => {
   const { close } = useBottomSheet(TRANSACTION_FILTERS_SHEET_ID);
   const [selectedType, setSelectedType] = useState<TransactionType | null>(currentType);
-  const [selectedCategories, setSelectedCategories] = useState<TransactionCategory[]>(currentCategories);
+  const [selectedCategories, setSelectedCategories] =
+    useState<TransactionCategory[]>(currentCategories);
   const [selectedLastNDays, setSelectedLastNDays] = useState<LastNDays>(currentLastNDays);
 
   const toggleType = useCallback((type: TransactionType) => {
@@ -105,7 +107,7 @@ const TransactionFilters: React.FC<TransactionFilterArgs> = ({
 
   const toggleCategory = useCallback((cat: TransactionCategory) => {
     setSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
   }, []);
 

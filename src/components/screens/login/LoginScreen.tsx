@@ -30,13 +30,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
 
   return (
     <Container>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
           {/* Header Section - Top Left */}
-          <View className="pt-8 pb-12">
-            <Text className="font-head text-4xl mb-2 text-foreground">
-              peculium
-            </Text>
+          <View className="pb-12 pt-8">
+            <Text className="mb-2 font-head text-4xl text-foreground">peculium</Text>
             <CustomText variant="p" className="text-muted-foreground">
               Main Character Energy!
             </CustomText>
@@ -45,9 +48,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
           {/* Login Form - Vertically Centered */}
           <View className="flex-1 justify-center">
             <View className="gap-6">
-              <Text className="font-head text-3xl text-foreground">
-                Login
-              </Text>
+              <Text className="font-head text-3xl text-foreground">Login</Text>
 
               <View>
                 <Controller
@@ -67,14 +68,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
                   )}
                 />
                 {errors.email && (
-                  <CustomText variant="p" className="text-destructive mt-2">
+                  <CustomText variant="p" className="mt-2 text-destructive">
                     {errors.email.message}
                   </CustomText>
                 )}
               </View>
 
               {serverError && (
-                <CustomText variant="p" className="text-destructive -mt-2">
+                <CustomText variant="p" className="-mt-2 text-destructive">
                   {serverError}
                 </CustomText>
               )}
@@ -83,8 +84,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onSubmit, isLoading = false, 
                 onPress={handleSubmit(handleFormSubmit)}
                 variant="default"
                 size="lg"
-                disabled={isLoading}
-              >
+                disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Continue'}
               </Button>
             </View>

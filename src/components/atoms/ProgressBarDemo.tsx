@@ -40,12 +40,12 @@ const ProgressBarDemo: React.FC = () => {
           </CustomText>
           <ProgressBar value={60} size="sm" />
 
-          <CustomText variant="label" className="text-xs mt-2">
+          <CustomText variant="label" className="mt-2 text-xs">
             Medium (md) - Default
           </CustomText>
           <ProgressBar value={60} size="md" />
 
-          <CustomText variant="label" className="text-xs mt-2">
+          <CustomText variant="label" className="mt-2 text-xs">
             Large (lg)
           </CustomText>
           <ProgressBar value={60} size="lg" />
@@ -61,17 +61,17 @@ const ProgressBarDemo: React.FC = () => {
           </CustomText>
           <ProgressBar value={80} color="primary" />
 
-          <CustomText variant="label" className="text-xs mt-2">
+          <CustomText variant="label" className="mt-2 text-xs">
             Secondary (Black)
           </CustomText>
           <ProgressBar value={65} color="secondary" />
 
-          <CustomText variant="label" className="text-xs mt-2">
+          <CustomText variant="label" className="mt-2 text-xs">
             Destructive (Red)
           </CustomText>
           <ProgressBar value={90} color="destructive" />
 
-          <CustomText variant="label" className="text-xs mt-2">
+          <CustomText variant="label" className="mt-2 text-xs">
             Accent (Light Yellow)
           </CustomText>
           <ProgressBar value={45} color="accent" />
@@ -87,7 +87,7 @@ const ProgressBarDemo: React.FC = () => {
           </CustomText>
           <ProgressBar value={dynamicValue} animationType="timing" />
 
-          <CustomText variant="label" className="text-xs mt-2">
+          <CustomText variant="label" className="mt-2 text-xs">
             Spring Animation
           </CustomText>
           <ProgressBar value={dynamicValue} animationType="spring" />
@@ -97,7 +97,7 @@ const ProgressBarDemo: React.FC = () => {
       {/* Budget Example */}
       <View className="gap-2">
         <CustomText variant="h4">Budget Progress</CustomText>
-        <View className="bg-card border-2 border-border p-4 gap-2">
+        <View className="gap-2 border-2 border-border bg-card p-4">
           <View className="flex-row justify-between">
             <CustomText variant="label">Food Budget</CustomText>
             <CustomText variant="muted" className="text-xs">
@@ -114,7 +114,7 @@ const ProgressBarDemo: React.FC = () => {
       {/* Over Budget Example */}
       <View className="gap-2">
         <CustomText variant="h4">Over Budget Warning</CustomText>
-        <View className="bg-card border-2 border-border p-4 gap-2">
+        <View className="gap-2 border-2 border-border bg-card p-4">
           <View className="flex-row justify-between">
             <CustomText variant="label">Travel Budget</CustomText>
             <CustomText variant="muted" className="text-xs">
@@ -122,16 +122,14 @@ const ProgressBarDemo: React.FC = () => {
             </CustomText>
           </View>
           <ProgressBar value={3500} max={2000} color="destructive" />
-          <CustomText className="text-xs text-destructive">
-            ⚠️ 175% - Over budget!
-          </CustomText>
+          <CustomText className="text-xs text-destructive">⚠️ 175% - Over budget!</CustomText>
         </View>
       </View>
 
       {/* Savings Goal */}
       <View className="gap-2">
         <CustomText variant="h4">Savings Goal</CustomText>
-        <View className="bg-accent border-2 border-border p-4 gap-2">
+        <View className="gap-2 border-2 border-border bg-accent p-4">
           <View className="flex-row justify-between">
             <CustomText variant="label">Dream Vacation</CustomText>
             <CustomText variant="muted" className="text-xs">
@@ -154,14 +152,10 @@ const ProgressBarDemo: React.FC = () => {
       {/* Interactive Example */}
       <View className="gap-2">
         <CustomText variant="h4">Interactive</CustomText>
-        <View className="bg-card border-2 border-border p-4 gap-3">
+        <View className="gap-3 border-2 border-border bg-card p-4">
           <View className="flex-row justify-between">
             <CustomText variant="label">Progress: {dynamicValue}%</CustomText>
-            <Button
-              size="sm"
-              variant="outline"
-              onPress={() => setDynamicValue(0)}
-            >
+            <Button size="sm" variant="outline" onPress={() => setDynamicValue(0)}>
               Reset
             </Button>
           </View>

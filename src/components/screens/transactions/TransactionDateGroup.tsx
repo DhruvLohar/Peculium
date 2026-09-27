@@ -21,7 +21,7 @@ const TransactionDateGroup: React.FC<TransactionDateGroupProps> = ({
     (id: string) => {
       onCardPress?.(id);
     },
-    [onCardPress],
+    [onCardPress]
   );
 
   return (
