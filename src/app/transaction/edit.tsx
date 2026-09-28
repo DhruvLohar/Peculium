@@ -38,7 +38,11 @@ const EditTransactionScreen: React.FC = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const { data: transaction, isLoading } = useTransaction(id ?? null);
-  const { mutate: updateTransaction, isPending: isUpdating } = useUpdateTransaction();
+  const {
+    mutate: updateTransaction,
+    isPending: isUpdating,
+    error: updateError,
+  } = useUpdateTransaction();
   const { mutate: deleteTransaction, isPending: isDeleting } = useDeleteTransaction();
   const { mutate: updateStreak } = useUpdateStreak();
   const { trackEditTransaction, trackDeleteTransaction } = useAnalytics();
@@ -260,6 +264,11 @@ const EditTransactionScreen: React.FC = () => {
                 </Button>
               </View>
             </View>
+            {updateError && (
+              <CustomText variant="muted" className="text-destructive">
+                Couldn&apos;t save: {updateError.message}
+              </CustomText>
+            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
