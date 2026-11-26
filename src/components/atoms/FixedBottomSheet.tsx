@@ -64,17 +64,32 @@ function FixedBottomSheetInner<TArgs extends object = object>({
     };
   }, [id, register, unregister, removePortal]);
 
-  // Drive animation when open state changes
+  // Drive animation when open state changes. Only an actual open -> closed transition may dismiss
+  // the keyboard: every screen mounts its (closed) sheets, so dismissing on any other re-run would
+  // blur whatever input the user just focused.
+  const wasOpenRef = useRef(false);
+  const screenHeightRef = useRef(SCREEN_HEIGHT);
+  screenHeightRef.current = SCREEN_HEIGHT;
   useEffect(() => {
+    const wasOpen = wasOpenRef.current;
+    wasOpenRef.current = isOpen;
+
     if (isOpen) {
       translateY.value = withSpring(0, SPRING_CONFIG);
       backdropOpacity.value = withTiming(1, { duration: 200 });
-    } else {
-      Keyboard.dismiss();
-      translateY.value = withSpring(SCREEN_HEIGHT, SPRING_CONFIG);
-      backdropOpacity.value = withTiming(0, { duration: 200 });
+      return;
     }
-  }, [isOpen, translateY, backdropOpacity, SCREEN_HEIGHT]);
+
+    if (wasOpen) Keyboard.dismiss();
+    translateY.value = withSpring(screenHeightRef.current, SPRING_CONFIG);
+    backdropOpacity.value = withTiming(0, { duration: 200 });
+  }, [isOpen, translateY, backdropOpacity]);
+
+  // Keep a closed sheet parked just off-screen when the window height changes (the on-screen
+  // keyboard resizes the viewport on web) - without animating or touching focus.
+  useEffect(() => {
+    if (!wasOpenRef.current) translateY.value = SCREEN_HEIGHT;
+  }, [SCREEN_HEIGHT, translateY]);
 
   const handleClose = useCallback(() => close(id), [id, close]);
 
