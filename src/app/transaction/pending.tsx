@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { ScrollView, RefreshControl, View } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Container } from '@/components/Container';
 import ScreenHeader from '@/components/ScreenHeader';
@@ -7,6 +7,7 @@ import CustomText from '@/components/atoms/CustomText';
 import Loader from '@/components/atoms/Loader';
 import TransactionCard from '@/components/screens/transactions/TransactionCard';
 import { usePendingTransactions } from '@/hooks/useTransactions';
+import RefreshableScrollView from '@/components/atoms/RefreshableScrollView';
 
 const PendingTransactionsScreen: React.FC = () => {
   const router = useRouter();
@@ -27,17 +28,12 @@ const PendingTransactionsScreen: React.FC = () => {
 
   return (
     <Container>
-      <ScrollView
+      <RefreshableScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            tintColor="#ffdb33"
-            colors={['#ffdb33']}
-          />
-        }>
+        refreshing={isRefetching}
+        onRefresh={refetch}
+        tintColor="#ffdb33">
         <ScreenHeader
           title="Needs Review"
           subtitle="Captured from bank SMS. Pick a category to add them to your totals."
@@ -67,7 +63,7 @@ const PendingTransactionsScreen: React.FC = () => {
         )}
 
         <View className="h-8" />
-      </ScrollView>
+      </RefreshableScrollView>
     </Container>
   );
 };

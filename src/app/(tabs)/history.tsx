@@ -1,7 +1,5 @@
 import React, { memo, useState, useMemo, useCallback } from 'react';
 import {
-  ScrollView,
-  RefreshControl,
   View,
   ActivityIndicator,
   Text,
@@ -28,6 +26,7 @@ import {
 import { useInfiniteTransactions } from '@/hooks/useTransactions';
 import type { TransactionCategory, TransactionType } from '@/hooks/useTransactions';
 import type { Database } from '@/utils/database.types';
+import RefreshableScrollView from '@/components/atoms/RefreshableScrollView';
 
 type TransactionRow = Database['public']['Tables']['transactions']['Row'];
 
@@ -230,18 +229,13 @@ const HistoryScreen: React.FC = () => {
         </View>
       </View>
 
-      <ScrollView
+      <RefreshableScrollView
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={400}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            tintColor="#ffdb33"
-            colors={['#ffdb33']}
-          />
-        }>
+        refreshing={isRefetching}
+        onRefresh={refetch}
+        tintColor="#ffdb33">
         {isLoading ? (
           <View className="items-center justify-center py-20">
             <Loader />
@@ -281,7 +275,7 @@ const HistoryScreen: React.FC = () => {
           </>
         )}
         <View className="h-8" />
-      </ScrollView>
+      </RefreshableScrollView>
 
       <FloatingActionButton onPress={handleAddTransaction} variant="default" size="lg">
         <Text className="text-3xl font-bold text-primary-foreground">+</Text>

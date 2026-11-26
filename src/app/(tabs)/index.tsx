@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { ScrollView, RefreshControl, View, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Container } from '@/components/Container';
 import CustomText from '@/components/atoms/CustomText';
@@ -17,6 +17,7 @@ import { useLast7DaysSpending } from '@/hooks/useLast7DaysSpending';
 import { useMonthlyBudget } from '@/hooks/useMonthlyBudget';
 import { useStreak } from '@/hooks/useStreak';
 import { usePendingTransactions } from '@/hooks/useTransactions';
+import RefreshableScrollView from '@/components/atoms/RefreshableScrollView';
 
 const Home: React.FC = () => {
   const router = useRouter();
@@ -78,24 +79,19 @@ const Home: React.FC = () => {
 
   return (
     <Container>
-      <ScrollView
+      <RefreshableScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={
-              isRefetching ||
-              isChartRefetching ||
-              isMonthRefetching ||
-              isBudgetRefetching ||
-              isStreakRefetching ||
-              isPendingRefetching
-            }
-            onRefresh={handleRefresh}
-            tintColor="#ffdb33"
-            colors={['#ffdb33']}
-          />
-        }>
+        refreshing={
+          isRefetching ||
+          isChartRefetching ||
+          isMonthRefetching ||
+          isBudgetRefetching ||
+          isStreakRefetching ||
+          isPendingRefetching
+        }
+        onRefresh={handleRefresh}
+        tintColor="#ffdb33">
         {/* Header */}
         <View className="flex-row items-center gap-3 pb-6 pt-8">
           <Pressable
@@ -161,7 +157,7 @@ const Home: React.FC = () => {
         </View>
 
         <View className="h-8" />
-      </ScrollView>
+      </RefreshableScrollView>
 
       {/* Bottom Sheets */}
       <EditMonthlyBudgetSheet />

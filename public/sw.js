@@ -3,10 +3,12 @@
  * Only same-origin GETs are handled; Supabase/API traffic always goes straight to the network
  * (React Query's on-device cache covers data).
  */
-const VERSION = 'v1';
+// Bump when this file's caching strategy changes; keep SHELL_CACHE in sync with src/utils/appUpdate.ts
+const VERSION = 'v2';
 const SHELL_CACHE = `peculium-shell-${VERSION}`;
 const ASSET_CACHE = `peculium-assets-${VERSION}`;
 const MAX_ASSETS = 80;
+const NAVIGATION_TIMEOUT_MS = 2500;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -49,23 +51,23 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Page loads: serve the cached shell immediately, refresh it in the background.
-  // A new deploy is picked up on the following launch.
+  // Page loads: network-first so a new deploy shows up on the next launch, but fall back to the
+  // cached shell after a short wait (or when offline) so launch stays fast on a bad connection.
   if (request.mode === 'navigate') {
     event.respondWith(
       caches.open(SHELL_CACHE).then(async (cache) => {
-        const cached = await cache.match('/');
-        const network = fetch('/', { cache: 'no-cache' })
-          .then((response) => {
-            if (response.ok) cache.put('/', response.clone());
-            return response;
-          })
-          .catch(() => cached);
-        if (cached) {
-          event.waitUntil(network);
-          return cached;
-        }
-        return network;
+        const network = fetch('/', { cache: 'no-cache' }).then((response) => {
+          if (response.ok) cache.put('/', response.clone());
+          return response;
+        });
+        const timeout = new Promise((resolve) => setTimeout(resolve, NAVIGATION_TIMEOUT_MS));
+        const cached = cache.match('/');
+
+        const winner = await Promise.race([network.catch(() => null), timeout]);
+        if (winner) return winner;
+        // Slow or offline: serve the cached shell, keep updating it in the background
+        event.waitUntil(network.catch(() => undefined));
+        return (await cached) || network;
       })
     );
     return;
