@@ -169,9 +169,13 @@ export const useAuthState = () => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        await updateAuthState(session.user.id);
+        // Never await Supabase calls inside this callback: auth-js runs it while holding its session
+        // lock, and the profile query below needs that same lock - awaiting it here deadlocks every
+        // later query (they all hang in "fetching"). Deferring lets the lock release first.
+        const userId = session.user.id;
+        setTimeout(() => void updateAuthState(userId), 0);
       } else if (event === 'SIGNED_OUT') {
         setAuthState('unauthenticated');
       }
