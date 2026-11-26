@@ -9,9 +9,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing EXPO_PUBLIC_SUPABASE_URL or EXPO_PUBLIC_SUPABASE_ANON_KEY');
 }
 
+// Same value supabase-js derives by default, spelled out so we can read the persisted session directly
+const AUTH_STORAGE_KEY = `sb-${supabaseUrl.replace(/^https?:\/\//, '').split('.')[0]}-auth-token`;
+
 const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: AsyncStorage,
+    storageKey: AUTH_STORAGE_KEY,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
@@ -59,6 +63,22 @@ export const getSessionUser = async () => {
   }
 
   return session?.user ?? null;
+};
+
+/**
+ * Whether a session is persisted on the device, without touching the network. Supabase only removes
+ * the stored session on an explicit sign-out or a rejected refresh token, so if one is here the user is
+ * still signed in - even when getSession() can't refresh an expired access token because we're offline.
+ */
+export const getPersistedUserId = async (): Promise<string | null> => {
+  try {
+    const raw = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const stored = JSON.parse(raw) as { refresh_token?: string; user?: { id?: string } };
+    return stored.refresh_token && stored.user?.id ? stored.user.id : null;
+  } catch {
+    return null;
+  }
 };
 
 export default supabase;

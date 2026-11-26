@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import supabase from '../utils/supabase';
+import supabase, { getPersistedUserId } from '../utils/supabase';
 
 interface VerifyOtpResult {
   needsOnboarding: boolean;
@@ -126,22 +126,35 @@ export const useAuthState = () => {
     // left held (e.g. app backgrounded mid-refresh), so guard it with a
     // timeout instead of leaving the splash screen stuck.
     let settled = false;
+
+    // An expired access token makes getSession() refresh over the network, which fails or stalls
+    // offline. That isn't a sign-out: if the session is still persisted, stay signed in and let
+    // auto-refresh catch up (TOKEN_REFRESHED / SIGNED_OUT below settle it once we're back online).
+    const resolveFromStorage = async () => {
+      const userId = await getPersistedUserId();
+      setAuthState(userId ? 'authenticated' : 'unauthenticated');
+    };
+
     const timeoutId = setTimeout(() => {
       if (!settled) {
         settled = true;
-        console.warn('Auth session check timed out; treating as unauthenticated.');
-        setAuthState('unauthenticated');
+        console.warn('Auth session check timed out; falling back to persisted session.');
+        void resolveFromStorage();
       }
     }, 8000);
 
     supabase.auth
       .getSession()
-      .then(({ data: { session } }) => {
+      .then(({ data: { session }, error }) => {
         if (settled) return;
         settled = true;
         clearTimeout(timeoutId);
         if (session) {
           updateAuthState(session.user.id);
+        } else if (error) {
+          // A rejected refresh token has already cleared storage, so this only keeps network failures signed in
+          console.warn('Failed to refresh auth session:', error.message);
+          void resolveFromStorage();
         } else {
           setAuthState('unauthenticated');
         }
@@ -151,17 +164,18 @@ export const useAuthState = () => {
         settled = true;
         clearTimeout(timeoutId);
         console.error('Failed to read auth session:', error);
-        setAuthState('unauthenticated');
+        void resolveFromStorage();
       });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!session) {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        await updateAuthState(session.user.id);
+      } else if (event === 'SIGNED_OUT') {
         setAuthState('unauthenticated');
-        return;
       }
-      await updateAuthState(session.user.id);
+      // A null INITIAL_SESSION means the startup refresh failed; the bootstrap above handles it
     });
 
     return () => {
