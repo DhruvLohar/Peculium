@@ -1,12 +1,11 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { Pressable } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { AnimatedPressable } from './Animated';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
 import { getThemeColors } from '@/utils/themeColors';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SHADOW_SIZE = 5;
 

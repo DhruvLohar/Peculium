@@ -1,13 +1,13 @@
 import React, { memo, useCallback } from 'react';
 import { Pressable, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { AnimatedPressable } from '@/components/atoms/Animated';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
 import FireIcon from '@/components/icons/FireIcon';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import { STREAK_EXPLAINER_SHEET_ID } from '@/components/bottomsheets/StreakExplainerSheet';
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SHADOW_SIZE = 4;
 

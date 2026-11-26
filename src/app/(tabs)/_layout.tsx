@@ -1,5 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Platform } from 'react-native';
 import { Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
 import { getThemeColors } from '@/utils/themeColors';
 
@@ -8,6 +10,7 @@ export default function TabLayout() {
   const isDark = colorScheme === 'dark';
   const colors = getThemeColors(isDark);
   const bgColor = isDark ? '#1a1a1a' : '#ffffff';
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -20,6 +23,13 @@ export default function TabLayout() {
           backgroundColor: bgColor,
           borderTopColor: colors.border,
           borderTopWidth: 2,
+          // Explicit on web so labels aren't clipped; the inset is non-zero when launched from the
+          // iPhone home screen (viewport-fit=cover), keeping the bar above the home indicator
+          ...(Platform.OS === 'web' && {
+            height: 64 + bottomInset,
+            paddingTop: 6,
+            paddingBottom: 8 + bottomInset,
+          }),
         },
         tabBarLabelStyle: {
           fontFamily: 'SpaceGrotesk_700Bold',

@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from 'react';
-import { TextInput, type TextInputProps } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { type TextInputProps } from 'react-native';
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { AnimatedTextInput } from './Animated';
 import { useColorScheme } from 'nativewind';
 import { cn } from '@/utils/cn';
 import { getThemeColors } from '@/utils/themeColors';
@@ -10,7 +11,6 @@ export interface InputProps extends TextInputProps {
   isInvalid?: boolean;
 }
 
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 const Input: React.FC<InputProps> = ({
   placeholder = 'Enter text',

@@ -1,12 +1,13 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, type LayoutChangeEvent } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
+import {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
+import { AnimatedView } from './Animated';
 import { cn } from '@/utils/cn';
 
 export interface SliderProps {
@@ -135,8 +136,8 @@ const Slider: React.FC<SliderProps> = ({
     <View className={containerClass}>
       <GestureDetector gesture={panGesture}>
         <View className={cn(trackClass, 'h-3')} onLayout={handleLayoutChange}>
-          <Animated.View className={cn(rangeClass, 'h-full')} style={rangeAnimatedStyle} />
-          <Animated.View className={thumbClass} style={thumbAnimatedStyle} />
+          <AnimatedView className={cn(rangeClass, 'h-full')} style={rangeAnimatedStyle} />
+          <AnimatedView className={thumbClass} style={thumbAnimatedStyle} />
         </View>
       </GestureDetector>
     </View>

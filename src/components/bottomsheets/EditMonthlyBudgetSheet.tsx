@@ -18,7 +18,7 @@ export interface EditMonthlyBudgetArgs extends Record<string, unknown> {
 
 const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) => {
   const { close } = useBottomSheet(EDIT_MONTHLY_BUDGET_SHEET_ID);
-  const { upsertBudget } = useMonthlyBudget();
+  const { upsertBudget, saveBudget } = useMonthlyBudget();
 
   const {
     control,
@@ -35,12 +35,13 @@ const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) =
     close();
   }, [close]);
 
+  // Optimistic: the card updates immediately and the write syncs (or queues offline) in the background
   const onSubmit = useCallback(
-    async (data: BudgetFormValues) => {
-      await upsertBudget.mutateAsync(data.amount);
+    (data: BudgetFormValues) => {
+      saveBudget(data.amount);
       close();
     },
-    [upsertBudget, close]
+    [saveBudget, close]
   );
 
   return (
@@ -88,7 +89,7 @@ const EditMonthlyBudget: React.FC<EditMonthlyBudgetArgs> = ({ currentAmount }) =
           <Button
             variant="default"
             size="lg"
-            onPress={handleSubmit(onSubmit) as any}
+            onPress={handleSubmit(onSubmit)}
             disabled={upsertBudget.isPending}>
             {upsertBudget.isPending ? 'Saving...' : 'Save'}
           </Button>

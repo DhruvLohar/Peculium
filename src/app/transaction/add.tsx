@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -19,13 +19,22 @@ import {
   type AddTransactionFormOutput,
 } from '@/utils/schemas';
 import { useAddTransaction } from '@/hooks/useTransactions';
-import { useUpdateStreak } from '@/hooks/useStreak';
+import { isWriteQueued } from '@/hooks/useOfflineQueue';
+import { generateId } from '@/utils/network';
 import { useAnalytics } from '@/hooks/useAnalytics';
 
 const AddTransactionScreen: React.FC = () => {
   const router = useRouter();
-  const { mutate: addTransaction, isPending, error } = useAddTransaction();
-  const { mutate: updateStreak } = useUpdateStreak();
+  const {
+    mutate: addTransaction,
+    isPending,
+    isPaused,
+    failureCount,
+    failureReason,
+    error,
+  } = useAddTransaction();
+  // Values of the in-flight save, so leaving the screen (on success or once queued) happens once
+  const submittedRef = useRef<AddTransactionFormOutput | null>(null);
   const { trackAddTransaction } = useAnalytics();
 
   const {
@@ -45,31 +54,37 @@ const AddTransactionScreen: React.FC = () => {
 
   const currentType = useWatch({ control, name: 'type' });
 
+  const finishSubmit = useCallback(() => {
+    const values = submittedRef.current;
+    if (!values) return;
+    submittedRef.current = null;
+    trackAddTransaction({ type: values.type, category: values.category, amount: values.amount });
+    router.back();
+  }, [router, trackAddTransaction]);
+
   const onSubmit = useCallback(
     (values: AddTransactionFormOutput) => {
+      submittedRef.current = values;
       addTransaction(
         {
+          id: generateId(),
           amount: values.amount,
           type: values.type,
           category: values.category,
           notes: values.notes || undefined,
           transaction_date: new Date(values.transaction_date).toISOString(),
         },
-        {
-          onSuccess: () => {
-            trackAddTransaction({
-              type: values.type,
-              category: values.category,
-              amount: values.amount,
-            });
-            updateStreak();
-            router.back();
-          },
-        }
+        // The streak bump runs inside the queued write (useTransactions), so it survives offline
+        { onSuccess: finishSubmit }
       );
     },
-    [addTransaction, router, updateStreak, trackAddTransaction]
+    [addTransaction, finishSubmit]
   );
+
+  // Offline (or unreachable): the write is queued and already shown in the lists, so move on
+  useEffect(() => {
+    if (isPending && isWriteQueued({ isPaused, failureCount, failureReason })) finishSubmit();
+  }, [isPending, isPaused, failureCount, failureReason, finishSubmit]);
 
   return (
     <Container>

@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
-import { Pressable, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { View } from 'react-native';
+import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { AnimatedPressable, AnimatedView } from '@/components/atoms/Animated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorScheme } from 'nativewind';
 import CustomText from '@/components/atoms/CustomText';
@@ -9,8 +10,6 @@ import { EDIT_MONTHLY_BUDGET_SHEET_ID } from '@/components/bottomsheets/EditMont
 import { getThemeColors } from '@/utils/themeColors';
 import { cn } from '@/utils/cn';
 
-const AnimatedView = Animated.View;
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const SHADOW_SIZE = 4;
 

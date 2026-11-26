@@ -1,5 +1,6 @@
 import React, { createContext, memo, useContext } from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { useWebBrowserChrome } from '@/hooks/useWebBrowserChrome';
 
 type ThemeContextValue = {
   isDark: boolean;
@@ -11,6 +12,7 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const theme = useTheme();
+  useWebBrowserChrome(theme.isDark);
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 };
 

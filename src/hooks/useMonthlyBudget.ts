@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useQuery, useMutation, type QueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
 import supabase, { getSessionUser } from '../utils/supabase';
+import { OFFLINE_WRITE_SCOPE } from './useTransactions';
 
 // Manual types since monthly_budgets is not in database.types.ts
 interface MonthlyBudgetRow {
@@ -12,8 +13,33 @@ interface MonthlyBudgetRow {
   updated_at: string;
 }
 
+export const BUDGET_MUTATION_KEY = ['monthly-budget', 'upsert'] as const;
+
+// monthYear travels with the write so a replay after midnight on the 31st hits the right month
+export type QueuedBudgetUpsert = { amount: number; monthYear: string };
+
+/** Registers the offline-queued budget write. Must run before the persisted cache is restored. */
+export const registerBudgetMutations = (queryClient: QueryClient) => {
+  queryClient.setMutationDefaults(BUDGET_MUTATION_KEY, {
+    scope: OFFLINE_WRITE_SCOPE,
+    mutationFn: async ({ amount, monthYear }: QueuedBudgetUpsert): Promise<void> => {
+      const user = await getSessionUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase.from('monthly_budgets').upsert(
+        { user_id: user.id, month_year: monthYear, amount, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id,month_year' }
+      );
+      if (error) throw new Error(error.message);
+    },
+    onMutate: async ({ amount, monthYear }: QueuedBudgetUpsert) => {
+      queryClient.setQueryData(['monthly-budget', monthYear], { amount });
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['monthly-budget'] }),
+  });
+};
+
 export const useMonthlyBudget = () => {
-  const queryClient = useQueryClient();
 
   // Get current month in YYYY-MM format
   const currentMonthYear = useMemo(() => {
@@ -42,36 +68,22 @@ export const useMonthlyBudget = () => {
     },
   });
 
-  // Mutation to upsert budget
-  const upsertBudget = useMutation({
-    mutationFn: async (amount: number): Promise<void> => {
-      const user = await getSessionUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { error } = await supabase.from('monthly_budgets').upsert(
-        {
-          user_id: user.id,
-          month_year: currentMonthYear,
-          amount,
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: 'user_id,month_year',
-        }
-      );
-
-      if (error) throw new Error(error.message);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['monthly-budget'] });
-    },
+  const upsertMutation = useMutation<void, Error, QueuedBudgetUpsert>({
+    mutationKey: BUDGET_MUTATION_KEY,
   });
+
+  const { mutate: upsert } = upsertMutation;
+  const saveBudget = useCallback(
+    (amount: number) => upsert({ amount, monthYear: currentMonthYear }),
+    [upsert, currentMonthYear]
+  );
 
   return {
     budget: query.data,
     isLoading: query.isLoading,
     isRefetching: query.isRefetching,
     refetch: query.refetch,
-    upsertBudget,
+    upsertBudget: upsertMutation,
+    saveBudget,
   };
 };

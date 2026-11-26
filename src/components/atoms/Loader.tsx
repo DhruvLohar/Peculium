@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import Animated, {
+import {
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -9,6 +9,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { AnimatedView } from './Animated';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
 
@@ -69,7 +70,7 @@ const LoaderDot: React.FC<LoaderDotProps> = memo(({ delay, duration, dotClass })
     transform: [{ translateY: translateY.value }],
   }));
 
-  return <Animated.View className={dotClass} style={animatedStyle} />;
+  return <AnimatedView className={dotClass} style={animatedStyle} />;
 });
 
 LoaderDot.displayName = 'LoaderDot';

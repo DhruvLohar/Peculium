@@ -5,12 +5,16 @@
     "version": "1.0.3",
     "scheme": "peculium",
     "description": "A minimal, fast expense tracker. Latin: savings, property.",
-    "owner": "DhruvLohar09",
-    "platforms": ["ios", "android"],
+    "owner": "dhruvlohar",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
+      "output": "single",
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       [
@@ -19,7 +23,9 @@
           "root": "./src/app"
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-web-browser",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -33,10 +39,15 @@
       "resizeMode": "cover",
       "backgroundColor": "#FFDB33"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.dhruvlohar.peculium"
+      "bundleIdentifier": "com.dhruvlohar.peculium",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -44,6 +55,14 @@
         "backgroundColor": "#FFDB33"
       },
       "package": "com.dhruvlohar.peculium"
+    },
+    "extra": {
+      "router": {
+        "root": "./src/app"
+      },
+      "eas": {
+        "projectId": "4a47c4ea-8a34-4419-8f37-2f8746fe4801"
+      }
     }
   }
 }

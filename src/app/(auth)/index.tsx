@@ -2,7 +2,6 @@ import React, { memo, useCallback, useRef, useState, useMemo } from 'react';
 import {
   View,
   FlatList,
-  Dimensions,
   Pressable,
   Image,
   type NativeSyntheticEvent,
@@ -13,8 +12,8 @@ import { useRouter } from 'expo-router';
 import CustomText from '@/components/atoms/CustomText';
 import Button from '@/components/atoms/Button';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAppDimensions } from '@/hooks/useAppDimensions';
 
-const { width } = Dimensions.get('window');
 
 interface Slide {
   id: string;
@@ -52,28 +51,29 @@ const OnboardingScreen: React.FC = () => {
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
   const { trackSkippedToLogin } = useAnalytics();
+  const { width } = useAppDimensions();
 
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / width);
     setCurrentIndex(index);
-  }, []);
+  }, [width]);
 
   const handleNext = useCallback(() => {
     if (currentIndex < slides.length - 1) {
-      flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+      flatListRef.current?.scrollToOffset({ offset: (currentIndex + 1) * width });
     } else {
       // Navigate to login
       router.push('/login');
     }
-  }, [currentIndex, router]);
+  }, [currentIndex, router, width]);
 
   const handleSkip = useCallback(() => {
     trackSkippedToLogin();
     router.replace('/login');
   }, [router, trackSkippedToLogin]);
 
-  const imageSize = useMemo(() => width * 0.8, []);
+  const imageSize = useMemo(() => width * 0.8, [width]);
 
   const renderSlide = useCallback(
     ({ item }: { item: Slide }) => {
@@ -103,7 +103,16 @@ const OnboardingScreen: React.FC = () => {
         </View>
       );
     },
-    [imageSize]
+    [imageSize, width]
+  );
+
+  const getItemLayout = useCallback(
+    (_data: ArrayLike<Slide> | null | undefined, index: number) => ({
+      length: width,
+      offset: width * index,
+      index,
+    }),
+    [width]
   );
 
   const renderDots = useCallback(() => {
@@ -142,6 +151,7 @@ const OnboardingScreen: React.FC = () => {
         ref={flatListRef}
         data={slides}
         renderItem={renderSlide}
+        getItemLayout={getItemLayout}
         keyExtractor={(item) => item.id}
         horizontal
         pagingEnabled

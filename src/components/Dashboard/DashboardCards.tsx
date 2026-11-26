@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { View } from 'react-native';
 import CustomText from '@/components/atoms/CustomText';
+import FitText from '@/components/atoms/FitText';
 
 interface DashboardCardsProps {
   balance: number;
@@ -32,9 +33,9 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
           <CustomText className="text-[11px] font-bold tracking-[1.5px] text-muted-foreground">
             BALANCE
           </CustomText>
-          <CustomText variant="h2" className="mt-0.5">
+          <FitText maxFontSize={30} className="mt-0.5">
             {balanceStr}
-          </CustomText>
+          </FitText>
         </View>
       </View>
 
@@ -48,9 +49,9 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
             </CustomText>
             <View className="h-5 w-5 bg-safe" />
           </View>
-          <CustomText variant="h3" className="mt-2">
+          <FitText maxFontSize={24} className="mt-2">
             {incomeStr}
-          </CustomText>
+          </FitText>
         </View>
 
         {/* Expense */}
@@ -61,9 +62,9 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ balance, income, expens
             </CustomText>
             <View className="h-5 w-5 bg-destructive" />
           </View>
-          <CustomText variant="h3" className="mt-2">
+          <FitText maxFontSize={24} className="mt-2">
             {expenseStr}
-          </CustomText>
+          </FitText>
         </View>
       </View>
     </View>

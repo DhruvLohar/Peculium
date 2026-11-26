@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
-import { Dimensions, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { useAppDimensions } from '@/hooks/useAppDimensions';
 import { MaterialIcons } from '@expo/vector-icons';
 import { type Control, Controller } from 'react-hook-form';
 import { useColorScheme } from 'nativewind';
@@ -14,8 +15,6 @@ interface CategoryGridProps {
   type?: TransactionType;
 }
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const TILE_SIZE = Math.floor((SCREEN_WIDTH - 32 - 24) / 4);
 
 const CategoryGrid: React.FC<CategoryGridProps> = ({ control, type }) => {
   const { colorScheme } = useColorScheme();
@@ -23,6 +22,9 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ control, type }) => {
   const colors = getThemeColors(isDark);
   const unselectedBg = isDark ? '#242424' : '#ffffff';
   const unselectedFg = isDark ? '#888888' : '#5a5a5a';
+  const { width } = useAppDimensions();
+  // 4 tiles per row: 16px screen padding each side, 8px gap x3
+  const TILE_SIZE = useMemo(() => Math.floor((width - 32 - 24) / 4), [width]);
 
   const filteredCategories = useMemo(() => {
     return type ? getCategoriesByType(type) : [];

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { Dimensions, Keyboard, Pressable, View } from 'react-native';
+import { Keyboard, Pressable, View } from 'react-native';
 import Animated, {
   useAnimatedKeyboard,
   useAnimatedStyle,
@@ -7,12 +7,13 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
 import { useBottomSheetStore } from '@/store/bottomSheetStore';
 import { usePortalStore } from '@/store/portalStore';
 import { getThemeColors } from '@/utils/themeColors';
+import { useAppDimensions } from '@/hooks/useAppDimensions';
 
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const SPRING_CONFIG = {
   damping: 20,
@@ -47,9 +48,12 @@ function FixedBottomSheetInner<TArgs extends object = object>({
   const colors = getThemeColors(colorScheme === 'dark');
   const bgColor = colorScheme === 'dark' ? '#1c1c1e' : '#ffffff';
 
+  const { height: SCREEN_HEIGHT } = useAppDimensions();
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const backdropOpacity = useSharedValue(0);
   const keyboard = useAnimatedKeyboard();
+  // Keeps sheet content clear of the iPhone home indicator
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   // Register sheet in bottom sheet store on mount
   useEffect(() => {
@@ -70,7 +74,7 @@ function FixedBottomSheetInner<TArgs extends object = object>({
       translateY.value = withSpring(SCREEN_HEIGHT, SPRING_CONFIG);
       backdropOpacity.value = withTiming(0, { duration: 200 });
     }
-  }, [isOpen, translateY, backdropOpacity]);
+  }, [isOpen, translateY, backdropOpacity, SCREEN_HEIGHT]);
 
   const handleClose = useCallback(() => close(id), [id, close]);
 
@@ -135,7 +139,7 @@ function FixedBottomSheetInner<TArgs extends object = object>({
           </View>
 
           {/* Content */}
-          <View style={{ flex: 1 }}>{children(args)}</View>
+          <View style={{ flex: 1, paddingBottom: bottomInset }}>{children(args)}</View>
         </Animated.View>
       </>
     );

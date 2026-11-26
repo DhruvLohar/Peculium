@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <!--
+      viewport-fit=cover: lets env(safe-area-inset-*) report the notch / home indicator.
+      maximum-scale=1: stops iOS Safari auto-zooming the page when an input under 16px is focused.
+    -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Add to Home Screen: launch full screen like an app -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Peculium" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>Peculium</title>
+    <script>
+      // Apply the saved theme before first paint so Safari's bars and the page don't flash white
+      // in dark mode. Mirrors useTheme (key) and useWebBrowserChrome (colors).
+      (function () {
+        try {
+          var stored = localStorage.getItem('@peculium/theme');
+          var dark = stored
+            ? stored === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var color = dark ? '#1a1a1a' : '#ffffff';
+          var root = document.documentElement;
+          root.style.backgroundColor = color;
+          root.style.colorScheme = dark ? 'dark' : 'light';
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', color);
+        } catch (e) {}
+      })();
+    </script>
+    <style id="expo-reset">
+      /*
+        NativeWind compiles rem with 1rem = 14px on native (inlineRem). Browsers default to 16px,
+        which made every text-* size and rem spacing ~14% larger on web than in the app.
+      */
+      html {
+        font-size: 14px;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+      /* Native-app feel: no grey tap flash, no 300ms double-tap-zoom delay, no long-press
+         callout/selection on UI chrome. Inputs and text areas stay selectable. */
+      * {
+        -webkit-tap-highlight-color: transparent;
+      }
+      html {
+        touch-action: manipulation;
+      }
+      body {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      input,
+      textarea,
+      [contenteditable='true'] {
+        -webkit-user-select: text;
+        user-select: text;
+        -webkit-touch-callout: default;
+      }
+      img {
+        -webkit-user-drag: none;
+      }
+      #root {
+        display: flex;
+        /* dvh tracks Safari's collapsing toolbar; 100% is the fallback */
+        height: 100%;
+        height: 100dvh;
+        flex: 1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script>
+      // Service workers need HTTPS (or localhost), so this is a no-op on the LAN dev server
+      if ('serviceWorker' in navigator && window.isSecureContext) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js').catch(function () {});
+        });
+      }
+    </script>
+  </body>
+</html>

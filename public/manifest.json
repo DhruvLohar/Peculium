@@ -1,0 +1,12 @@
+{
+  "name": "Peculium",
+  "short_name": "Peculium",
+  "description": "A minimal, fast expense tracker.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [{ "src": "/apple-touch-icon.png", "sizes": "1024x1024", "type": "image/png" }]
+}

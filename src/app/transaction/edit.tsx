@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useEffect } from 'react';
+import React, { memo, useCallback, useMemo, useEffect, useRef } from 'react';
 import { ScrollView, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -25,7 +25,7 @@ import {
   useDeleteTransaction,
 } from '@/hooks/useTransactions';
 import { useAnalytics } from '@/hooks/useAnalytics';
-import { useUpdateStreak } from '@/hooks/useStreak';
+import { isWriteQueued } from '@/hooks/useOfflineQueue';
 import { useBottomSheet } from '@/hooks/useBottomSheet';
 import {
   CONFIRM_TRANSACTION_DELETE_SHEET_ID,
@@ -41,10 +41,20 @@ const EditTransactionScreen: React.FC = () => {
   const {
     mutate: updateTransaction,
     isPending: isUpdating,
+    isPaused: isUpdatePaused,
+    failureCount: updateFailureCount,
+    failureReason: updateFailureReason,
     error: updateError,
   } = useUpdateTransaction();
-  const { mutate: deleteTransaction, isPending: isDeleting } = useDeleteTransaction();
-  const { mutate: updateStreak } = useUpdateStreak();
+  const {
+    mutate: deleteTransaction,
+    isPending: isDeleting,
+    isPaused: isDeletePaused,
+    failureCount: deleteFailureCount,
+    failureReason: deleteFailureReason,
+  } = useDeleteTransaction();
+  // Set while a save/delete is in flight; cleared once we leave, so leaving happens exactly once
+  const leaveAfterWriteRef = useRef<(() => void) | null>(null);
   const { trackEditTransaction, trackDeleteTransaction } = useAnalytics();
   const { open: openDeleteConfirm } = useBottomSheet<ConfirmTransactionDeleteArgs>(
     CONFIRM_TRANSACTION_DELETE_SHEET_ID
@@ -92,10 +102,25 @@ const EditTransactionScreen: React.FC = () => {
     [isDraft]
   );
 
+  const leave = useCallback(() => {
+    const onLeave = leaveAfterWriteRef.current;
+    if (!onLeave) return;
+    leaveAfterWriteRef.current = null;
+    onLeave();
+    router.back();
+  }, [router]);
+
   const onUpdate = useCallback(
     (values: AddTransactionFormOutput) => {
       if (!id) return;
 
+      leaveAfterWriteRef.current = () =>
+        trackEditTransaction({
+          transaction_id: id,
+          type: values.type,
+          category: values.category,
+          amount: values.amount,
+        });
       updateTransaction(
         {
           id,
@@ -104,23 +129,13 @@ const EditTransactionScreen: React.FC = () => {
           category: values.category,
           notes: values.notes || undefined,
           transaction_date: new Date(values.transaction_date).toISOString(),
+          // Confirming a draft counts as logging a transaction (streak bump runs with the write)
+          confirmsDraft: isDraft,
         },
-        {
-          onSuccess: () => {
-            trackEditTransaction({
-              transaction_id: id,
-              type: values.type,
-              category: values.category,
-              amount: values.amount,
-            });
-            // Confirming a draft counts as logging a transaction
-            if (isDraft) updateStreak();
-            router.back();
-          },
-        }
+        { onSuccess: leave }
       );
     },
-    [id, updateTransaction, router, trackEditTransaction, isDraft, updateStreak]
+    [id, updateTransaction, leave, trackEditTransaction, isDraft]
   );
 
   const onDelete = useCallback(() => {
@@ -128,11 +143,30 @@ const EditTransactionScreen: React.FC = () => {
 
     openDeleteConfirm({
       onConfirm: () => {
-        trackDeleteTransaction(id);
-        deleteTransaction(id, { onSuccess: () => router.back() });
+        leaveAfterWriteRef.current = () => trackDeleteTransaction(id);
+        deleteTransaction(id, { onSuccess: leave });
       },
     });
-  }, [id, openDeleteConfirm, deleteTransaction, router, trackDeleteTransaction]);
+  }, [id, openDeleteConfirm, deleteTransaction, leave, trackDeleteTransaction]);
+
+  // Offline (or unreachable): the write is queued and already applied to the lists, so move on
+  const isQueued =
+    (isUpdating &&
+      isWriteQueued({
+        isPaused: isUpdatePaused,
+        failureCount: updateFailureCount,
+        failureReason: updateFailureReason,
+      })) ||
+    (isDeleting &&
+      isWriteQueued({
+        isPaused: isDeletePaused,
+        failureCount: deleteFailureCount,
+        failureReason: deleteFailureReason,
+      }));
+
+  useEffect(() => {
+    if (isQueued) leave();
+  }, [isQueued, leave]);
 
   if (isLoading) {
     return (

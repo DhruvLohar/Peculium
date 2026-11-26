@@ -2,7 +2,7 @@ import '../../global.css';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { ArchivoBlack_400Regular } from '@expo-google-fonts/archivo-black';
@@ -13,7 +13,8 @@ import {
   SpaceGrotesk_600SemiBold,
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { queryClient, persistOptions, resumeQueuedWrites } from '@/utils/queryClient';
 import { Stack, useRouter, useSegments, useRootNavigationState } from 'expo-router';
 import { useAuthState } from '@/hooks/useUserAuth';
 import { useDeviceId } from '@/hooks/useDeviceId';
@@ -22,9 +23,10 @@ import { useBankSmsDebugLogs } from '@/hooks/useBankSmsDebugLogs';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useSmsTransactionSync } from '@/hooks/useSmsTransactionSync';
 import BottomSheetProvider from '@/components/providers/BottomSheetProvider';
+import WebFrame from '@/components/atoms/WebFrame';
+import BootOverlay from '@/components/atoms/BootOverlay';
+import SyncStatusIndicator from '@/components/SyncStatusIndicator';
 import ThemeProvider from '@/components/providers/ThemeProvider';
-
-const queryClient = new QueryClient();
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 void SplashScreen.preventAutoHideAsync();
@@ -34,6 +36,9 @@ function RootLayoutNav() {
   const segments = useSegments();
   const authState = useAuthState();
   const navigationState = useRootNavigationState();
+  // Covers the initial (auth) route until the redirect below has run, so a signed-in reload
+  // goes straight to home instead of flashing the login screen (web has no native splash)
+  const [hasRouted, setHasRouted] = useState(false);
 
   useSmsTransactionSync(authState === 'authenticated');
 
@@ -56,21 +61,26 @@ function RootLayoutNav() {
     } catch (error) {
       console.error('Failed to route after auth resolution:', error);
     } finally {
+      setHasRouted(true);
       void SplashScreen.hideAsync();
     }
   }, [authState, segments, router, navigationState?.key]);
 
   return (
-    <Stack>
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="transaction/add" options={{ headerShown: false }} />
-      <Stack.Screen name="transaction/edit" options={{ headerShown: false }} />
-      <Stack.Screen name="transaction/view" options={{ headerShown: false }} />
-      <Stack.Screen name="transaction/pending" options={{ headerShown: false }} />
-      <Stack.Screen name="profile/index" options={{ headerShown: false }} />
-    </Stack>
+    <>
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="transaction/add" options={{ headerShown: false }} />
+        <Stack.Screen name="transaction/edit" options={{ headerShown: false }} />
+        <Stack.Screen name="transaction/view" options={{ headerShown: false }} />
+        <Stack.Screen name="transaction/pending" options={{ headerShown: false }} />
+        <Stack.Screen name="profile/index" options={{ headerShown: false }} />
+      </Stack>
+      <SyncStatusIndicator />
+      {!hasRouted && <BootOverlay />}
+    </>
   );
 }
 
@@ -107,15 +117,20 @@ export default function RootLayout() {
   // Once fonts are loaded, RootLayoutNav mounts, evaluates auth, and then drops the splash screen
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={persistOptions}
+        onSuccess={resumeQueuedWrites}>
         <SafeAreaProvider>
           <ThemeProvider>
-            <BottomSheetProvider>
-              <RootLayoutNav />
-            </BottomSheetProvider>
+            <WebFrame>
+              <BottomSheetProvider>
+                <RootLayoutNav />
+              </BottomSheetProvider>
+            </WebFrame>
           </ThemeProvider>
         </SafeAreaProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </GestureHandlerRootView>
   );
 }
